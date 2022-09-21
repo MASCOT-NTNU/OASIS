@@ -25,3 +25,9 @@ plt.plot(oop[:, 1], oop[:, 0], 'k.-')
 plt.show()
 
 
+#%%
+
+box = np.loadtxt("OperationArea.txt", delimiter=", ")
+plt.plot(box[:, 1], box[:, 0], 'r-.')
+plt.show()
+
