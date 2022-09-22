@@ -1,7 +1,16 @@
 from WGS import WGS
 import numpy as np
-import os
+import os    
 
+
+
+"""
+Boundary region is updated to be
+dx1 = 8300
+dy1 = 4800
+dx2 = 5100
+dy2 = 6200
+"""
 
 class GMRF:
 
