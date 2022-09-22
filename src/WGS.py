@@ -41,6 +41,20 @@ class WGS:
         return lat, lon
 
     @staticmethod
+    @vectorize
+    def latlon2xy_with_origin(lat, lon, lat_origin, lon_origin):
+        x = radians((lat - lat_origin)) / 2 / np.pi * WGS.__CIRCUMFERENCE
+        y = radians((lon - lon_origin)) / 2 / np.pi * WGS.__CIRCUMFERENCE * np.cos(radians(lat))
+        return x, y
+
+    @staticmethod
+    @vectorize
+    def xy2latlon_with_origin(x, y, lat_origin, lon_origin):
+        lat = lat_origin + degrees(x * np.pi * 2.0 / WGS.__CIRCUMFERENCE)
+        lon = lon_origin + degrees(y * np.pi * 2.0 / (WGS.__CIRCUMFERENCE * np.cos(radians(lat))))
+        return lat, lon
+
+    @staticmethod
     def get_origin() -> tuple:
         """ Return origin lat, lon in degrees. """
         return WGS.__LATITUDE_ORIGIN, WGS.__LONGITUDE_ORIGIN
