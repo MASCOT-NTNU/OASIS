@@ -3,35 +3,56 @@ import numpy as np
 import os    
 
 
-
-"""
-Boundary region is updated to be
-dx1 = 8300
-dy1 = 4800
-dx2 = 5100
-dy2 = 6200
-"""
-
 class GMRF:
 
+    __xlim = [0, 1]
+    __ylim = [0, 1]
+    __zlim = [0, 1]
+    __nx = 1
+    __ny = 1
+    __nz = 1
+    __grid = np.empty([0, 3])
 
-    def construct_gmrf_grid(self) -> None:
+    def construct_rectangular_grid(self) -> None:
         """
-        Construct GMRF grid by converting lats, lons to xy.
+        Construct rectangular grid for spde discretisation.
         """
-        filepath = os.getcwd() + "/GMRF/"
+        xv = np.linspace(self.__xlim[0], self.__xlim[1], self.__nx)
+        yv = np.linspace(self.__ylim[0], self.__ylim[1], self.__ny)
+        zv = np.linspace(self.__zlim[0], self.__zlim[1], self.__nz)
+        grid = []
+        for i in range(self.__nx):
+            for j in range(self.__ny):
+                for k in range(self.__nz):
+                    grid.append([xv[i], yv[j], zv[k]])
+        self.__grid = np.array(grid)
 
-        x, y = WGS.latlon2xy(lat, lon)
-        z = depth
-        self.__gmrf_grid = np.stack((x, y, z), axis=1)
-        self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
+    def set_xlim(self, value: list) -> None:
+        self.__xlim = value
 
-        """
-        Get the rotation of the grid, used for later plotting.
-        """
-        box = np.load(filepath + "grid.npy")
-        polygon = box[:, 2:]
-        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
-        polygon = sort_polygon_vertices(polygon)
-        self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
-                                             polygon[1, 1] - polygon[0, 1])
+    def set_ylim(self, value: list) -> None:
+        self.__ylim = value
+
+    def set_zlim(self, value: list) -> None:
+        self.__zlim = value
+
+    def set_nx(self, value: int) -> None:
+        self.__nx = value
+
+    def set_ny(self, value: int) -> None:
+        self.__ny = value
+
+    def set_nz(self, value: int) -> None:
+        self.__nz = value
+
+    def get_xlim(self):
+        return self.__xlim
+
+    def get_ylim(self):
+        return self.__ylim
+
+    def get_zlim(self):
+        return self.__zlim
+
+    def get_grid(self):
+        return self.__grid
