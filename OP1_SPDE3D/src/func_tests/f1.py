@@ -149,3 +149,7 @@ lat_reduced = lat[:, ind2, ind3]
 #%%
 plt.plot(depth[2, 123, 240, :])
 plt.show()
+
+#%%
+id1, id2, id3, id4 = np.where(~np.isnan(sal_data))
+
