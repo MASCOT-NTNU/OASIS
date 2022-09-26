@@ -59,6 +59,19 @@ dmx = cdist(vectorize(xg), vectorize(xd))
 t2 = time.time()
 print("Distance matrix for x: ", t2 - t1)
 
+#%%
+import numpy as np
+import pandas as pd
+from WGS import WGS
+
+grid = pd.read_csv("grid.csv").to_numpy()
+
+x, y = WGS.latlon2xy(grid[:, 0], grid[:, 1])
+
+print(np.diff(x))
+print(np.diff(y))
+
+
 
 
 

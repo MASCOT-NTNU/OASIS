@@ -1,151 +1,198 @@
+from shapely.geometry import Polygon, Point
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import math
+import os
 from unittest import TestCase
 from WaypointGraph import WaypointGraph
-
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-
-figpath = os.getcwd() + "/../../fig/astar/"
+from matplotlib.gridspec import GridSpec
 
 
 class Node:
-    def __init__(self, loc: np.ndarray, parent=None):
-        self.x = loc[0]
-        self.y = loc[1]
-        # self.z = loc[2]
+
+    def __init__(self, loc=None, parent=None):
+        self.x, self.y = loc
         self.parent = parent
-
-        self.g = 0
-        self.h = 0
-        self.f = 0
-
-    # def __eq__(self, other):
-    #     return (self.x == other.x) and (self.y == other.y) and (self.z == other.z)
+        self.g = np.inf
+        self.h = np.inf
+        self.f = np.inf
 
 
-class Astar:
-    def __init__(self, grid: np.ndarray):
-        self.grid = grid
-        # self.neighbour_distance = self.wp.get_neighbour_distance()
-        pass
+def astar(wp: 'WaypointGraph', loc_start, loc_end, border: np.ndarray, obstacle: np.ndarray):
 
-    def search_path(self, loc_start, loc_end):
+    figpath = os.getcwd() + "/../../fig/astar/"
 
-        start_node = Node(loc_start, parent=None)
-        end_node = Node(loc_end, parent=None)
+    start_node = Node(loc_start, None)
+    start_node.cost = 0
+    end_node = Node(loc_end, None)
+    end_node.cost = 0
 
-        open_list = []
-        closed_list = []
+    plg_border = Polygon(border)
+    plg_obstalce = Polygon(obstacle)
+    # stepsize = .1
+    maximum_iter = 150
+    cnt = 0
 
-        open_list.append(start_node)
+    open_list = []
+    closed_list = []
 
-        cnt = 0
-        NUM_MAX = 50
+    open_list.append(start_node)
 
-        while len(open_list) > 0:
-            print(cnt)
-            current_node = open_list[0]
-            current_index = 0
+    while len(open_list) > 0:
+        print(cnt)
+        node_now = open_list[0]
+        ind_now = 0
+        for i in range(len(open_list)):
+            if open_list[i].f < node_now.f:
+                node_now = open_list[i]
+                ind_now = i
+        # for index, item in enumerate(open_list):
+        #     if item.f < node_now.f:
+        #         node_now = item
+        #         ind_now = index
 
-            for i in range(len(open_list)):
-                if open_list[i].f < current_node.f:
-                    current_node = open_list[i]
-                    current_index = i
-            # for index, item in enumerate(open_list):
-            #     if item.f < current_node.f:
-            #         current_node = item
-            #         current_index = index
+        # print("open before: ", open_list)
+        open_list.pop(ind_now)
+        # print("open after: ", open_list)
+        closed_list.append(node_now)
+        # print("closed: ", closed_list)
 
-            open_list.pop(current_index)
-            closed_list.append(current_node)
+        if np.sqrt((node_now.x - end_node.x)**2 +
+                   (node_now.y - end_node.y)**2) <= .01:
+            path = []
+            pointer = node_now
+            while pointer is not None:
+                path.append([pointer.x, pointer.y])
+                pointer = pointer.parent
+            return path[::-1]
 
-            if current_node == end_node:
-                path = []
-                current = current_node
-                while current is not None:
-                    path.append([current.x, current.y])
-                    current = current.parent
-                return path
+        children = []
+
+        wp_now = np.array([node_now.x, node_now.y, 0])
+        ind_now_wp = wp.get_ind_from_waypoint(wp_now)
+        ind_neighbours = wp.get_ind_neighbours(ind_now_wp)
+
+        for idn in ind_neighbours:
+            loc = wp.get_waypoint_from_ind(idn)
+            x_new = loc[0]
+            y_new = loc[1]
+        # angles = np.arange(0, 360, 90)
+        # for angle in angles:
+        #     x_new = node_now.x + stepsize * np.cos(math.radians(angle))
+        #     y_new = node_now.y + stepsize * np.sin(math.radians(angle))
+
+            # point = Point(x_new, y_new)
+
+            # filter obstcle and border
+            # if not plg_border.contains(point) or plg_obstalce.contains(point):
+            #     continue
+
+            loc_new = np.array([x_new, y_new])
+            node_new = Node(loc_new, node_now)
+
+            children.append(node_new)
+
+        for child in children:
+            for closed_child in closed_list:
+                # if closed_child == child:
+                # print(np.sqrt((closed_child.x - child.x)**2 +
+                #             (closed_child.y - child.y)**2))
+                if (np.sqrt((closed_child.x - child.x)**2 +
+                            (closed_child.y - child.y)**2)) <= .099:
+                    print("Too close")
+                    continue
+
+            child.g = node_now.g + wp.get_neighbour_distance()
+            child.h = (child.x - end_node.x)**2 + (child.y - end_node.y)**2
+            child.f = child.g + child.h
+
+            for open_node in open_list:
+                # if open_node == child and child.g > open_node.g:
+                # print(np.sqrt((open_node.x - child.x)**2 + (open_node.y - child.y)**2))
+                if (np.sqrt((open_node.x - child.x)**2 +
+                            (open_node.y - child.y)**2)) <= .099 and child.g > open_node.g:
+                    continue
+
+            open_list.append(child)
+
+        fig = plt.figure(figsize=(35, 15))
+        gs = GridSpec(nrows=1, ncols=3)
+
+        ax = fig.add_subplot(gs[0])
+        ax.plot(border[:, 0], border[:, 1], 'r-.')
+        ax.plot(obstacle[:, 0], obstacle[:, 1], 'r-.')
+        plt.plot(loc_start[0], loc_start[1], 'k.')
+        plt.plot(loc_end[0], loc_end[1], 'b*')
+        for item in open_list:
+            ax.plot(item.x, item.y, 'c.', alpha=.2)
+
+        ax = fig.add_subplot(gs[1])
+        ax.plot(border[:, 0], border[:, 1], 'r-.')
+        ax.plot(obstacle[:, 0], obstacle[:, 1], 'r-.')
+        plt.plot(loc_start[0], loc_start[1], 'k.')
+        plt.plot(loc_end[0], loc_end[1], 'b*')
+        for item in closed_list:
+            ax.plot(item.x, item.y, 'k.', alpha=.2)
+
+        ax = fig.add_subplot(gs[2])
+        ax.plot(border[:, 0], border[:, 1], 'r-.')
+        ax.plot(obstacle[:, 0], obstacle[:, 1], 'r-.')
+        plt.plot(loc_start[0], loc_start[1], 'k.')
+        plt.plot(loc_end[0], loc_end[1], 'b*')
+        for child in children:
+            plt.plot(child.x, child.y, 'r.')
+        plt.plot(node_now.x, node_now.y, 'g.')
+
+        plt.savefig(figpath + "P_{:03d}.png".format(cnt))
+        plt.close("all")
+
+        cnt += 1
+        if cnt > maximum_iter:
+            print("Cannot converge")
+            break
 
 
-
-            children = []
-            for idn in ind_neighbours:
-                new_loc = self.wp.get_waypoint_from_ind(idn)
-                new_node = Node(new_loc, parent=current_node)
-                children.append(new_node)
-
-            for child in children:
-                for closed_child in closed_list:
-                    if child == closed_child:
-                        continue
-
-                child.g = current_node.g + self.neighbour_distance
-                child.h = np.sqrt((child.x - end_node.x)**2 +
-                                  (child.y - end_node.y)**2)
-                child.f = child.g + child.h
-
-                for open_node in open_list:
-                    if child == open_node and child.g > open_node.g:
-                        continue
-
-                open_list.append(child)
-
-            plt.figure(figsize=(10, 10))
-            plt.plot(waypoints[:, 0], waypoints[:, 1], 'k.', alpha=.1)
-            plt.plot(obs[0][:, 0], obs[0][:, 1], 'r-.')
-            plt.plot(current_node.x, current_node.y, 'r.')
-            for child in children:
-                plt.plot(child.x, child.y, 'b.')
-            plt.savefig(figpath+"P_{:03d}.png".format(cnt))
-            plt.close("all")
-
-            cnt += 1
-            if cnt > NUM_MAX:
-                break
-
-
-class TestAStar(TestCase):
-
+class TestAstar(TestCase):
     def setUp(self) -> None:
-        xv = np.arange(0, 1, .1)
-        yv = np.arange(0, 1, .1)
-        xx, yy = np.meshgrid(xv, yv)
-        x = xx.flatten()
-        y = yy.flatten()
-        self.grid = np.stack((x, y), axis=1)
-        # self.polygon_border = np.array([[0, 0],
-        #                                 [1, 0],
-        #                                 [1, 1],
-        #                                 [0, 1],
-        #                                 [0, 0]])
-        # self.polygon_obstacle = [np.array([[.4, .4],
-        #                                    [.7, .6],
-        #                                    [.6, .8],
-        #                                    [.3, .5],
-        #                                    [.4, .4]])]
-        # self.wp = WaypointGraph()
-        # self.wp.set_polygon_border(self.polygon_border)
-        # self.wp.set_polygon_obstacles(self.polygon_obstacle)
-        # self.wp.set_depth_layers([0])
-        # self.wp.set_neighbour_distance(.1)
-        # self.wp.construct_waypoints()
-        # self.wp.construct_hash_neighbours()
+        self.plg_border = np.array([[0, 0],
+                               [0, 1],
+                               [1, 1],
+                               [1, 0],
+                               [0, 0]])
 
-        self.astar = Astar(self.grid)
+        self.plg_obstacle = np.array([[.25, .25],
+                                 [.65, .25],
+                                 [.65, .65],
+                                 [.25, .65],
+                                 [.25, .25]])
+        self.wp = WaypointGraph()
+        self.wp.set_polygon_border(self.plg_border)
+        self.wp.set_polygon_obstacles([self.plg_obstacle])
+        self.wp.set_depth_layers([0])
+        self.wp.set_neighbour_distance(.05)
+        self.wp.construct_waypoints()
+        self.wp.construct_hash_neighbours()
+        self.waypoint = self.wp.get_waypoints()
+        plt.plot(self.waypoint[:, 1], self.waypoint[:, 0], 'k.')
+        plt.show()
 
-    def test_wp(self):
-        # wp = self.wp.get_waypoints()
-        # loc_start = [0, 0, 0]
-        # loc_end = [1, 1, 0]
-        # id_start = self.wp.get_ind_from_waypoint(np.array(loc_start))
-        # id_end = self.wp.get_ind_from_waypoint(np.array(loc_end))
+    def test_astar(self):
+        # pass
+        loc_start = np.array([.1, .1, 0])
+        loc_end = np.array([.9, .9, 0])
+        ids = self.wp.get_ind_from_waypoint(loc_start)
+        ide = self.wp.get_ind_from_waypoint(loc_end)
+        wps = self.wp.get_waypoint_from_ind(ids)
+        wpe = self.wp.get_waypoint_from_ind(ide)
+        astar(self.wp, loc_start=wps[:2], loc_end=wpe[:2], border=self.plg_border, obstacle=self.plg_obstacle)
 
-        # wps = self.wp.get_waypoint_from_ind(id_start)
-        # wpe = self.wp.get_waypoint_from_ind(id_end)
-        path = self.astar.search_path([.1, .1], [.9, .9])
 
-        # plt.plot(wp[:, 1], wp[:, 0], 'k.')
-        # plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
-        # plt.plot(self.polygon_obstacle[0][:, 1], self.polygon_obstacle[0][:, 0], 'r-.')
-        # plt.show()
+
+
+
+
+
+
+
+
