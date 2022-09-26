@@ -14,10 +14,10 @@ class TestGMRF(TestCase):
         self.g = GMRF()
         self.g.set_xlim([0, 8300])
         self.g.set_ylim([0, 4800])
-        self.g.set_zlim([-.5, -4.5])
+        self.g.set_zlim([0.5, -4.5])
         self.g.set_nx(120)
         self.g.set_ny(75)
-        self.g.set_nz(5)
+        self.g.set_nz(6)
         self.g.construct_rectangular_grid()
 
     def test_grid_discretisation(self):
@@ -27,6 +27,8 @@ class TestGMRF(TestCase):
         # plt.plot(g[ind, 1], g[ind, 0], 'k.')
         # plt.show()
         lat, lon = WGS.xy2latlon_with_origin(g[:, 0], g[:, 1], self.o1[0], self.o1[1])
+        ind = np.where(g[:, 2] == .5)[0]
+        g[ind, 2] = 0
         grid = np.stack((lat, lon, g[:, 2]), axis=1)
         df = pd.DataFrame(grid, columns=['lat', 'lon', 'depth'])
         df.to_csv("grid.csv", index=False)
