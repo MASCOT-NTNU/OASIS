@@ -37,6 +37,8 @@ def astar(wp: 'WaypointGraph', ind_start, ind_end, border, obstacle):
 
     open_list = []
     closed_list = []
+    ind_open = []
+    ind_closed = []
 
     ind_open = []
     ind_closed = []
