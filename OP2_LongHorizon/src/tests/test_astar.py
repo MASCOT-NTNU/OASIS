@@ -36,14 +36,18 @@ def astar(wp: 'WaypointGraph', loc_start, loc_end, border: np.ndarray, obstacle:
 
     open_list = []
     closed_list = []
+    ind_open = []
+    ind_closed = []
 
     open_list.append(start_node)
+    wp_temp = np.array([start_node.x, start_node.y, 0])
+    ind_open.append(wp.get_ind_from_waypoint(wp_temp))
 
     while len(open_list) > 0:
         print(cnt)
         node_now = open_list[0]
         ind_now = 0
-        for i in range(len(open_list)):
+        for i in range(len(ind_open)):
             if open_list[i].f < node_now.f:
                 node_now = open_list[i]
                 ind_now = i
@@ -111,7 +115,7 @@ def astar(wp: 'WaypointGraph', loc_start, loc_end, border: np.ndarray, obstacle:
                 # if open_node == child and child.g > open_node.g:
                 # print(np.sqrt((open_node.x - child.x)**2 + (open_node.y - child.y)**2))
                 if (np.sqrt((open_node.x - child.x)**2 +
-                            (open_node.y - child.y)**2)) <= .099 and child.g > open_node.g:
+                            (open_node.y - child.y)**2)) <= .1 and child.g > open_node.g:
                     continue
 
             open_list.append(child)
