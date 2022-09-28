@@ -7,9 +7,9 @@ The selected origin is at Nidarosdomen in Trondheim.
 
 Example:
     >>> wgs = WGS()
-    >>> x, y = wgs.latlon2xy(64.55, 10.55)
+    >>> x, y = wgs.latlon2xy(41.065, -8.68281012789546)
     >>> print(x, y)
-    >>> 4214.231340278183 -6537.03396706585
+    >>> 0.0, 0.0
     >>> x, y = 1000, 2000
     >>> lat, lon = wgs.xy2latlon(x, y)
     >>> print(lat, lon)
@@ -23,36 +23,28 @@ from numpy import vectorize
 
 class WGS:
     __CIRCUMFERENCE = 40075000  # [m], circumference
-    __LATITUDE_ORIGIN = 41.1621429
-    __LONGITUDE_ORIGIN = -8.6219537
+    __LATITUDE_ORIGIN = 41.065
+    __LONGITUDE_ORIGIN = -8.68281012789546
 
     @staticmethod
     @vectorize
-    def latlon2xy(lat, lon):
+    def latlon2xy(lat: float, lon: float) -> tuple:
         x = radians((lat - WGS.__LATITUDE_ORIGIN)) / 2 / np.pi * WGS.__CIRCUMFERENCE
         y = radians((lon - WGS.__LONGITUDE_ORIGIN)) / 2 / np.pi * WGS.__CIRCUMFERENCE * np.cos(radians(lat))
         return x, y
 
     @staticmethod
     @vectorize
-    def xy2latlon(x, y):
+    def xy2latlon(x: float, y: float) -> tuple:
         lat = WGS.__LATITUDE_ORIGIN + degrees(x * np.pi * 2.0 / WGS.__CIRCUMFERENCE)
         lon = WGS.__LONGITUDE_ORIGIN + degrees(y * np.pi * 2.0 / (WGS.__CIRCUMFERENCE * np.cos(radians(lat))))
         return lat, lon
 
     @staticmethod
-    @vectorize
-    def latlon2xy_with_origin(lat, lon, lat_origin, lon_origin):
-        x = radians((lat - lat_origin)) / 2 / np.pi * WGS.__CIRCUMFERENCE
-        y = radians((lon - lon_origin)) / 2 / np.pi * WGS.__CIRCUMFERENCE * np.cos(radians(lat))
-        return x, y
-
-    @staticmethod
-    @vectorize
-    def xy2latlon_with_origin(x, y, lat_origin, lon_origin):
-        lat = lat_origin + degrees(x * np.pi * 2.0 / WGS.__CIRCUMFERENCE)
-        lon = lon_origin + degrees(y * np.pi * 2.0 / (WGS.__CIRCUMFERENCE * np.cos(radians(lat))))
-        return lat, lon
+    def set_origin(lat: float, lon: float) -> None:
+        """ Update the origin for the coordinate system. """
+        WGS.__LATITUDE_ORIGIN = lat
+        WGS.__LONGITUDE_ORIGIN = lon
 
     @staticmethod
     def get_origin() -> tuple:
@@ -61,12 +53,13 @@ class WGS:
 
     @staticmethod
     def get_circumference() -> float:
+        """ Return the circumference for the earth in meters. """
         return WGS.__CIRCUMFERENCE
 
 
 if __name__ == "__main__":
     wgs = WGS()
-    x, y = wgs.latlon2xy(41.2, -8.7)
+    x, y = wgs.latlon2xy(41.065, -8.68281012789546)
     print(x, y)
     x, y = 1000, 2000
     lat, lon = wgs.xy2latlon(x, y)
