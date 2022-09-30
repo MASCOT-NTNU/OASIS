@@ -1,9 +1,42 @@
+
+from datetime import datetime
 import h5py
-import time
 import numpy as np
 import matplotlib.pyplot as plt
+import numba
+from numba import cuda
+import pandas as pd
+import plotly
+import plotly.graph_objects as go
+import time
+from matplotlib.cm import get_cmap
+from scipy.spatial.distance import cdist
 import os
-from datetime import datetime
+
+print("hello")
+import concurrent.futures
+
+datapath = "data/"
+
+def vectorize(v):
+    return np.array(v).reshape(-1, 1)
+
+
+path = "raw/Nov2016_sal_1.mat"
+
+t1 = time.time()
+data = h5py.File(path, 'r')
+t2 = time.time()
+print("Time consumed: ", t2 - t1)
+
+data = data.get('data')
+lon = np.array(data.get("X")).squeeze()
+lat = np.array(data.get("Y")).squeeze()
+depth = np.array(data.get("Z"))
+Time = np.array(data.get('Time'))
+timestamp = (Time - 719529) * 24 * 3600  # 719529 is how many days have passed from Jan1 0,
+# to Jan1 1970. Since 1970Jan1, is used as the starting index for datetime
+sal_data = np.array(data["Val"])
 
 
 path = "/home/ahomea/y/yaoling/MASCOT/Porto_Data_Processing/Data/"
