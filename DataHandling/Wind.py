@@ -18,7 +18,7 @@ class Wind:
 
     def __init__(self):
         df_wind = np.loadtxt(self.__datapath_wind, delimiter=',')
-        df_wind
+
         pass
 
     def set_datapath(self, value: str) -> None:
