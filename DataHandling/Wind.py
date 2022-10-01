@@ -8,18 +8,11 @@ from math import radians
 from matplotlib.gridspec import GridSpec
 
 
-@vectorize
-def tsp2str(tsp):
-    return datetime.fromtimestamp(tsp)
-
-
 class Wind:
     __datapath_wind = os.getcwd() + "/DataSources/wind/raw/wind_data.txt"  # auxiliary data to resolve missing data.
 
     def __init__(self):
         df_wind = np.loadtxt(self.__datapath_wind, delimiter=',')
-
-        pass
 
     def set_datapath(self, value: str) -> None:
         self.__datapath_wind = value
