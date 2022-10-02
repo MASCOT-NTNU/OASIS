@@ -1,20 +1,23 @@
 """ GRF object handles GRF-related functions. """
 
 from Field import Field
+from MOHID import MOHID
 from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
 from usr_func.normalize import normalize
+import matplotlib.pyplot as plt
+from matplotlib.cm import get_cmap
 import time
 
 
 class GRF:
-    # set
+    # parameters
     __distance_matrix = None
-    __sigma = .1
-    __lateral_range = .7
-    __nugget = .03
-    __threshold = .7
+    __sigma = .5
+    __lateral_range = 900
+    __nugget = .04
+    __threshold = 33
 
     # computed
     __eta = 4.5 / __lateral_range  # decay factor
@@ -38,17 +41,42 @@ class GRF:
         # s3: compute matern kernel
         self.__construct_grf_field()
 
+        # s4: load mohid
+        self.mohid = MOHID()
+        self.dataset_delft3d = self.mohid.get_delft3d_dataset()
+        self.dataset_mohid = self.mohid.get_mohid_dataset()
+
         # s4: update prior mean
-        x = self.grid[:, 0]
-        y = self.grid[:, 1]
+        self.__construct_prior_mean()
+        # x = self.grid[:, 0]
+        # y = self.grid[:, 1]
         # self.__mu = (.7 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)) +
         #              .3 * (1 - np.exp(- ((x - .5) ** 2 + (y - 1.) ** 2) / .07))).reshape(-1, 1)
-        self.__mu = (1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)).reshape(-1, 1)
+        # self.__mu = (1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)).reshape(-1, 1)
 
     def __construct_grf_field(self):
         self.__distance_matrix = cdist(self.grid, self.grid)
         self.__Sigma = self.__sigma ** 2 * ((1 + self.__eta * self.__distance_matrix) *
                                             np.exp(-self.__eta * self.__distance_matrix))
+
+    def __construct_prior_mean(self):
+        # s1: interpolate data onto grid
+        xgrid = self.grid[:, 0]
+        ygrid = self.grid[:, 1]
+        # plt.plot(ygrid, xgrid, 'k.')
+        # plt.show()
+
+        dm_grid_delft3d = cdist(self.grid, self.dataset_delft3d[:, :2])
+        ind_close = np.argmin(dm_grid_delft3d, axis=1)
+        self.__mu = self.dataset_delft3d[ind_close, 2]
+
+        plt.scatter(ygrid, xgrid, c=self.__mu, cmap=get_cmap("BrBG", 10), vmin=10, vmax=36)
+        plt.colorbar()
+        plt.show()
+        xb = sal_sel[ind_close]
+
+        # s2: krige mohid onto prior mean
+        pass
 
     def assimilate_data(self, dataset: np.ndarray) -> None:
         """

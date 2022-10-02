@@ -9,7 +9,6 @@ import h5py
 import pandas as pd
 from shapely.geometry import Polygon, Point
 from WGS import WGS
-from scipy.spatial.distance import cdist
 
 
 class MOHID:
@@ -39,7 +38,8 @@ class MOHID:
     __lat_delft3d = __data_delft3d['lat']
     __lon_delft3d = __data_delft3d['lon']
     __salinity_delft3d = np.mean(__data_delft3d[__wind_dir][__wind_level], axis=0)
-    __dataset_delft3d = np.stack((__lat_delft3d, __lon_delft3d, __salinity_delft3d), axis=1)
+    xd, yd = WGS.latlon2xy(__lat_delft3d, __lon_delft3d)
+    __dataset_delft3d = np.stack((xd, yd, __salinity_delft3d), axis=1)
 
     """ MOHID data manipulation. """
     __folderpath_mohid = os.getcwd() + "/../../../../Data/Porto/OASIS/mohid/"
@@ -68,7 +68,8 @@ class MOHID:
 
     __salinity_mohid_time_ave = np.mean(__salinity_mohid[__clock_start:__clock_end, :, :], axis=0).flatten()[
         __ind_legal_mohid]
-    __dataset_mohid = np.stack((__lat_mohid, __lon_mohid, __salinity_mohid_time_ave), axis=1)
+    xm, ym = WGS.latlon2xy(__lat_mohid[__ind_legal_mohid], __lon_mohid[__ind_legal_mohid])
+    __dataset_mohid = np.stack((xm, ym, __salinity_mohid_time_ave), axis=1)
 
     @staticmethod
     def set_mission_date(value: str) -> None:

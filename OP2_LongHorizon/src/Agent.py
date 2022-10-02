@@ -14,8 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from matplotlib.cm import get_cmap
 
-from RRTStar.RRTStar import RRTStar
-from RRTStar.StraightLinePathPlanner import StraightLinePathPlanner
+from Planner.RRTStar import RRTStar
+from Planner.StraightLinePathPlanner import StraightLinePathPlanner
 from CostValley.CostValley import CostValley
 from Field import Field
 from AUVSimulator.AUVSimulator import AUVSimulator
