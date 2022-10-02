@@ -15,14 +15,19 @@ class Field:
 
     __grid = np.empty([0, 2])
     __neighbour_distance = .05
-    __polygon_border = np.array([[.0, .0],
-                                 [1., .0],
-                                 [1., 1.],
-                                 [.0, 1.]])
-    __polygon_obstacles = [np.array([[.4, .4],
-                                     [.6, .5],
-                                     [.5, .6],
-                                     [.3, .4]])]
+    __polygon_border = np.array([[14255.15453767, 5709.75943741],
+                                 [6655.93266267, 6090.08594322],
+                                 [6569.54877378, -217.02662071],
+                                 [0., 0.],
+                                 [2463.42533384, 11085.316791],
+                                 [8832.34529913, 11091.94966078],
+                                 [11678.38384112, 10215.62113641],
+                                 [14255.15453767, 5709.75943741]])
+    __polygon_obstacles = [[[]]]
+    # __polygon_obstacles = [np.array([[.4, .4],
+    #                                  [.6, .5],
+    #                                  [.5, .6],
+    #                                  [.3, .4]])]
     __obs_free = True
     __polygon_border_shapely = Polygon(__polygon_border)
     if not is_list_empty(__polygon_obstacles):
