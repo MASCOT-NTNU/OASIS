@@ -16,14 +16,20 @@ from numpy import testing
 class TestField(TestCase):
     """ Common test class for the waypoint graph module
     """
+    def setUp(self) -> None:
+        """ setup parameters """
+        self.f = Field()
+        self.grid = self.f.get_grid()
+        self.polygon_border = self.f.get_polygon_border()
+        self.polygon_obstacle = self.f.get_polygon_obstacles()
 
-    def run_test_empty_grids(self):
+    def test_empty_grids(self):
         """ Test if it generates empty waypoint. """
         actual_len = len(self.grid)
         min = 0
         self.assertGreater(actual_len, min, "Waypoints are empty! Test is not passed!")
 
-    def run_test_illegal_grids(self):
+    def test_illegal_grids(self):
         """ Test if any waypoints are not within the border polygon or colliding with obstacles. """
         pb = Polygon(self.polygon_border)
         pos = []
@@ -45,7 +51,7 @@ class TestField(TestCase):
                 break
         self.assertTrue(s)
 
-    def run_test_get_locations_from_ind(self):
+    def test_get_locations_from_ind(self):
         # c1: empty ind
         wp = self.f.get_location_from_ind([])
         self.assertEqual(wp.shape[0], 0)
@@ -58,7 +64,7 @@ class TestField(TestCase):
         wp = self.f.get_location_from_ind(ids)
         self.assertEqual(wp.shape[0], len(ids))
 
-    def run_test_get_ind_from_locations(self):
+    def test_get_ind_from_locations(self):
         """ Test waypoint interpolation works. Given random location, it should return indices for the nearest locations. """
         # c1: empty wp
         ind = self.f.get_ind_from_location([])
@@ -107,7 +113,7 @@ class TestField(TestCase):
             # plt.plot(wr[i, 0], wr[i, 1], '.', alpha=.3)
         plt.show()
 
-    def run_test_border_contains(self):
+    def test_border_contains(self):
         x, y = 1e6, 1e6
         b = self.f.border_contains(np.array([x, y]))
         self.assertFalse(b)
@@ -115,7 +121,7 @@ class TestField(TestCase):
         b = self.f.border_contains(np.array([x, y]))
         self.assertTrue(b)
 
-    def run_test_obstacles_contain(self):
+    def test_obstacles_contain(self):
         x, y = 1e6, 1e6
         o = self.f.obstacles_contain(np.array([x, y]))
         self.assertFalse(o)
@@ -123,7 +129,7 @@ class TestField(TestCase):
         o = self.f.border_contains(np.array([x, y]))
         self.assertTrue(o)
 
-    def run_test_border_in_the_way(self):
+    def test_border_in_the_way(self):
         x1, y1 = 0, 0
         x2, y2 = 100, 100
         c = self.f.is_border_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
@@ -133,7 +139,7 @@ class TestField(TestCase):
         c = self.f.is_border_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
         self.assertFalse(c)
 
-    def run_test_obstacles_in_the_way(self):
+    def test_obstacles_in_the_way(self):
         # c1: border along polygon obstacle
         x1, y1 = self.polygon_obstacle[0][0, :]
         x2, y2 = self.polygon_obstacle[0][-1, :]
@@ -146,31 +152,6 @@ class TestField(TestCase):
         c = self.f.is_obstacle_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
         self.assertFalse(c)
 
-
-class TC2(TestField):
-
-    def setUp(self) -> None:
-        """ setup parameters """
-        self.f = Field()
-        self.grid = self.f.get_grid()
-        self.polygon_border = self.f.get_polygon_border()
-        self.polygon_obstacle = self.f.get_polygon_obstacles()
-
-    def test_all(self):
-        self.run_test_illegal_grids()
-        self.run_test_get_ind_from_locations()
-        self.run_test_empty_grids()
-        self.run_test_get_locations_from_ind()
-        self.run_test_border_contains()
-        self.run_test_border_in_the_way()
-        self.run_test_obstacles_in_the_way()
-
-
-if __name__ == "__main__":
-
-    # T2: test setup 2
-    tc2 = TC2()
-    tc2.test_all()
 
 
 

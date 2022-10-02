@@ -7,13 +7,13 @@ The selected origin is at Nidarosdomen in Trondheim.
 
 Example:
     >>> wgs = WGS()
-    >>> x, y = wgs.latlon2xy(41.065, -8.68281012789546)
+    >>> x, y = wgs.latlon2xy(41.04068871469593, -8.813846858228182)
     >>> print(x, y)
     >>> 0.0, 0.0
     >>> x, y = 1000, 2000
     >>> lat, lon = wgs.xy2latlon(x, y)
     >>> print(lat, lon)
-    >>> 41.17112605658141 -8.59808602737396
+    >>> 41.04967187127734 -8.790023297043152
 """
 
 import numpy as np
@@ -23,8 +23,8 @@ from numpy import vectorize
 
 class WGS:
     __CIRCUMFERENCE = 40075000  # [m], circumference
-    __LATITUDE_ORIGIN = 41.065
-    __LONGITUDE_ORIGIN = -8.68281012789546
+    __LATITUDE_ORIGIN = 41.04068871469593
+    __LONGITUDE_ORIGIN = -8.813846858228182
 
     @staticmethod
     @vectorize
@@ -59,7 +59,7 @@ class WGS:
 
 if __name__ == "__main__":
     wgs = WGS()
-    x, y = wgs.latlon2xy(41.065, -8.68281012789546)
+    x, y = wgs.latlon2xy(41.04068871469593, -8.813846858228182)
     print(x, y)
     x, y = 1000, 2000
     lat, lon = wgs.xy2latlon(x, y)
