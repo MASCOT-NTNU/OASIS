@@ -14,7 +14,7 @@ from typing import Union
 class Field:
 
     __grid = np.empty([0, 2])
-    __neighbour_distance = .05
+    __neighbour_distance = 360
     __polygon_border = np.array([[14255.15453767, 5709.75943741],
                                  [6655.93266267, 6090.08594322],
                                  [6569.54877378, -217.02662071],
@@ -120,12 +120,12 @@ class Field:
         counter_grid2d = 0
         for i in range(len(gx)):
             for j in range(len(gy)):
-                if j % 2 == 0:
-                    x = gx[i] + Field.__xgap / 2
-                    y = gy[j]
-                else:
+                if i % 2 == 0:
+                    y = gy[j] + Field.__ygap / 2
                     x = gx[i]
+                else:
                     y = gy[j]
+                    x = gx[i]
                 loc = np.array([x, y])
                 if self.__obs_free:
                     if self.border_contains(loc):
