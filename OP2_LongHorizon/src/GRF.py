@@ -130,17 +130,18 @@ class GRF:
         return self.__eibv_field, self.__ivr_field
 
     def get_ei_field_partial(self, indices: np.ndarray) -> tuple:
+        """ Get EI field only for selected indices. """
         t1 = time.time()
-        eibv_field = np.ones([self.Ngrid]) *
-        ivr_field = np.ones([self.Ngrid]) * np.inf
-        for i in range(self.Ngrid):
-            SF = self.__Sigma[:, i].reshape(-1, 1)
-            MD = 1 / (self.__Sigma[i, i] + self.__nugget)
+        eibv_field = np.ones([self.Ngrid]) * maxsize
+        ivr_field = np.ones([self.Ngrid]) * maxsize
+        for idx in indices:
+            SF = self.__Sigma[:, idx].reshape(-1, 1)
+            MD = 1 / (self.__Sigma[idx, idx] + self.__nugget)
             VR = SF @ SF.T * MD
             SP = self.__Sigma - VR
             sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv_field[i] = self.__get_ibv(self.__mu, sigma_diag)
-            ivr_field[i] = np.sum(np.diag(VR))
+            eibv_field[idx] = self.__get_ibv(self.__mu, sigma_diag)
+            ivr_field[idx] = np.sum(np.diag(VR))
         self.__eibv_field = normalize(eibv_field)
         self.__ivr_field = 1 - normalize(ivr_field)
         t2 = time.time()

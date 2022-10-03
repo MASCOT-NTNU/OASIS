@@ -14,6 +14,7 @@ from typing import Union
 class Field:
 
     __grid = np.empty([0, 2])
+    __neighbour_hash_table = dict()
     __neighbour_distance = 180
     __polygon_border = np.array([[14255.15453767, 5709.75943741],
                                  [6655.93266267, 6090.08594322],
@@ -51,6 +52,7 @@ class Field:
 
     def __init__(self):
         self.__construct_field()
+        self.__construct_hash_neighbours()
 
     def set_neighbour_distance(self, value: float) -> None:
         """ Set the neighbour distance """
@@ -139,6 +141,19 @@ class Field:
                         grid2d.append([x, y])
                         counter_grid2d += 1
         self.__grid = np.array(grid2d)
+        
+    def __construct_hash_neighbours(self) -> None:
+        """ Construct the hash table for containing neighbour indices around each waypoint.
+        - Directly use the neighbouring radius to determine the neighbouring indices.
+        """
+        no_grid = self.__grid.shape[0]
+        ERROR_BUFFER = .01 * self.__neighbour_distance
+        for i in range(no_grid):
+            xy_c = self.__grid[i].reshape(1, -1)
+            dist = cdist(self.__grid, xy_c)
+            ind_n = np.where((dist <= self.__neighbour_distance + ERROR_BUFFER) *
+                                  (dist >= self.__neighbour_distance - ERROR_BUFFER))[0]
+            self.__neighbour_hash_table[i] = ind_n
 
     def get_grid(self):
         """

@@ -35,7 +35,6 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
     return plt.gca()
 
 
-
 def plotf(self, v1, v2, title1="mean", title2="cov"):
     fig = plt.figure(figsize=(15, 5))
     gs = GridSpec(nrows=1, ncols=2)
@@ -60,6 +59,7 @@ class TestGRF(TestCase):
         self.grid = self.g.field.get_grid()
         x = self.grid[:, 0]
         y = self.grid[:, 1]
+        self.f = self.g.field
         # mu_prior = 1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)
         # mu_prior = (.5 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)) +
         #             .5 * (1 - np.exp(- ((x - .0) ** 2 + (y - .5) ** 2) / .07)))
@@ -89,24 +89,31 @@ class TestGRF(TestCase):
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
         print("End S2")
 
-    def test_get_ei_field(self):
+    def test_get_ei_field_total(self):
         # c1: no data assimilation
         print("S3")
-        eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr)
-
-        # c2: with data assimilation
-        dataset = np.array([[10000, 9000, 10],
-                            [12000, 8000, 15],
-                            [8000, 10000, 13],
-                            [2000, 2000, 33],
-                            [8000, 8000, 26],
-                            [4000, 8000, 24]])
-        self.g.assimilate_data(dataset)
-        eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
+        """ For now, it takes too much time to compute the entire EI field. """
+        # eibv, ivr = self.g.get_ei_field_total()
+        # plotf(self, v1=eibv, v2=ivr)
+        #
+        # # c2: with data assimilation
+        # dataset = np.array([[10000, 9000, 10],
+        #                     [12000, 8000, 15],
+        #                     [8000, 10000, 13],
+        #                     [2000, 2000, 33],
+        #                     [8000, 8000, 26],
+        #                     [4000, 8000, 24]])
+        # self.g.assimilate_data(dataset)
+        # eibv, ivr = self.g.get_ei_field_total()
+        # plotf(self, v1=eibv, v2=ivr)
+        # plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
         print("End S3")
+
+    def test_get_neighbour_ei_field(self):
+        loc = np.array([6000, 8000])
+        ind_now = self.f.get_ind_from_location(loc)
+
+        pass
 
 
 
