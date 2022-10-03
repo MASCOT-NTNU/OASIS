@@ -126,11 +126,13 @@ class GRF:
         self.__eibv_field = normalize(eibv_field)
         self.__ivr_field = 1 - normalize(ivr_field)
         t2 = time.time()
-        print("EI field takes: ", t2 - t1, " seconds.")
+        print("Total EI field takes: ", t2 - t1, " seconds.")
         return self.__eibv_field, self.__ivr_field
 
     def get_ei_field_partial(self, indices: np.ndarray) -> tuple:
-        """ Get EI field only for selected indices. """
+        """ Get EI field only for selected indices.
+        Only compute EI field for the designated indices. Then the rest EI field is large numbers.
+        """
         t1 = time.time()
         eibv_field = np.ones([self.Ngrid]) * maxsize
         ivr_field = np.ones([self.Ngrid]) * maxsize
@@ -142,10 +144,12 @@ class GRF:
             sigma_diag = np.diag(SP).reshape(-1, 1)
             eibv_field[idx] = self.__get_ibv(self.__mu, sigma_diag)
             ivr_field[idx] = np.sum(np.diag(VR))
-        self.__eibv_field = normalize(eibv_field)
-        self.__ivr_field = 1 - normalize(ivr_field)
+        eibv_field[indices] = normalize(eibv_field[indices])
+        ivr_field[indices] = 1 - normalize(ivr_field[indices])
+        self.__eibv_field = eibv_field
+        self.__ivr_field = ivr_field
         t2 = time.time()
-        print("EI field takes: ", t2 - t1, " seconds.")
+        print("Partial EI field takes: ", t2 - t1, " seconds.")
         return self.__eibv_field, self.__ivr_field
 
     def __get_ibv(self, mu: np.ndarray, sigma_diag: np.ndarray):
