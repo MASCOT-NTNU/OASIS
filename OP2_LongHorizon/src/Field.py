@@ -152,8 +152,20 @@ class Field:
             xy_c = self.__grid[i].reshape(1, -1)
             dist = cdist(self.__grid, xy_c)
             ind_n = np.where((dist <= self.__neighbour_distance + ERROR_BUFFER) *
-                                  (dist >= self.__neighbour_distance - ERROR_BUFFER))[0]
+                             (dist >= self.__neighbour_distance - ERROR_BUFFER))[0]
             self.__neighbour_hash_table[i] = ind_n
+
+    def get_neighbour_indices(self, ind_now: Union[int, np.ndarray]) -> np.ndarray:
+        """ Return neighbouring indices according to index current. """
+        dt = type(ind_now)
+        if type(ind_now) == np.int64:
+            return self.__neighbour_hash_table[ind_now]
+        else:
+            neighbours = np.empty([0])
+            for i in range(len(ind_now)):
+                idnn = self.__neighbour_hash_table[ind_now[i]]
+                neighbours = np.append(neighbours, idnn)
+            return np.unique(neighbours.astype(int))
 
     def get_grid(self):
         """

@@ -155,6 +155,19 @@ class TestField(TestCase):
         # c = self.f.is_obstacle_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
         # self.assertFalse(c)
 
+    def test_get_neighbours(self):
+        loc = np.array([6000, 8000])
+        ind = self.f.get_ind_from_location(loc)
+        indn = self.f.get_neighbour_indices(ind)
+        indnn = self.f.get_neighbour_indices(indn)
+        indnnn = self.f.get_neighbour_indices(indnn)
+        plt.plot(self.grid[:, 1], self.grid[:, 0], 'k.', alpha=.1)
+        plt.plot(self.grid[indnnn, 1], self.grid[indnnn, 0], 'y.')
+        plt.plot(self.grid[indnn, 1], self.grid[indnn, 0], 'g.')
+        plt.plot(self.grid[indn, 1], self.grid[indn, 0], 'r.')
+        plt.plot(self.grid[ind, 1], self.grid[ind, 0], 'b.')
+        plt.show()
+        plt.show()
 
 
 

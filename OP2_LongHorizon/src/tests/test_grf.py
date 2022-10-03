@@ -109,11 +109,22 @@ class TestGRF(TestCase):
         # plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
         print("End S3")
 
-    def test_get_neighbour_ei_field(self):
+    def test_get_ei_field_partial(self):
         loc = np.array([6000, 8000])
         ind_now = self.f.get_ind_from_location(loc)
+        loc_now = self.f.get_location_from_ind(ind_now)
+        ind_neighbours_layer1 = self.f.get_neighbour_indices(ind_now)
+        ind_neighbours_layer2 = self.f.get_neighbour_indices(ind_neighbours_layer1)
+        ind_neighbours_layer3 = self.f.get_neighbour_indices(ind_neighbours_layer2)
+        ind_neighbours_layer4 = self.f.get_neighbour_indices(ind_neighbours_layer3)
+        ind_neighbours_layer5 = self.f.get_neighbour_indices(ind_neighbours_layer4)
 
+        eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
+        plotf(self, v1=eibv, v2=ivr)
+
+        loc_now
         pass
+
 
 
 
