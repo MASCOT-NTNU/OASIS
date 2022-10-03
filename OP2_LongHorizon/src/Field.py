@@ -15,7 +15,7 @@ class Field:
 
     __grid = np.empty([0, 2])
     __neighbour_hash_table = dict()
-    __neighbour_distance = 180
+    __neighbour_distance = 360
     __polygon_border = np.array([[14255.15453767, 5709.75943741],
                                  [6655.93266267, 6090.08594322],
                                  [6569.54877378, -217.02662071],
