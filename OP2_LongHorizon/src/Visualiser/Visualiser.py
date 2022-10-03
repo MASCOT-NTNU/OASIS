@@ -18,25 +18,7 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
                  stepsize=None, threshold=None, polygon_border=None,
                  polygon_obstacle=None, xlabel=None, ylabel=None):
     """
-
-    :param x:
-    :param y:
-    :param values:
-    :param title:
-    :param alpha:
-    :param cmap:
-    :param cbar_title:
-    :param colorbar:
-    :param vmin:
-    :param vmax:
-    :param ticks:
-    :param stepsize:
-    :param threshold:
-    :param polygon_border: shapely polygon object.
-    :param polygon_obstacle: list of shapely objects containing polygons of obstacles.
-    :param xlabel:
-    :param ylabel:
-    :return:
+    Remember x, y is plotting x, y, thus x along horizonal and y along vertical.
     """
     triangulated = tri.Triangulation(x, y)
     x_triangulated = x[triangulated.triangles].mean(axis=1)
@@ -44,7 +26,7 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
 
     ind_mask = []
     for i in range(len(x_triangulated)):
-        ind_mask.append(is_masked(x_triangulated[i], y_triangulated[i]))
+        ind_mask.append(is_masked(y_triangulated[i], x_triangulated[i]))
     triangulated.set_mask(ind_mask)
     refiner = tri.UniformTriRefiner(triangulated)
     triangulated_refined, value_refined = refiner.refine_field(values.flatten(), subdiv=3)
@@ -79,9 +61,9 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     if np.any(polygon_border):
-        plt.plot(polygon_border[:, 0], polygon_border[:, 1], 'k-.', lw=2)
+        plt.plot(polygon_border[:, 1], polygon_border[:, 0], 'k-.', lw=2)
         for i in range(len(polygon_obstacle)):
-            plt.plot(polygon_obstacle[i][:, 0], polygon_obstacle[i][:, 1], 'k-.', lw=2)
+            plt.plot(polygon_obstacle[i][:, 1], polygon_obstacle[i][:, 0], 'k-.', lw=2)
     return ax
 
 

@@ -1,23 +1,22 @@
 """ GRF object handles GRF-related functions. """
 
 from Field import Field
-from MOHID import MOHID
+from Delft3D import Delft3D
 from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
 from usr_func.normalize import normalize
-import matplotlib.pyplot as plt
-from matplotlib.cm import get_cmap
+from sys import maxsize
 import time
 
 
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = .5
-    __lateral_range = 900
+    __sigma = 1.
+    __lateral_range = 5000
     __nugget = .04
-    __threshold = 33
+    __threshold = 30
 
     # computed
     __eta = 4.5 / __lateral_range  # decay factor
@@ -29,8 +28,10 @@ class GRF:
     __eibv_field = None
     __ivr_field = None
 
+    # data sources
+    __delft3d = Delft3D()
+
     def __init__(self) -> None:
-        np.random.seed(0)
         # s1: set up field
         self.field = Field()
 
@@ -41,11 +42,6 @@ class GRF:
         # s3: compute matern kernel
         self.__construct_grf_field()
 
-        # s4: load mohid
-        self.mohid = MOHID()
-        self.dataset_delft3d = self.mohid.get_delft3d_dataset()
-        self.dataset_mohid = self.mohid.get_mohid_dataset()
-
         # s4: update prior mean
         self.__construct_prior_mean()
         # x = self.grid[:, 0]
@@ -55,28 +51,22 @@ class GRF:
         # self.__mu = (1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)).reshape(-1, 1)
 
     def __construct_grf_field(self):
+        """ Construct distance matrix and thus Covariance matrix for the kernel. """
         self.__distance_matrix = cdist(self.grid, self.grid)
         self.__Sigma = self.__sigma ** 2 * ((1 + self.__eta * self.__distance_matrix) *
                                             np.exp(-self.__eta * self.__distance_matrix))
 
     def __construct_prior_mean(self):
-        # s1: interpolate data onto grid
-        xgrid = self.grid[:, 0]
-        ygrid = self.grid[:, 1]
-        # plt.plot(ygrid, xgrid, 'k.')
-        # plt.show()
-
-        dm_grid_delft3d = cdist(self.grid, self.dataset_delft3d[:, :2])
+        # s0: get delft3d dataset
+        dataset_delft3d = self.__delft3d.get_dataset()
+        # s1: interpolate onto grid.
+        dm_grid_delft3d = cdist(self.grid, dataset_delft3d[:, :2])
         ind_close = np.argmin(dm_grid_delft3d, axis=1)
-        self.__mu = self.dataset_delft3d[ind_close, 2]
-
-        plt.scatter(ygrid, xgrid, c=self.__mu, cmap=get_cmap("BrBG", 10), vmin=10, vmax=36)
-        plt.colorbar()
-        plt.show()
-        xb = sal_sel[ind_close]
-
-        # s2: krige mohid onto prior mean
-        pass
+        self.__mu = dataset_delft3d[ind_close, 2].reshape(-1, 1)
+        # plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.__mu, cmap=get_cmap("BrBG", 10), vmin=10, vmax=36)
+        # plt.colorbar()
+        # plt.show()
+        # TODO: maybe krige mohid onto prior mean
 
     def assimilate_data(self, dataset: np.ndarray) -> None:
         """
@@ -121,8 +111,8 @@ class GRF:
         self.__mu = self.__mu + self.__Sigma @ F.T @ np.linalg.solve(C, (salinity_measured - F @ self.__mu))
         self.__Sigma = self.__Sigma - self.__Sigma @ F.T @ np.linalg.solve(C, F @ self.__Sigma)
 
-    def get_ei_field(self) -> tuple:
-        # t1 = time.time()
+    def get_ei_field_total(self) -> tuple:
+        t1 = time.time()
         eibv_field = np.zeros([self.Ngrid])
         ivr_field = np.zeros([self.Ngrid])
         for i in range(self.Ngrid):
@@ -135,8 +125,26 @@ class GRF:
             ivr_field[i] = np.sum(np.diag(VR))
         self.__eibv_field = normalize(eibv_field)
         self.__ivr_field = 1 - normalize(ivr_field)
-        # t2 = time.time()
-        # print("EI field takes: ", t2 - t1, " seconds.")
+        t2 = time.time()
+        print("EI field takes: ", t2 - t1, " seconds.")
+        return self.__eibv_field, self.__ivr_field
+
+    def get_ei_field_partial(self, indices: np.ndarray) -> tuple:
+        t1 = time.time()
+        eibv_field = np.ones([self.Ngrid]) *
+        ivr_field = np.ones([self.Ngrid]) * np.inf
+        for i in range(self.Ngrid):
+            SF = self.__Sigma[:, i].reshape(-1, 1)
+            MD = 1 / (self.__Sigma[i, i] + self.__nugget)
+            VR = SF @ SF.T * MD
+            SP = self.__Sigma - VR
+            sigma_diag = np.diag(SP).reshape(-1, 1)
+            eibv_field[i] = self.__get_ibv(self.__mu, sigma_diag)
+            ivr_field[i] = np.sum(np.diag(VR))
+        self.__eibv_field = normalize(eibv_field)
+        self.__ivr_field = 1 - normalize(ivr_field)
+        t2 = time.time()
+        print("EI field takes: ", t2 - t1, " seconds.")
         return self.__eibv_field, self.__ivr_field
 
     def __get_ibv(self, mu: np.ndarray, sigma_diag: np.ndarray):
@@ -183,10 +191,10 @@ class GRF:
     def get_Sigma(self) -> np.ndarray:
         return self.__Sigma
 
-    def get_eibv_field(self):
+    def get_eibv_field(self) -> np.ndarray:
         return self.__eibv_field
 
-    def get_ivr_field(self):
+    def get_ivr_field(self) -> np.ndarray:
         return self.__ivr_field
 
 

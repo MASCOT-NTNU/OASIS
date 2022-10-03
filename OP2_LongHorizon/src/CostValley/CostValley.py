@@ -22,7 +22,7 @@ class CostValley:
     __Direction = Direction(__grid)
 
     # fundamental layers
-    __eibv_field, __ivr_field = __grf.get_ei_field()
+    __eibv_field, __ivr_field = __grf.get_ei_field_total()
     __obstacle_field = __Obstacle.get_obstacle_field()
     __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
     __budget_field = __Budget.get_budget_field(__x_now, __y_now)
@@ -37,7 +37,7 @@ class CostValley:
         # t1 = time.time()
         self.__budget_field = self.__Budget.get_budget_field(x_now, y_now)
         self.__azimuth_field = self.__Direction.get_direction_field(x_now, y_now)
-        self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field()
+        self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field_total()
         self.__cost_valley = (self.__obstacle_field +
                               self.__eibv_field +
                               self.__ivr_field +
