@@ -1,5 +1,6 @@
 """ CostValley object handles CostValley-related functions. """
 
+from Config import Config
 from GRF import GRF
 from CostValley.Budget import Budget
 from CostValley.Obstacle import Obstacle
@@ -9,17 +10,17 @@ import time
 
 
 class CostValley:
-
-    __x_now = 4000
-    __y_now = 4000
-
     # fundamental components
+    __config = Config()
     __grf = GRF()
     __field = __grf.field
     __grid = __field.get_grid()
     __Budget = Budget(__grid)
     __Obstacle = Obstacle(__grid, __field)
     __Direction = Direction(__grid)
+
+    __Budget.set_loc_prev(__config.get_loc_start())
+    __x_now, __y_now = __config.get_loc_start()
 
     # fundamental layers
     __eibv_field, __ivr_field = __grf.get_ei_field_total()

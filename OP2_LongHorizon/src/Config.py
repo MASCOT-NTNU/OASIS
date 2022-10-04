@@ -1,10 +1,10 @@
 """ Setup contains all essentials used for operations. """
-
+from WGS import WGS
 import numpy as np
 from shapely.geometry import Polygon
 
 
-class Setup:
+class Config:
     """ Mission setup. """
     __mission_date = "2022-10-01_2022-10-02"  # needs to have one day ahead.
     __wind_dir = "North"
@@ -23,30 +23,36 @@ class Setup:
                                            [41.168745, -8.74571]])
     __polygon_operational_area_shapely = Polygon(__polygon_operational_area)
 
+    """ Starting and end locations. """
+    __lat_start = 41.05947
+    __lon_start = -8.77732
+    __lat_home = 41.12677
+    __lon_home = -8.68574
+
     @staticmethod
     def set_mission_date(value: str) -> None:
         """ Set mission date with a format 2022-10-01_2022-10-02. """
-        Setup.__mission_date = value
+        Config.__mission_date = value
 
     @staticmethod
     def set_wind_direction(value: str) -> None:
         """ Set wind direction to be North, East, South, West. """
-        Setup.__wind_dir = value
+        Config.__wind_dir = value
 
     @staticmethod
     def set_wind_level(value: str) -> None:
         """ Set wind level to be Mild, Moderate, Heavy. """
-        Setup.__wind_level = value
+        Config.__wind_level = value
 
     @staticmethod
     def set_clock_start(value: int) -> None:
         """ Set starting clock to be 0, 1, 2, 3, ..., 24. """
-        Setup.__clock_start = value
+        Config.__clock_start = value
 
     @staticmethod
     def set_clock_end(value: int) -> None:
         """ Set starting clock to be 0, 1, 2, 3, ..., 24. Must be larger than MOHID.__clock_start. """
-        Setup.__clock_end = value
+        Config.__clock_end = value
 
     @staticmethod
     def set_polygon_operational_area(value: np.ndarray) -> None:
@@ -57,44 +63,70 @@ class Setup:
                                 ...
                                 [latn, lonn]])
         """
-        Setup.__polygon_operational_area = value
-        Setup.__polygon_operational_area_shapely = Polygon(Setup.__polygon_operational_area)
+        Config.__polygon_operational_area = value
+        Config.__polygon_operational_area_shapely = Polygon(Config.__polygon_operational_area)
+
+    @staticmethod
+    def set_loc_start(loc: np.ndarray) -> None:
+        """ Set the starting location with (lat,lon). """
+        Config.__lat_start, Config.__lon_start = loc
+
+    @staticmethod
+    def set_loc_home(loc: np.ndarray) -> None:
+        """ Set the home location with (lat, lon). """
+        Config.__lat_home, Config.__lon_home = loc
 
     @staticmethod
     def get_mission_date() -> str:
         """ Return pre-set mission date string. """
-        return Setup.__mission_date
+        return Config.__mission_date
 
     @staticmethod
     def get_wind_direction() -> str:
         """ Return pre-set wind direction string. """
-        return Setup.__wind_dir
+        return Config.__wind_dir
 
     @staticmethod
     def get_wind_level() -> str:
         """ Return pre-set wind level string. """
-        return Setup.__wind_level
+        return Config.__wind_level
 
     @staticmethod
     def get_clock_start() -> int:
         """ Return expected time clock to start the mission. """
-        return Setup.__clock_start
+        return Config.__clock_start
 
     @staticmethod
     def get_clock_end() -> int:
         """ Return expected time clock to end the mission. """
-        return Setup.__clock_end
+        return Config.__clock_end
 
     @staticmethod
     def get_polygon_operational_area() -> np.ndarray:
         """ Return polygon for the oprational area. """
-        return Setup.__polygon_operational_area
+        return Config.__polygon_operational_area
 
     @staticmethod
     def get_polygon_operational_area_shapely() -> 'Polygon':
         """ Return shapelized polygon for the operational area. """
-        return Setup.__polygon_operational_area_shapely
+        return Config.__polygon_operational_area_shapely
+
+    @staticmethod
+    def get_loc_start() -> np.ndarray:
+        """ Return starting location in (x, y). """
+        x, y = WGS.latlon2xy(Config.__lat_start, Config.__lon_start)
+        return np.array([x, y])
+
+    @staticmethod
+    def get_loc_home() -> np.ndarray:
+        """ Return home location in (x, y). """
+        x, y = WGS.latlon2xy(Config.__lat_home, Config.__lon_home)
+        return np.array([x, y])
 
 
 if __name__ == "__main__":
-    s = Setup()
+    s = Config()
+
+
+
+

@@ -1,5 +1,5 @@
 from unittest import TestCase
-
+from Config import Config
 from CostValley.Budget import Budget
 from Field import Field
 import numpy as np
@@ -13,6 +13,7 @@ from matplotlib.patches import Ellipse
 class TestBudget(TestCase):
 
     def setUp(self) -> None:
+        self.c = Config()
         self.f = Field()
         self.grid = self.f.get_grid()
         self.b = Budget(self.grid)
@@ -20,18 +21,20 @@ class TestBudget(TestCase):
     def test_locations(self):
         # c1: test goal location
         l = self.b.get_goal()
-        self.assertEqual(12000, l[0])
-        self.assertEqual(10000, l[1])
+        lc = self.c.get_loc_home()
+        self.assertEqual(lc[0], l[0])
+        self.assertEqual(lc[1], l[1])
 
         # c2: test now location
         l = self.b.get_loc_prev()
-        self.assertEqual(4000, l[0])
-        self.assertEqual(4000, l[1])
+        lc = self.c.get_loc_start()
+        self.assertEqual(lc[0], l[0])
+        self.assertEqual(lc[1], l[1])
 
         # c3: test previous location
         l = self.b.get_loc_now()
-        self.assertEqual(4000, l[0])
-        self.assertEqual(4000, l[1])
+        self.assertEqual(.0, l[0])
+        self.assertEqual(.0, l[1])
 
     def run_update_budget(self, loc, ls, BU, bf):
         l = self.b.get_loc_now()
@@ -82,6 +85,7 @@ class TestBudget(TestCase):
     def test_get_budget_field(self):
         # c0: starting location
         BU = self.b.get_budget()
+        self.b.set_loc_prev(self.c.get_loc_start())
         ls = self.b.get_loc_prev()
         loc = np.array([3000, 3000])
         bf = self.b.get_budget_field(loc[0], loc[1])

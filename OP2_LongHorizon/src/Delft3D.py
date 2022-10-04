@@ -2,7 +2,7 @@
 Delft3D handles data manipulation based on Delft3D data source
 """
 from WGS import WGS
-from Setup import Setup
+from Config import Config
 import os
 import pickle
 import numpy as np
@@ -12,7 +12,7 @@ from shapely.geometry import Point
 
 class Delft3D:
     """ Load setup. """
-    __setup = Setup()
+    __setup = Config()
     __wind_dir = __setup.get_wind_direction()
     __wind_level = __setup.get_wind_level()
     __polygon_operational_area_shapely = __setup.get_polygon_operational_area_shapely()

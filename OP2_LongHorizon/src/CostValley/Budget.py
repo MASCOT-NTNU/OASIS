@@ -1,6 +1,6 @@
 """ Budget object handles all budget-associated problems. """
 
-
+from Config import Config
 import numpy as np
 from matplotlib.patches import Ellipse
 from shapely.geometry import Polygon, LineString, Point
@@ -8,16 +8,15 @@ import math
 
 
 class Budget:
+    __config = Config
 
     # initial values
     __MARGIN = 100  # when ellipse b is smaller than this, should go home.
     __grid = None
     __budget = 15000
-    __goal = np.array([12000, 10000])
-    __x_now = 4000
-    __y_now = 4000
-    __x_prev = 4000
-    __y_prev = 4000
+    __goal = __config.get_loc_home()
+    __x_now, __y_now = .0, .0
+    __x_prev, __y_prev = .0, .0
     __budget_field = None
 
     # ellipse parameters
@@ -85,10 +84,10 @@ class Budget:
             self.__ellipse = Ellipse(xy=(self.__ellipse_middle_y, self.__ellipse_middle_x), width=2*self.__ellipse_a,
                                      height=2*self.__ellipse_b, angle=math.degrees(self.__ellipse_angle))
             self.vertices = self.__ellipse.get_verts()
-            self.__polygon_ellipse = Polygon(self.vertices)
-            self.__line_ellipse = LineString(self.vertices)
-            # self.__polygon_ellipse = Polygon(np.fliplr(self.vertices))  # when uses NED system.
-            # self.__line_ellipse = LineString(np.fliplr(self.vertices))
+            # self.__polygon_ellipse = Polygon(self.vertices)
+            # self.__line_ellipse = LineString(self.vertices)
+            self.__polygon_ellipse = Polygon(np.fliplr(self.vertices))  # when uses NED system.
+            self.__line_ellipse = LineString(np.fliplr(self.vertices))
         else:  # TODO: remove budget calculation, when it is too small, should only use straight line planning.
             self.__ellipse_b = 0
             self.__ellipse = Ellipse(xy=(self.__ellipse_middle_y, self.__ellipse_middle_x), width=2*self.__ellipse_a,

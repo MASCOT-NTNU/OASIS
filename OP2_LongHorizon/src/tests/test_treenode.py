@@ -5,7 +5,7 @@ This module tests the planner object.
 """
 
 from unittest import TestCase
-from RRTStar.TreeNode import TreeNode
+from Planner.TreeNode import TreeNode
 import numpy as np
 
 

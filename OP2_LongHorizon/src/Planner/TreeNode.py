@@ -11,10 +11,14 @@ class TreeNode:
     __cost = .0
     __parent = None
 
-    def set_location(self, x: float, y: float) -> None:
+    def __init__(self, loc: np.ndarray, cost=0, parent=None) -> None:
+        self.__x, self.__y = loc
+        self.__cost = cost
+        self.__parent = parent
+
+    def set_location(self, loc: np.ndarray) -> None:
         """ Set location for the new tree node. """
-        self.__x = x
-        self.__y = y
+        self.__x, self.__y = loc
 
     def set_cost(self, value: float) -> None:
         """ Set cost associated with tree node. """

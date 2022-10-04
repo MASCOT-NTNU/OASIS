@@ -3,7 +3,7 @@ MOHID handles the data preparation for the operation day. It imports Delft3D dat
 krige the updated field based on the forecast data from MOHID data source.
 """
 from WGS import WGS
-from Setup import Setup
+from Config import Config
 import os
 import numpy as np
 import h5py
@@ -12,7 +12,7 @@ from shapely.geometry import Point
 
 class MOHID:
     """ Load setup. """
-    __setup = Setup()
+    __setup = Config()
     __mission_date = __setup.get_mission_date()
     __clock_start = __setup.get_clock_start()
     __clock_end = __setup.get_clock_end()
