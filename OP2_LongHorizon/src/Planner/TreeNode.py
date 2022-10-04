@@ -28,9 +28,9 @@ class TreeNode:
         """ Set parent of the current tree node. """
         self.__parent = parent
 
-    def get_location(self) -> tuple:
+    def get_location(self) -> np.ndarray:
         """ Return the location associated with the tree node. """
-        return self.__x, self.__y
+        return np.array([self.__x, self.__y])
 
     def get_cost(self) -> float:
         """ Get cost associated with the tree node. """
@@ -40,7 +40,7 @@ class TreeNode:
         """ Return the parent node of the tree node. """
         return self.__parent
 
-    def get_distance_between_nodes(self, n1: 'TreeNode', n2: 'TreeNode'):
+    def get_distance_between_nodes(self, n1: 'TreeNode', n2: 'TreeNode') -> float:
         dist = np.sqrt((n1.__x - n2.__x)**2 +
                        (n1.__y - n2.__y)**2)
         return dist

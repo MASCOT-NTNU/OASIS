@@ -25,4 +25,6 @@ DNS: 8.8.8.8
 - WARNING: Launch all the commands in the backseat CPU with `> /dev/null 2>&1 &`.
 - check process ID: pidof python3/python
 
-- check if AUV has HITL mode. 
+- check if AUV has HITL mode.
+
+- SPDE remember to tell Martin about the wind condition one day ahead of mission.

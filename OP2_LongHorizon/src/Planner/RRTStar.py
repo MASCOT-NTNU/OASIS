@@ -6,10 +6,9 @@ determine the final tree discretization.
 
 from Planner.TreeNode import TreeNode
 from Field import Field
-from Config import Config
 import numpy as np
 from shapely.geometry import Polygon, GeometryCollection, Point, LineString
-
+from usr_func.is_list_empty import is_list_empty
 # TODO: delete
 from Visualiser.TreePlotter import TreePlotter
 import matplotlib.pyplot as plt
@@ -17,28 +16,35 @@ import time
 
 
 class RRTStar:
-    __config = Config()
     # loc
-    __loc_start = __config.get_loc_start()
-    __loc_target = __config.get_loc_home()
-    __loc_new = np.array([.01, .01])
+    __loc_start = np.array([1000, 1000])
+    __loc_target = np.array([1000, 1000])
+    __loc_new = np.array([1000, 1000])
 
     # tree
     __nodes = []  # all nodes in the tree.
     __trajectory = np.empty([0, 2])  # to save trajectory.
     __goal_sampling_rate = .01
     __max_expansion_iteration = 2000
-    __distance_tolerance = .05
-    __step_size = .1
-    __distance_rewire_neighbour = .12
+    __distance_tolerance = 300
+    __step_size = Field.get_neighbour_distance()
+    __distance_rewire_neighbour = __step_size * 1.12
 
     # polygons and lines
     __polygon_border = Field.get_polygon_border()
-    __polygon_obstacle = Field.get_polygon_obstacles()[0]
     __polygon_border_shapely = Polygon(__polygon_border)
-    __polygon_obstacle_shapely = Polygon(__polygon_obstacle)
     __line_border_shapely = LineString(__polygon_border)
-    __line_obstacle_shapely = LineString(__polygon_obstacle)
+
+    __polygon_obstacles = Field.get_polygon_obstacles()
+    __obs_free = True
+    if not is_list_empty(__polygon_obstacles):
+        __polygon_obstacles_shapely = []
+        __line_obstacles_shapely = []
+        for po in __polygon_obstacles:
+            __polygon_obstacles_shapely.append(Polygon(po))
+            __line_obstacles_shapely.append(LineString(po))
+        __obs_free = False
+
     __polygon_ellipse_shapely = None
     __line_ellipse_shapely = None
 
@@ -60,7 +66,6 @@ class RRTStar:
 
     # plot
     polygon_border = np.append(__polygon_border, __polygon_border[0, :].reshape(1, -1), axis=0)
-    polygon_obstacle = np.append(__polygon_obstacle, __polygon_obstacle[0, :].reshape(1, -1), axis=0)
     cnt_plot = 0
 
     def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray, cost_valley) -> np.ndarray:
@@ -313,8 +318,13 @@ class RRTStar:
         x, y = loc
         point = Point(x, y)
         islegal = True
-        if self.__polygon_obstacle_shapely.contains(point) or not self.__polygon_ellipse_shapely.contains(point):
-            islegal = False
+        if not self.__obs_free:
+
+            if self.__polygon_obstacles_shapely.contains(point) or not self.__polygon_ellipse_shapely.contains(point):
+                islegal = False
+        else:
+
+
         return islegal
 
     def is_path_legal(self, loc1: np.ndarray, loc2: np.ndarray) -> bool:
