@@ -10,14 +10,14 @@ import math
 class Budget:
 
     # initial values
-    __MARGIN = .05  # when ellipse b is smaller than this, should go home.
+    __MARGIN = 100  # when ellipse b is smaller than this, should go home.
     __grid = None
-    __budget = 5.
-    __goal = np.array([0., 1.])
-    __x_now = .0
-    __y_now = .0
-    __x_prev = .0
-    __y_prev = .0
+    __budget = 15000
+    __goal = np.array([12000, 10000])
+    __x_now = 4000
+    __y_now = 4000
+    __x_prev = 4000
+    __y_prev = 4000
     __budget_field = None
 
     # ellipse parameters
@@ -51,10 +51,10 @@ class Budget:
 
         xg = self.__grid[:, 0] - self.__ellipse_middle_x
         yg = self.__grid[:, 1] - self.__ellipse_middle_y
-        xr = xg * np.cos(self.__ellipse_angle) + yg * np.sin(self.__ellipse_angle)
-        yr = -xg * np.sin(self.__ellipse_angle) + yg * np.cos(self.__ellipse_angle)
+        xr = xg * np.cos(self.__ellipse_angle) - yg * np.sin(self.__ellipse_angle)
+        yr = xg * np.sin(self.__ellipse_angle) + yg * np.cos(self.__ellipse_angle)
         if not self.__go_home:
-            u = (xr / self.__ellipse_a) ** 2 + (yr / self.__ellipse_b) ** 2
+            u = (xr / self.__ellipse_b) ** 2 + (yr / self.__ellipse_a) ** 2
         else:
             u = np.ones_like(xr) * np.inf
 
@@ -77,12 +77,12 @@ class Budget:
         self.__ellipse_middle_y = (self.__y_now + self.__goal[1]) / 2
         dx = self.__goal[0] - self.__x_now
         dy = self.__goal[1] - self.__y_now
-        self.__ellipse_angle = np.math.atan2(dy, dx)  # dy: vertical increment, dy: lateral increment
+        self.__ellipse_angle = np.math.atan2(dx, dy)  # dx: vertical increment, dy: lateral increment
         self.__ellipse_a = self.__budget / 2
         self.__ellipse_c = np.sqrt(dx ** 2 + dy ** 2) / 2
         if self.__ellipse_a > self.__ellipse_c + self.__MARGIN:
             self.__ellipse_b = np.sqrt(self.__ellipse_a ** 2 - self.__ellipse_c ** 2)
-            self.__ellipse = Ellipse(xy=(self.__ellipse_middle_x, self.__ellipse_middle_y), width=2*self.__ellipse_a,
+            self.__ellipse = Ellipse(xy=(self.__ellipse_middle_y, self.__ellipse_middle_x), width=2*self.__ellipse_a,
                                      height=2*self.__ellipse_b, angle=math.degrees(self.__ellipse_angle))
             self.vertices = self.__ellipse.get_verts()
             self.__polygon_ellipse = Polygon(self.vertices)
@@ -91,7 +91,7 @@ class Budget:
             # self.__line_ellipse = LineString(np.fliplr(self.vertices))
         else:  # TODO: remove budget calculation, when it is too small, should only use straight line planning.
             self.__ellipse_b = 0
-            self.__ellipse = Ellipse(xy=(self.__ellipse_middle_x, self.__ellipse_middle_y), width=2*self.__ellipse_a,
+            self.__ellipse = Ellipse(xy=(self.__ellipse_middle_y, self.__ellipse_middle_x), width=2*self.__ellipse_a,
                                      height=2*self.__ellipse_b, angle=math.degrees(self.__ellipse_angle))
             self.vertices = self.__ellipse.get_verts()
             self.__polygon_ellipse = Polygon([])

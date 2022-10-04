@@ -10,8 +10,8 @@ import time
 
 class CostValley:
 
-    __x_now = .0
-    __y_now = .0
+    __x_now = 4000
+    __y_now = 4000
 
     # fundamental components
     __grf = GRF()

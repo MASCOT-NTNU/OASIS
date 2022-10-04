@@ -156,18 +156,42 @@ class TestField(TestCase):
         # self.assertFalse(c)
 
     def test_get_neighbours(self):
-        loc = np.array([6000, 8000])
-        ind = self.f.get_ind_from_location(loc)
+        # c1: get one neighbour
+        N = len(self.grid)
+        ind = np.random.randint(0, N, 1)[0]
+        loc_now = self.f.get_location_from_ind(ind)
         indn = self.f.get_neighbour_indices(ind)
-        indnn = self.f.get_neighbour_indices(indn)
-        indnnn = self.f.get_neighbour_indices(indnn)
-        plt.plot(self.grid[:, 1], self.grid[:, 0], 'k.', alpha=.1)
-        plt.plot(self.grid[indnnn, 1], self.grid[indnnn, 0], 'y.')
-        plt.plot(self.grid[indnn, 1], self.grid[indnn, 0], 'g.')
-        plt.plot(self.grid[indn, 1], self.grid[indn, 0], 'r.')
-        plt.plot(self.grid[ind, 1], self.grid[ind, 0], 'b.')
-        plt.show()
-        plt.show()
+        nd = self.f.get_neighbour_distance()
+        for idn in indn:
+            loc = self.f.get_location_from_ind(idn)
+            dist = np.sqrt((loc[0] - loc_now[0])**2 +
+                           (loc[1] - loc_now[1])**2)
+            self.assertLess(dist, nd + .01*nd)
+
+        # c2: multiple test.
+        for i in range(100):
+            ind = np.random.randint(0, N, 1)[0]
+            loc_now = self.f.get_location_from_ind(ind)
+            indn = self.f.get_neighbour_indices(ind)
+            nd = self.f.get_neighbour_distance()
+            for idn in indn:
+                loc = self.f.get_location_from_ind(idn)
+                dist = np.sqrt((loc[0] - loc_now[0]) ** 2 +
+                               (loc[1] - loc_now[1]) ** 2)
+                self.assertLess(dist, nd + .01 * nd)
+
+        # c3: multiple neighbour test.
+        # loc = np.array([6000, 8000])
+        # ind = self.f.get_ind_from_location(loc)
+        # indn = self.f.get_neighbour_indices(ind)
+        # indnn = self.f.get_neighbour_indices(indn)
+        # indnnn = self.f.get_neighbour_indices(indnn)
+        # plt.plot(self.grid[:, 1], self.grid[:, 0], 'k.', alpha=.1)
+        # plt.plot(self.grid[indnnn, 1], self.grid[indnnn, 0], 'y.')
+        # plt.plot(self.grid[indnn, 1], self.grid[indnn, 0], 'g.')
+        # plt.plot(self.grid[indn, 1], self.grid[indn, 0], 'r.')
+        # plt.plot(self.grid[ind, 1], self.grid[ind, 0], 'b.')
+        # plt.show()
 
 
 

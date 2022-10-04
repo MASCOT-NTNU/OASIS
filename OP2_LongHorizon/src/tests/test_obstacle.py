@@ -14,7 +14,7 @@ class TestObstacle(TestCase):
 
     def test_get_obstacle_field(self):
         obs = self.obs.get_obstacle_field()
-        plt.scatter(self.grid[:, 0], self.grid[:, 1], c=obs, cmap=get_cmap("RdBu", 2), vmin=0, vmax=1, alpha=.4)
+        plt.scatter(self.grid[:, 1], self.grid[:, 0], c=obs, cmap=get_cmap("RdBu", 2), vmin=0, vmax=1, alpha=.4)
         plt.colorbar()
         plt.show()
 

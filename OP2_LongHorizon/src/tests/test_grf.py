@@ -28,8 +28,9 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
     plt.ylabel(ylabel)
     if np.any(polygon_border):
         plt.plot(polygon_border[:, 1], polygon_border[:, 0], 'k-.', lw=2)
-        for i in range(len(polygon_obstacle)):
-            plt.plot(polygon_obstacle[i][:, 1], polygon_obstacle[i][:, 0], 'k-.', lw=2)
+        if np.any(polygon_obstacle):
+            for i in range(len(polygon_obstacle)):
+                plt.plot(polygon_obstacle[i][:, 1], polygon_obstacle[i][:, 0], 'k-.', lw=2)
     return plt.gca()
 
 

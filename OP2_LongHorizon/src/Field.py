@@ -24,10 +24,11 @@ class Field:
                                  [8832.34529913, 11091.94966078],
                                  [11678.38384112, 10215.62113641],
                                  [14255.15453767, 5709.75943741]])
-    __polygon_obstacles = [np.array([[0, 0],
-                                     [.1, .1],
-                                     [.2, .2],
-                                     [0, 0]])]
+    __polygon_obstacles = [[[]]]
+    # __polygon_obstacles = [np.array([[0, 0],
+    #                                  [.1, .1],
+    #                                  [.2, .2],
+    #                                  [0, 0]])]
     # __polygon_obstacles = [np.array([[.4, .4],
     #                                  [.6, .5],
     #                                  [.5, .6],
@@ -51,7 +52,7 @@ class Field:
     __xgap = __neighbour_distance * sin(radians(60))
 
     def __init__(self):
-        self.__construct_field()
+        self.__construct_grid()
         self.__construct_hash_neighbours()
 
     def set_neighbour_distance(self, value: float) -> None:
@@ -79,10 +80,11 @@ class Field:
         x, y = loc
         point = Point(x, y)
         obs = False
-        for posi in Field.__polygon_obstacles_shapely:
-            if posi.contains(point):
-                obs = True
-                break
+        if not Field.__obs_free:
+            for posi in Field.__polygon_obstacles_shapely:
+                if posi.contains(point):
+                    obs = True
+                    break
         return obs
 
     @staticmethod
@@ -100,13 +102,14 @@ class Field:
         xe, ye = loc_end
         line = LineString([(xs, ys), (xe, ye)])
         collision = False
-        for posi in Field.__polygon_obstacles_shapely:
-            if posi.intersects(line):
-                collision = True
-                break
+        if not Field.__obs_free:
+            for posi in Field.__polygon_obstacles_shapely:
+                if posi.intersects(line):
+                    collision = True
+                    break
         return collision
 
-    def __construct_field(self) -> None:
+    def __construct_grid(self) -> None:
         """ Construct the field grid based on the instruction given above.
         - Construct regular meshgrid.
         .  .  .  .
@@ -157,7 +160,6 @@ class Field:
 
     def get_neighbour_indices(self, ind_now: Union[int, np.ndarray]) -> np.ndarray:
         """ Return neighbouring indices according to index current. """
-        dt = type(ind_now)
         if type(ind_now) == np.int64:
             return self.__neighbour_hash_table[ind_now]
         else:
@@ -167,21 +169,26 @@ class Field:
                 neighbours = np.append(neighbours, idnn)
             return np.unique(neighbours.astype(int))
 
-    def get_grid(self):
+    def get_grid(self) -> np.ndarray:
         """
         Returns: waypoints
         """
         return self.__grid
 
     @staticmethod
-    def get_polygon_border():
+    def get_neighbour_distance() -> float:
+        """ Return neighbour distance. """
+        return Field.__neighbour_distance
+
+    @staticmethod
+    def get_polygon_border() -> np.ndarray:
         """
         Returns: border polygon
         """
         return Field.__polygon_border
 
     @staticmethod
-    def get_polygon_obstacles():
+    def get_polygon_obstacles() -> list:
         """
         Returns: obstacles' polygons.
         """

@@ -24,6 +24,6 @@ class Obstacle:
                 obs[i] = 0
         self.__obstacle_field = obs
 
-    def get_obstacle_field(self):
+    def get_obstacle_field(self) -> np.ndarray:
         return self.__obstacle_field
 

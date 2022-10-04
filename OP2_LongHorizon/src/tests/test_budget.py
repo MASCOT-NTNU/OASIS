@@ -20,18 +20,18 @@ class TestBudget(TestCase):
     def test_locations(self):
         # c1: test goal location
         l = self.b.get_goal()
-        self.assertEqual(.0, l[0])
-        self.assertEqual(1., l[1])
+        self.assertEqual(12000, l[0])
+        self.assertEqual(10000, l[1])
 
         # c2: test now location
         l = self.b.get_loc_prev()
-        self.assertEqual(.0, l[0])
-        self.assertEqual(.0, l[1])
+        self.assertEqual(4000, l[0])
+        self.assertEqual(4000, l[1])
 
         # c3: test previous location
         l = self.b.get_loc_now()
-        self.assertEqual(.0, l[0])
-        self.assertEqual(.0, l[1])
+        self.assertEqual(4000, l[0])
+        self.assertEqual(4000, l[1])
 
     def run_update_budget(self, loc, ls, BU, bf):
         l = self.b.get_loc_now()
@@ -62,78 +62,85 @@ class TestBudget(TestCase):
         self.assertEqual(c * 2, ct)
         if not self.b.get_go_home_alert():
             self.assertIsNone(testing.assert_almost_equal(b ** 2, (br / 2) ** 2 - (ct / 2) ** 2))
-        angle = math.atan2(dy, dx)
+        angle = math.atan2(dx, dy)
         self.assertEqual(alpha, angle)
         self.assertEqual(mid[0], (goal[0] + loc[0]) / 2)
         self.assertEqual(mid[1], (goal[1] + loc[1]) / 2)
 
-        e = Ellipse(xy=(mid[0], mid[1]), width=2*a, height=2*np.sqrt((br / 2) ** 2 - (ct / 2) ** 2),
+        e = Ellipse(xy=(mid[1], mid[0]), width=2*a, height=2*np.sqrt((br / 2) ** 2 - (ct / 2) ** 2),
                     angle=math.degrees(angle), edgecolor='r', fc='None', lw=2)
         if not self.b.get_go_home_alert():
-            plt.scatter(self.grid[:, 0], self.grid[:, 1], c=bf, cmap=get_cmap("RdBu", 10), vmin=-1, vmax=20)
+            plt.scatter(self.grid[:, 1], self.grid[:, 0], c=bf, cmap=get_cmap("RdBu", 10), vmin=-1, vmax=20)
             plt.colorbar()
         else:
-            plt.plot(self.grid[:, 0], self.grid[:, 1], 'k.')
-        plt.plot(loc[0], loc[1], 'k.', markersize=20)
-        plt.plot(goal[0], goal[1], 'b.', markersize=20)
+            plt.plot(self.grid[:, 1], self.grid[:, 0], 'k.')
+        plt.plot(loc[1], loc[0], 'k.', markersize=20)
+        plt.plot(goal[1], goal[0], 'b.', markersize=20)
         plt.gca().add_patch(e)
         plt.show()
 
     def test_get_budget_field(self):
+        # c0: starting location
+        BU = self.b.get_budget()
+        ls = self.b.get_loc_prev()
+        loc = np.array([3000, 3000])
+        bf = self.b.get_budget_field(loc[0], loc[1])
+        self.run_update_budget(loc, ls, BU, bf)
+
         # c1: move to first location,
         BU = self.b.get_budget()
         ls = self.b.get_loc_prev()
-        loc = np.array([1., 1.])
+        loc = np.array([4000, 5000])
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
         # c2: consume a little budget
-        loc = np.array([1., 0.])
+        loc = np.array([6000., 7500.])
         BU = self.b.get_budget()
         ls = self.b.get_loc_prev()
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
         # c3: consume more budget
-        loc = np.array([0., 0.])
+        loc = np.array([8000., 10000.])
         BU = self.b.get_budget()
         ls = self.b.get_loc_prev()
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
         # c4: consume more budget
-        loc = np.array([0.4, 0.8])
+        loc = np.array([11000, 10000])
         BU = self.b.get_budget()
         ls = self.b.get_loc_prev()
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
         # c5: consume last budget
-        loc = np.array([0.4, 0.9])
+        loc = np.array([11500, 10000])
         BU = self.b.get_budget()
         ls = self.b.get_loc_prev()
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
         # c5: consume last budget
-        loc = np.array([0.2, 0.8])
-        BU = self.b.get_budget()
-        ls = self.b.get_loc_prev()
-        bf = self.b.get_budget_field(loc[0], loc[1])
-        self.run_update_budget(loc, ls, BU, bf)
+        # loc = np.array([11700, 10000])
+        # BU = self.b.get_budget()
+        # ls = self.b.get_loc_prev()
+        # bf = self.b.get_budget_field(loc[0], loc[1])
+        # self.run_update_budget(loc, ls, BU, bf)
 
         # c6: consume last budget
-        loc = np.array([0.1, 0.8])
-        BU = self.b.get_budget()
-        ls = self.b.get_loc_prev()
-        bf = self.b.get_budget_field(loc[0], loc[1])
-        self.run_update_budget(loc, ls, BU, bf)
+        # loc = np.array([12000, 10000])
+        # BU = self.b.get_budget()
+        # ls = self.b.get_loc_prev()
+        # bf = self.b.get_budget_field(loc[0], loc[1])
+        # self.run_update_budget(loc, ls, BU, bf)
 
         # c7: consume last budget
-        loc = np.array([0.1, 0.9])
-        BU = self.b.get_budget()
-        ls = self.b.get_loc_prev()
-        bf = self.b.get_budget_field(loc[0], loc[1])
-        self.run_update_budget(loc, ls, BU, bf)
+        # loc = np.array([0.1, 0.9])
+        # BU = self.b.get_budget()
+        # ls = self.b.get_loc_prev()
+        # bf = self.b.get_budget_field(loc[0], loc[1])
+        # self.run_update_budget(loc, ls, BU, bf)
 
 

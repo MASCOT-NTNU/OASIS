@@ -44,9 +44,9 @@ class Direction:
     def get_previous_location(self) -> np.ndarray:
         return np.array([self.__x_prev, self.__y_prev])
 
-    def set_current_location(self, loc: np.ndarray):
+    def set_current_location(self, loc: np.ndarray) -> None:
         self.__x_now, self.__y_now = loc
 
-    def set_previous_location(self, loc: np.ndarray):
+    def set_previous_location(self, loc: np.ndarray) -> None:
         self.__x_prev, self.__y_prev = loc
 
