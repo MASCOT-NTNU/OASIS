@@ -12,7 +12,6 @@ sudo nano /etc/dhcpcd.conf
 # config
 sudo raspi-config
 
-
 # python3
 pip3 list -v
 sudo python3 setup.py install

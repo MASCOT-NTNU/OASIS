@@ -19,6 +19,10 @@
 `static ip_address=10.0.248.66/16`
 `static routers=10.0.0.1`
 `static domain_name_servers=10.0.0.1`
+interface eth0
+static ip_address=10.0.10.123/16
+static routers=10.0.0.1
+static domain_name_servers=10.0.0.1 8.8.8.8
 
 
 Usr CPU: root@10.0.10.150
@@ -51,3 +55,10 @@ DNS: 8.8.8.8
 - check if AUV has HITL mode.
 
 - SPDE remember to tell Martin about the wind condition one day ahead of mission.
+
+# Package installation
+[Python3](https://linuxize.com/post/how-to-install-python-3-9-on-debian-10/)
+[ROS]()
+[Tab case insensitive](https://askubuntu.com/questions/87061/can-i-make-tab-auto-completion-case-insensitive-in-bash)
+
+wget https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
