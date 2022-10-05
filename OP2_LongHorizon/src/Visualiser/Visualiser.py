@@ -18,7 +18,7 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
                  stepsize=None, threshold=None, polygon_border=None,
                  polygon_obstacle=None, xlabel=None, ylabel=None):
     """
-    Remember x, y is plotting x, y, thus x along horizonal and y along vertical.
+    Remember x, y is the plotting x, y, thus x is horizontal and y is verytical.
     """
     triangulated = tri.Triangulation(x, y)
     x_triangulated = x[triangulated.triangles].mean(axis=1)
@@ -75,7 +75,7 @@ def is_masked(x, y):
     """
     loc = np.array([x, y])
     masked = False
-    if field.obstacles_contain(loc) or not field.border_contains(loc):
+    if not field.border_contains(loc):
         masked = True
     return masked
 

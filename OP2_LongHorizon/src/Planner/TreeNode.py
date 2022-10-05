@@ -40,7 +40,8 @@ class TreeNode:
         """ Return the parent node of the tree node. """
         return self.__parent
 
-    def get_distance_between_nodes(self, n1: 'TreeNode', n2: 'TreeNode') -> float:
+    @staticmethod
+    def get_distance_between_nodes(n1: 'TreeNode', n2: 'TreeNode') -> float:
         dist = np.sqrt((n1.__x - n2.__x)**2 +
                        (n1.__y - n2.__y)**2)
         return dist

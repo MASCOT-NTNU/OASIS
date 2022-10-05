@@ -1,5 +1,5 @@
 from unittest import TestCase
-from RRTStar.RRTStar import RRTStar
+from Planner.RRTStar import RRTStar
 from CostValley.CostValley import CostValley
 import matplotlib.pyplot as plt
 import numpy as np
@@ -18,8 +18,6 @@ class TestRRTStar(TestCase):
         self.grid = self.cv.get_grid()
         self.polygon_border = self.field.get_polygon_border()
         self.polygon_border = np.append(self.polygon_border, self.polygon_border[0, :].reshape(1, -1), axis=0)
-        self.polygon_obstacle = self.field.get_polygon_obstacles()[0]
-        self.polygon_obstacle = np.append(self.polygon_obstacle, self.polygon_obstacle[0, :].reshape(1, -1), axis=0)
 
     def test_get_new_location(self):
         loc_now = np.array([.01, .01])
@@ -38,12 +36,11 @@ class TestRRTStar(TestCase):
         # plt.plot(wp[0], wp[1], 'b*', markersize=20)
         # plt.plot(loc_now[0], loc_now[1], 'c.', markersize=10)
         plt.plot(self.polygon_border[:, 0], self.polygon_border[:, 1], 'r-.')
-        plt.plot(self.polygon_obstacle[:, 0], self.polygon_obstacle[:, 1], 'r-.')
 
         plt.plot(0, 0, 'r.', markersize=20)
         plt.plot(0, 1, 'k*', markersize=20)
         plt.xlabel("x")
         plt.ylabel("y")
-        plt.savefig("/Users/yaoling/Downloads/trees/rrtcv.png")
+        plt.savefig("/Users/yaolin/Downloads/trees/rrtcv.png")
         plt.show()
 
