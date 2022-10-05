@@ -60,5 +60,7 @@ DNS: 8.8.8.8
 [Python3](https://linuxize.com/post/how-to-install-python-3-9-on-debian-10/)
 [ROS]()
 [Tab case insensitive](https://askubuntu.com/questions/87061/can-i-make-tab-auto-completion-case-insensitive-in-bash)
+[libsuitesparse](https://zoomadmin.com/HowToInstall/UbuntuPackage/libsuitesparse-dev)
+
 
 wget https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
