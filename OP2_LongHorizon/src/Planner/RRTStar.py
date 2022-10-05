@@ -35,16 +35,6 @@ class RRTStar:
     __polygon_border_shapely = Polygon(__polygon_border)
     __line_border_shapely = LineString(__polygon_border)
 
-    __polygon_obstacles = Field.get_polygon_obstacles()
-    __obs_free = True
-    if not is_list_empty(__polygon_obstacles):
-        __polygon_obstacles_shapely = []
-        __line_obstacles_shapely = []
-        for po in __polygon_obstacles:
-            __polygon_obstacles_shapely.append(Polygon(po))
-            __line_obstacles_shapely.append(LineString(po))
-        __obs_free = False
-
     __polygon_ellipse_shapely = None
     __line_ellipse_shapely = None
 

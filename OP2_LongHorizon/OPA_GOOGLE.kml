@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="OPA_GOOGLE" id="OPA_GOOGLE">
+	<SimpleField name="begin" type="string"></SimpleField>
+	<SimpleField name="end" type="string"></SimpleField>
+</Schema>
+<Folder><name>OPA_GOOGLE</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#OPA_GOOGLE">
+		<SimpleData name="begin">2</SimpleData>
+		<SimpleData name="end">9</SimpleData>
+	</SchemaData></ExtendedData>
+      <LineString><coordinates>-8.74571,41.168745 -8.741247,41.10048 -8.816434,41.099704 -8.81384685822818,41.0406887146959 -8.68177460501135,41.0628180501964 -8.6815804482062,41.1200310554991 -8.69198278121775,41.1455974653585 -8.74571,41.168745</coordinates></LineString>
+  </Placemark>
+</Folder>
+</Document></kml>
