@@ -5,10 +5,10 @@ determine the final tree discretization.
 """
 from Planner.TreeNode import TreeNode
 from Field import Field
+from CostValley import CostValley
 import numpy as np
 import os
-from shapely.geometry import Polygon, GeometryCollection, Point, LineString
-from usr_func.is_list_empty import is_list_empty
+from shapely.geometry import Polygon, Point, LineString
 # TODO: delete
 from Visualiser.TreePlotter import TreePlotter
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ class RRTStar:
     __N_random_locations = len(__random_locations)
 
     # TODO: delete
-    __figpath = os.getcwd() + "/../../trees/"
+    __figpath = os.getcwd() + "/../../fig/trees/"
 
     # loc
     __loc_start = np.array([1000, 1000])
@@ -34,9 +34,9 @@ class RRTStar:
     __nodes = []  # all nodes in the tree.
     __trajectory = np.empty([0, 2])  # to save trajectory.
     __goal_sampling_rate = .01
-    __max_expansion_iteration = 1000
-    __home_radius = 300
+    __max_expansion_iteration = 5000
     __step_size = Field.get_neighbour_distance()
+    __home_radius = __step_size * .8
     __rrtstar_neighbour_radius = __step_size * 1.12
 
     # polygons and lines
@@ -67,7 +67,7 @@ class RRTStar:
     polygon_border = np.append(__polygon_border, __polygon_border[0, :].reshape(1, -1), axis=0)
     cnt_plot = 0
 
-    def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray, cost_valley) -> np.ndarray:
+    def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray, cost_valley: 'CostValley') -> np.ndarray:
         """
         Get the next waypoint according to RRT* path planning philosophy.
         :param loc_start: current location np.array([x, y])
@@ -177,21 +177,21 @@ class RRTStar:
             self.tp.update_trees(self.__nodes)
 
             """ plot section """
-            plt.figure(figsize=(10, 10))
-            self.tp.plot_tree()
-            plt.plot(self.__loc_start[1], self.__loc_start[0], 'r.', markersize=20)
-            plt.plot(self.__loc_target[1], self.__loc_target[0], 'k*', markersize=20)
-            plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
-            if self.__isarrived():
-                # update new traj
-                self.__get_shortest_trajectory()
-            traj = self.get_trajectory()
-            plt.plot(traj[:, 1], traj[:, 0], 'k-', linewidth=4)
-            plt.xlabel("East")
-            plt.ylabel("North")
-            plt.savefig("/Users/yaolin/Downloads/trees/rrts/P_{:03d}.png".format(self.cnt_plot))
-            self.cnt_plot += 1
-            plt.close("all")
+            # plt.figure(figsize=(10, 10))
+            # self.tp.plot_tree()
+            # plt.plot(self.__loc_start[1], self.__loc_start[0], 'r.', markersize=20)
+            # plt.plot(self.__loc_target[1], self.__loc_target[0], 'k*', markersize=20)
+            # plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
+            # if self.__isarrived():
+            #     # update new traj
+            #     self.__get_shortest_trajectory()
+            # traj = self.get_trajectory()
+            # plt.plot(traj[:, 1], traj[:, 0], 'k-', linewidth=4)
+            # plt.xlabel("East")
+            # plt.ylabel("North")
+            # plt.savefig(self.__figpath + "rrts/P_{:04d}.png".format(self.cnt_plot))
+            # self.cnt_plot += 1
+            # plt.close("all")
             """ End of plot. """
         # t2 = time.time()
         # print("Tree expansion takes: ", t2 - t1)
@@ -279,9 +279,6 @@ class RRTStar:
             if cnt > self.__max_expansion_iteration:
                 break
         self.__trajectory = np.append(self.__trajectory, self.__starting_node.get_location().reshape(1, -1), axis=0)
-
-    def __get_border_limits(self):
-        return self.__xlim, self.__ylim
 
     def get_nodes(self):
         return self.__nodes

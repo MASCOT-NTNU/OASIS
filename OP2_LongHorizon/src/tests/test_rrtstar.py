@@ -1,27 +1,51 @@
 from unittest import TestCase
 from Planner.RRTStar import RRTStar
 from CostValley.CostValley import CostValley
+from Config import Config
 import matplotlib.pyplot as plt
 import numpy as np
 from Visualiser.TreePlotter import TreePlotter
-from Visualiser.Visualiser import plotf_vector
+# from Visualiser.Visualiser import plotf_vector
 from matplotlib.cm import get_cmap
+import os
+
+
+def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10),
+                 cbar_title='test', colorbar=True, vmin=None, vmax=None, ticks=None,
+                 stepsize=None, threshold=None, polygon_border=None,
+                 polygon_obstacle=None, xlabel=None, ylabel=None):
+    """
+    Remember x, y is plotting x, y, thus x along horizonal and y along vertical.
+    """
+    plt.scatter(x, y, c=values, s=500, cmap=get_cmap("BrBG", 10), vmin=vmin, vmax=vmax)
+    plt.colorbar()
+    plt.xlim([np.amin(x), np.amax(x)])
+    plt.ylim([np.amin(y), np.amax(y)])
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if np.any(polygon_border):
+        plt.plot(polygon_border[:, 1], polygon_border[:, 0], 'k-.', lw=2)
+        if np.any(polygon_obstacle):
+            for i in range(len(polygon_obstacle)):
+                plt.plot(polygon_obstacle[i][:, 1], polygon_obstacle[i][:, 0], 'k-.', lw=2)
+    return plt.gca()
 
 
 class TestRRTStar(TestCase):
 
     def setUp(self) -> None:
+        self.config = Config()
         self.rrtstar = RRTStar()
         self.tp = TreePlotter()
         self.cv = CostValley()
         self.field = self.cv.get_field()
         self.grid = self.cv.get_grid()
         self.polygon_border = self.field.get_polygon_border()
-        self.polygon_border = np.append(self.polygon_border, self.polygon_border[0, :].reshape(1, -1), axis=0)
 
     def test_get_new_location(self):
-        loc_now = np.array([.01, .01])
-        loc_end = np.array([.01, .99])
+        loc_now = self.config.get_loc_start()
+        loc_end = self.config.get_loc_home()
         wp = self.rrtstar.get_next_waypoint(loc_now, loc_end, cost_valley=self.cv)
         print(wp)
         nodes = self.rrtstar.get_nodes()
@@ -29,18 +53,18 @@ class TestRRTStar(TestCase):
         self.tp.update_trees(nodes)
         plt.figure(figsize=(15, 12))
         cv = self.cv.get_cost_valley()
-        plotf_vector(self.grid[:, 0], self.grid[:, 1], cv, xlabel='x', ylabel='y', title='RRTCV', cbar_title="Cost",
-                     cmap=get_cmap("RdBu", 10), alpha=.3)
+        plotf_vector(self.grid[:, 1], self.grid[:, 0], cv, xlabel='x', ylabel='y', title='RRTCV', cbar_title="Cost",
+                     cmap=get_cmap("RdBu", 10), vmin=0, vmax=4, alpha=.3)
         self.tp.plot_tree()
-        plt.plot(traj[:, 0], traj[:, 1], 'k-', linewidth=10)
+        plt.plot(traj[:, 1], traj[:, 0], 'k-', linewidth=10)
         # plt.plot(wp[0], wp[1], 'b*', markersize=20)
         # plt.plot(loc_now[0], loc_now[1], 'c.', markersize=10)
-        plt.plot(self.polygon_border[:, 0], self.polygon_border[:, 1], 'r-.')
+        plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
 
-        plt.plot(0, 0, 'r.', markersize=20)
-        plt.plot(0, 1, 'k*', markersize=20)
+        plt.plot(loc_now[1], loc_now[0], 'r.', markersize=20)
+        plt.plot(loc_end[1], loc_end[0], 'k*', markersize=20)
         plt.xlabel("x")
         plt.ylabel("y")
-        plt.savefig("/Users/yaolin/Downloads/trees/rrtcv.png")
+        plt.savefig(os.getcwd() + "/../../fig/trees/rrtcv.png")
         plt.show()
 
