@@ -8,8 +8,8 @@ import numpy as np
 
 class StraightLinePathPlanner:
 
-    __distance_tolerance = .05
-    __step_size = .1
+    __home_radius = 150  # metres.
+    __step_size = 360  # metres.
     __loc_next = np.empty([0, 2])
 
     def get_waypoint_from_straight_line(self, loc_now: np.ndarray, loc_target: np.ndarray):
@@ -18,7 +18,7 @@ class StraightLinePathPlanner:
         t1 = time.time()
         distance_remaining = np.sqrt((x_now - x_target)**2 +
                                      (y_now - y_target)**2)
-        if distance_remaining <= self.__distance_tolerance:
+        if distance_remaining <= self.__home_radius:
             x_next = x_target
             y_next = y_target
         else:

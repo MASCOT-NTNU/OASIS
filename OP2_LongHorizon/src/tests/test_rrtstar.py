@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Planner.RRTStar import RRTStar
+from Planner.RRTSCV.RRTStar import RRTStar
 from CostValley.CostValley import CostValley
 from Config import Config
 import matplotlib.pyplot as plt

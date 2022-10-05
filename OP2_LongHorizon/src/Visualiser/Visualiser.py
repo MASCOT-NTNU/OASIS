@@ -13,20 +13,20 @@ from Field import Field
 field = Field()
 
 
-def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10),
+def plotf_vector(lat, lon, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10),
                  cbar_title='test', colorbar=True, vmin=None, vmax=None, ticks=None,
                  stepsize=None, threshold=None, polygon_border=None,
                  polygon_obstacle=None, xlabel=None, ylabel=None):
     """
     Remember x, y is the plotting x, y, thus x is horizontal and y is verytical.
     """
-    triangulated = tri.Triangulation(x, y)
-    x_triangulated = x[triangulated.triangles].mean(axis=1)
-    y_triangulated = y[triangulated.triangles].mean(axis=1)
+    triangulated = tri.Triangulation(lat, lon)
+    lat_triangulated = lat[triangulated.triangles].mean(axis=1)
+    lon_triangulated = lon[triangulated.triangles].mean(axis=1)
 
     ind_mask = []
-    for i in range(len(x_triangulated)):
-        ind_mask.append(is_masked(y_triangulated[i], x_triangulated[i]))
+    for i in range(len(lat_triangulated)):
+        ind_mask.append(is_masked(lon_triangulated[i], lat_triangulated[i]))
     triangulated.set_mask(ind_mask)
     refiner = tri.UniformTriRefiner(triangulated)
     triangulated_refined, value_refined = refiner.refine_field(values.flatten(), subdiv=3)
@@ -55,8 +55,8 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
     if colorbar:
         cbar = plt.colorbar(contourplot, ax=ax, ticks=ticks)
         cbar.ax.set_title(cbar_title)
-    plt.xlim([np.amin(y), np.amax(y)])
-    plt.ylim([np.amin(x), np.amax(x)])
+    # plt.xlim([np.amin(lon), np.amax(lon)])
+    # plt.ylim([np.amin(lat), np.amax(lat)])
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -65,15 +65,16 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
     return ax
 
 
-def is_masked(x, y):
+def is_masked(lon, lat):
     """
-    :param x:
-    :param y:
+    :param lon:
+    :param lat:
     :return:
     """
-    loc = np.array([x, y])
+    loc = np.array([lon, lat])
     masked = False
     if not field.border_contains(loc):
         masked = True
     return masked
+
 
