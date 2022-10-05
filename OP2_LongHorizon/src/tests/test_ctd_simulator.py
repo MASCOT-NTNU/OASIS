@@ -4,6 +4,7 @@
 from unittest import TestCase
 from AUVSimulator.CTDSimulator import CTDSimulator
 from GRF import GRF
+from Field import Field
 import numpy as np
 from numpy import testing
 import pandas as pd
@@ -18,6 +19,7 @@ class TestCTDSimulator(TestCase):
 
     def setUp(self) -> None:
         self.grf = GRF()
+        self.f = Field()
         self.ctd = CTDSimulator()
 
     def test_get_salinity_at_loc(self):
@@ -32,10 +34,12 @@ class TestCTDSimulator(TestCase):
         truth = self.ctd.get_ground_truth()
         # value = normalize(truth, 16, 32)
         value = truth
+        plg = self.f.get_polygon_border()
         plt.figure(figsize=(15, 12))
-        plotf_vector(grid[:, 0], grid[:, 1], truth, cmap=get_cmap("RdBu", 10),
-                     vmin=.0, vmax=1.4, stepsize=.1, threshold=.7, cbar_title="Value",
-                     title="Ground field", xlabel="East", ylabel="North")
+        plotf_vector(grid[:, 1], grid[:, 0], truth, cmap=get_cmap("RdBu", 10),
+                     vmin=5, vmax=45, stepsize=1.5, threshold=33, cbar_title="Value",
+                     title="Ground field", xlabel="East", ylabel="North", polygon_border=plg)
+        # plt.plot(plg[:, 1], plg[:, 0], 'r-.')
         plt.gca().set_aspect('equal')
         # plt.scatter(grid[:, 0], grid[:, 1], c=truth, cmap=get_cmap("RdBu", 10), vmin=0, vmax=1.1)
         # plt.colorbar()
