@@ -3,7 +3,7 @@ WGS 84 coordinate system.
 North-East-Down reference is employed.
 
 It converts (lat, lon) in degrees to (x, y) in meters given a specific origin.
-The selected origin is at Nidarosdomen in Trondheim.
+The selected origin is at Porto church.
 
 Example:
     >>> wgs = WGS()
