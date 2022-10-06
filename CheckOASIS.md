@@ -61,4 +61,6 @@ DNS: 8.8.8.8
 [ROS]()
 [Tab case insensitive](https://askubuntu.com/questions/87061/can-i-make-tab-auto-completion-case-insensitive-in-bash)
 
-wget https://www.python.org/ftp/python/3.9.12/Python-3.9.12.tgz
+# x11vnc setup
+- Step I, `x11vnc -storepasswd`
+- Step II, 
