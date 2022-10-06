@@ -32,7 +32,7 @@ class TestMyopic(TestCase):
         # c1: one waypoint.
         self.myopic.set_next_index(10)
         id_next = self.myopic.get_next_index()
-        id_neigh = self.wp.get_ind_neighbours(id_next)
+        id_neigh = self.wp.get_neighbour_indices(id_next)
         id_curr = id_neigh[0]
         # id_curr = id_neigh[np.random.randint(0, len(id_neigh))]
         wp_curr = self.wp.get_waypoint_from_ind(id_curr)
@@ -54,7 +54,7 @@ class TestMyopic(TestCase):
             self.myopic.set_next_index(id_nexts[i])
             id_next = self.myopic.get_next_index()
             wp_next = self.waypoints[id_next]
-            id_neigh = self.wp.get_ind_neighbours(id_next)
+            id_neigh = self.wp.get_neighbour_indices(id_next)
             for j in range(len(id_neigh)):
                 self.myopic.set_current_index(id_neigh[j])
                 id_c, id_n = self.myopic.get_candidates_indices()
