@@ -17,7 +17,7 @@ import time
 
 class GMRF:
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = -.25
-    __GMRF_DISTANCE_NEIGHBOUR = 32
+    __GMRF_DISTANCE_NEIGHBOUR = 65  # lateral distance used to scale depth comparison
     __gmrf_grid = None
     __N_gmrf_grid = 0
     __rotated_angle = .0
