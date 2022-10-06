@@ -5,11 +5,10 @@ from unittest import TestCase
 from AUVSimulator.AUVSimulator import AUVSimulator
 import numpy as np
 from numpy import testing
-from usr_func.is_list_empty import is_list_empty
 
-
-def value(x, y):
-    return 2 * x + 3 * y
+#
+# def value(x, y):
+#     return 2 * x + 3 * y
 
 
 class TestAUVSimulator(TestCase):

@@ -10,34 +10,46 @@ The goal of the agent is to conduct the autonomous sampling operation by using t
 Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from matplotlib.cm import get_cmap
-
-from Planner.RRTStar import RRTStar
+from Config import Config
+from Planner.RRTSCV.RRTStar import RRTStar
 from Planner.StraightLinePathPlanner import StraightLinePathPlanner
 from CostValley.CostValley import CostValley
-from Field import Field
 from AUVSimulator.AUVSimulator import AUVSimulator
 from Visualiser.TreePlotter import TreePlotter
 import numpy as np
-import time
 import os
+
+# plot
+import matplotlib.pyplot as plt
+from matplotlib.cm import get_cmap
+from matplotlib.gridspec import GridSpec
+from Visualiser.Visualiser import plotf_vector
+from matplotlib.patches import Ellipse
+from Field import Field
+import math
+field = Field()
 
 
 class Agent:
+    # s0: load configuration
+    __config = Config()
 
-    __loc_start = np.array([.01, .01])
-    __loc_end = np.array([.01, .99])
+    # s1: set up agent
+    __loc_start = __config.get_loc_start()
+    __loc_end = __config.get_loc_home()
 
-    __loc_min_cv = np.array([.01, .01])
-    __loc_next = np.array([.01, .01])
+    __loc_min_cv = np.array([8000, 8000])
+    __loc_next = np.array([8000, 8000])
 
     __NUM_STEP = 10
-    __distance_tolerance = .05
+    __home_radius = 150
     __counter = 0
 
+    # s3: set up trajectory
     traj = np.empty([0, 2])
+
+    # ss: plot
+    __figpath = os.getcwd() + "/../../fig/trees/agent/"
 
     def __init__(self) -> None:
         """
@@ -87,33 +99,109 @@ class Agent:
             # s5: get minimum cost location.
             self.__loc_min_cv = self.cv.get_minimum_cost_location()
 
-            # s6: plot trees
-            self.tp.update_trees(self.rrtstar.get_nodes())
-            self.tp.plot_tree()
-            # traj = self.rrtstar.get_trajectory()
-            plt.plot(loc[0], loc[1], 'y*', markersize=20)
-            plt.plot(self.traj[:, 0], self.traj[:, 1], 'k.-')
-            # plt.plot(traj[:, 0], traj[:, 1], 'r-')
-
             # s7: plan one step based on cost valley and rrt*
             if not self.Budget.get_go_home_alert():
                 loc = self.rrtstar.get_next_waypoint(loc, self.__loc_min_cv, self.cv)
             else:
                 loc = self.slpp.get_waypoint_from_straight_line(loc, self.__loc_end)
 
-            # print("loc: ", loc)
-            plt.plot(loc[0], loc[1], 'b*', markersize=20)
-            plt.scatter(self.grid[:, 0], self.grid[:, 1], c=self.cv.get_cost_valley(),
-                        cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.5)
-            plt.colorbar()
-            plt.savefig("/Users/yaoling/Downloads/trees/P_{:03d}.png".format(i))
-            plt.close("all")
-
             # s8: check arrival
             dist = np.sqrt((loc[0] - self.__loc_end[0])**2 +
                            (loc[1] - self.__loc_end[1])**2)
-            if dist <= self.__distance_tolerance:
+            if dist <= self.__home_radius:
                 break
+
+    def run(self):
+        """
+        Run the autonomous operation according to Sense, Plan, Act philosophy.
+        """
+        loc = self.__loc_start
+
+        # c1: start the operation from scratch.
+        id_start = np.random.randint(0, len(self.myopic.wp.get_waypoints()))
+        id_curr = id_start
+
+        # s1: setup the planner -> only once
+        self.myopic.set_current_index(id_curr)
+        self.myopic.set_next_index(id_curr)
+
+        # a1: move to current location
+        self.auv.move_to_location(self.myopic.wp.get_waypoint_from_ind(id_curr))
+
+        t_start = time.time()
+        t_pop_last = time.time()
+
+        self.visualiser.plot_agent()
+
+        while True:
+            t_end = time.time()
+            """
+            Simulating the AUV behaviour, not the actual one
+            """
+            t_gap = t_end - t_start
+            if t_gap >= 5:
+                self.auv.arrive()
+                t_start = time.time()
+
+            if self.__counter == 0:
+                if t_end - t_pop_last >= 50:
+                    self.auv.popup()
+                    print("POP UP")
+                    t_pop_last = time.time()
+
+            if self.auv.is_arrived():
+                if t_end - t_pop_last >= 20:
+                    self.auv.popup()
+                    print("POPUP")
+                    t_pop_last = time.time()
+
+                if self.__counter == 0:
+                    # s2: get next index using get_pioneer_waypoint
+                    ind = self.myopic.get_pioneer_waypoint_index()
+                    self.myopic.set_next_index(ind)
+
+                    # p1: parallel move AUV to the first location
+                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                    self.auv.move_to_location(loc)
+
+                    # s3: update planner -> so curr and next waypoint is updated
+                    self.myopic.update_planner()
+
+                    # s4: get pioneer waypoint
+                    self.myopic.get_pioneer_waypoint_index()
+
+                    # # s5: obtain CTD data
+                    ctd_data = self.auv.get_ctd_data()
+
+                    # # s5: assimilate data
+                    self.myopic.gmrf.assimilate_data(ctd_data)
+                else:
+                    ind = self.myopic.get_current_index()
+                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                    self.auv.move_to_location(loc)
+
+                    # a1: gather AUV data
+                    ctd_data = self.auv.get_ctd_data()
+
+                    # a2: update GMRF field
+                    self.myopic.gmrf.assimilate_data(ctd_data)
+
+                    # ss2: update planner
+                    self.myopic.update_planner()
+
+                    # ss3: plan ahead.
+                    self.myopic.get_pioneer_waypoint_index()
+
+                    if self.__counter == self.__NUM_STEP:
+                        break
+                print("counter: ", self.__counter)
+                print(self.myopic.get_current_index())
+                print(self.myopic.get_trajectory_indices())
+                self.visualiser.plot_agent()
+                self.__counter += 1
+
+    def get_counter(self):
+        return self.__counter
 
 
 if __name__ == "__main__":

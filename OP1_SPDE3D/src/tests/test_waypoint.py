@@ -226,7 +226,7 @@ class TC1(TestWaypoint):
         self.wg.construct_waypoints()
         self.wg.construct_hash_neighbours()
         self.waypoints = self.wg.get_waypoints()
-        self.hash_neighbours = self.wg.get_hash_neighbour()
+        self.hash_neighbours = self.wg.get_hash_neighbours()
 
     def test_all(self):
         self.run_test_get_vector_between_two_waypoints()
@@ -262,7 +262,7 @@ class TC2(TestWaypoint):
         self.wg.construct_waypoints()
         self.wg.construct_hash_neighbours()
         self.waypoints = self.wg.get_waypoints()
-        self.hash_neighbours = self.wg.get_hash_neighbour()
+        self.hash_neighbours = self.wg.get_hash_neighbours()
 
     def test_all(self):
         self.run_test_get_vector_between_two_waypoints()

@@ -12,7 +12,7 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 from Planner.Myopic3D import Myopic3D
 from AUVSimulator.AUVSimulator import AUVSimulator
-from Visualiser.Visualiser_myopic import Visualiser
+from Visualiser.Visualiser import Visualiser
 import numpy as np
 import time
 import os
@@ -36,7 +36,7 @@ class Agent:
         self.auv = AUVSimulator()
 
         # s3: setup Visualiser.
-        self.visualiser = Visualiser(self, figpath=os.getcwd() + "/../fig/Myopic3D/")
+        self.visualiser = Visualiser(self, figpath=os.getcwd() + "/../../fig/Myopic3D/")
 
     def run(self):
         """

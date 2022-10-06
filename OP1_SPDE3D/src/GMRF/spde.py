@@ -88,14 +88,19 @@ class spde:
             rel ([k,1]-array): k number of measurements of the GMRF. (k>0).
             ks ([k,]-array): k number of indicies describing the index of the measurment in the field.
         """
-        mu = self.mu.reshape(-1,1)
-        if ks.size>0:
-            S = self.Stot[ks,:]
-            self.Q = self.Q + S.transpose()@S*1/self.sigma**2
-            self.Q_fac.cholesky_inplace(self.Q)
+        if len(rel.shape) == 2:
+            mu = self.mu.reshape(-1,1)
+        else:
+            mu = self.mu 
+        S = self.Stot[ks,:]
+        self.Q = self.Q + S.transpose()@S*1/self.sigma**2
+        self.Q_fac.cholesky_inplace(self.Q)
 
-            mu = mu - self.Q_fac.solve_A(S.transpose().tocsc())@(S@mu - rel)*1/self.sigma**2
-        self.mu = mu.reshape(-1)
+        mu = mu - self.Q_fac.solve_A(S.transpose().tocsc())@(S@mu - rel)*1/self.sigma**2
+        if len(rel.shape)==2:
+            self.mu = mu.reshape(-1)
+        else:
+            self.mu = mu
 
     def mvar(self,Q_fac = None, n=DEFAULT_NUM_SAMPLES):
         """Monte Carlo Estimate of the marginal variance of a GMRF.

@@ -21,7 +21,6 @@ class TestField(TestCase):
         self.f = Field()
         self.grid = self.f.get_grid()
         self.polygon_border = self.f.get_polygon_border()
-        self.polygon_obstacles = self.f.get_polygon_obstacles()
 
     def test_empty_grids(self):
         """ Test if it generates empty waypoint. """
@@ -32,20 +31,12 @@ class TestField(TestCase):
     def test_illegal_grids(self):
         """ Test if any waypoints are not within the border polygon or colliding with obstacles. """
         pb = Polygon(self.polygon_border)
-        pos = []
-        if not is_list_empty(self.polygon_obstacles):
-            for po in self.polygon_obstacles:
-                pos.append(Polygon(po))
         s = True
 
         for i in range(len(self.grid)):
             p = Point(self.grid[i, :2])
             in_border = pb.contains(p)
             in_obs = False
-            for po in pos:
-                if po.contains(p):
-                    in_obs = True
-                    break
             if in_obs or not in_border:
                 s = False
                 break
@@ -121,15 +112,6 @@ class TestField(TestCase):
         b = self.f.border_contains(np.array([x, y]))
         self.assertTrue(b)
 
-    def test_obstacles_contain(self):
-        pass
-        # x, y = 1e6, 1e6
-        # o = self.f.obstacles_contain(np.array([x, y]))
-        # self.assertFalse(o)
-        # x, y = self.polygon_obstacles[0, :]
-        # o = self.f.border_contains(np.array([x, y]))
-        # self.assertTrue(o)
-
     def test_border_in_the_way(self):
         x1, y1 = 0, 0
         x2, y2 = 100, 100
@@ -139,21 +121,6 @@ class TestField(TestCase):
         x2, y2 = -100, -100
         c = self.f.is_border_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
         self.assertFalse(c)
-
-    def test_obstacles_in_the_way(self):
-        """ Test when obstacle exists. """
-        pass
-        # c1: border along polygon obstacle
-        # x1, y1 = self.polygon_obstacles[0][0, :]
-        # x2, y2 = self.polygon_obstacles[0][-1, :]
-        # c = self.f.is_obstacle_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
-        # self.assertTrue(c)
-        #
-        # # c2: no collision detection.
-        # x1, y1 = -20, -20
-        # x2, y2 = -100, -100
-        # c = self.f.is_obstacle_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
-        # self.assertFalse(c)
 
     def test_get_neighbours(self):
         # c1: get one neighbour

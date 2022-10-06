@@ -39,14 +39,12 @@ def plotf(self, v1, v2, title1="mean", title2="cov", vmin1=None, vmax1=None, vmi
     gs = GridSpec(nrows=1, ncols=2)
     ax = fig.add_subplot(gs[0])
     plotf_vector(self.grid[:, 1], self.grid[:, 0], v1,
-                 polygon_border=self.g.field.get_polygon_border(),
-                 polygon_obstacle=self.g.field.get_polygon_obstacles(), vmin=vmin1, vmax=vmax1)
+                 polygon_border=self.g.field.get_polygon_border(), vmin=vmin1, vmax=vmax1)
     plt.title(title1)
 
     ax = fig.add_subplot(gs[1])
     plotf_vector(self.grid[:, 1], self.grid[:, 0], v2,
-                 polygon_border=self.g.field.get_polygon_border(),
-                 polygon_obstacle=self.g.field.get_polygon_obstacles(), vmin=vmin2, vmax=vmax2)
+                 polygon_border=self.g.field.get_polygon_border(), vmin=vmin2, vmax=vmax2)
     plt.title(title2)
     plt.show()
 

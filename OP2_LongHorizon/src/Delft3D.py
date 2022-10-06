@@ -12,10 +12,10 @@ from shapely.geometry import Point
 
 class Delft3D:
     """ Load setup. """
-    __setup = Config()
-    __wind_dir = __setup.get_wind_direction()
-    __wind_level = __setup.get_wind_level()
-    __polygon_operational_area_shapely = __setup.get_polygon_operational_area_shapely()
+    __config = Config()
+    __wind_dir = __config.get_wind_direction()
+    __wind_level = __config.get_wind_level()
+    __polygon_operational_area_shapely = __config.get_polygon_operational_area_shapely()
 
     """ Delft3D data manipulation. """
     __datapath_delft3d = os.getcwd() + "/../../../../Data/Porto/OASIS/delft3d/oct_prior.pickle"
@@ -39,3 +39,4 @@ class Delft3D:
 
 if __name__ == "__main__":
     m = Delft3D()
+

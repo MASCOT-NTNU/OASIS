@@ -77,45 +77,32 @@ class TestCostValley(TestCase):
                     angle=math.degrees(angle), edgecolor='r', fc='None', lw=2)
 
         azimuth = self.cv.get_direction_field()
-        obs = self.cv.get_obstacle_field()
 
         fig = plt.figure(figsize=(30, 5))
         gs = GridSpec(nrows=1, ncols=6)
         ax = fig.add_subplot(gs[0])
         plotf_vector(grid[:, 1], grid[:, 0], cv, vmin=0, vmax=4)
-                     # polygon_border=self.cv.field.get_polygon_border(),
-                     # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("Cost Valley")
 
         ax = fig.add_subplot(gs[1])
         plotf_vector(grid[:, 1], grid[:, 0], eibv, vmin=0, vmax=1)
-                     # polygon_border=self.g.field.get_polygon_border(),
-                     # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("EIBV")
 
         ax = fig.add_subplot(gs[2])
         plotf_vector(grid[:, 1], grid[:, 0], ivr, vmin=0, vmax=1)
-                     # polygon_border=self.g.field.get_polygon_border(),
-                     # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("IVR")
 
         ax = fig.add_subplot(gs[3])
         plotf_vector(grid[:, 1], grid[:, 0], budget, vmin=0, vmax=1)
-        # polygon_border=self.g.field.get_polygon_border(),
-        # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("Budget")
         plt.gca().add_patch(e)
 
         ax = fig.add_subplot(gs[4])
         plotf_vector(grid[:, 1], grid[:, 0], azimuth, vmin=0, vmax=1)
-        # polygon_border=self.g.field.get_polygon_border(),
-        # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("Direction")
 
         ax = fig.add_subplot(gs[5])
         plotf_vector(grid[:, 1], grid[:, 0], self.grf.get_mu(), vmin=10, vmax=35)
-        # polygon_border=self.g.field.get_polygon_border(),
-        # polygon_obstacle=self.g.field.get_polygon_obstacles())
         plt.title("mean")
         plt.show()
 

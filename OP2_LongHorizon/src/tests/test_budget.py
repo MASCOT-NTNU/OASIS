@@ -27,9 +27,8 @@ class TestBudget(TestCase):
 
         # c2: test now location
         l = self.b.get_loc_prev()
-        lc = self.c.get_loc_start()
-        self.assertEqual(lc[0], l[0])
-        self.assertEqual(lc[1], l[1])
+        self.assertEqual(0, l[0])
+        self.assertEqual(.0, l[1])
 
         # c3: test previous location
         l = self.b.get_loc_now()
@@ -119,12 +118,12 @@ class TestBudget(TestCase):
         bf = self.b.get_budget_field(loc[0], loc[1])
         self.run_update_budget(loc, ls, BU, bf)
 
-        # c5: consume last budget
-        loc = np.array([11500, 10000])
-        BU = self.b.get_budget()
-        ls = self.b.get_loc_prev()
-        bf = self.b.get_budget_field(loc[0], loc[1])
-        self.run_update_budget(loc, ls, BU, bf)
+        # # c5: consume last budget
+        # loc = np.array([11500, 10000])
+        # BU = self.b.get_budget()
+        # ls = self.b.get_loc_prev()
+        # bf = self.b.get_budget_field(loc[0], loc[1])
+        # self.run_update_budget(loc, ls, BU, bf)
 
         # c5: consume last budget
         # loc = np.array([11700, 10000])

@@ -14,6 +14,6 @@ class TreePlotter:
             if node.get_parent() is not None:
                 loc = node.get_location()
                 loc_p = node.get_parent().get_location()
-                plt.plot([loc[0], loc_p[0]],
-                         [loc[1], loc_p[1]], "-g")
+                plt.plot([loc[1], loc_p[1]],
+                         [loc[0], loc_p[0]], "-g")
 

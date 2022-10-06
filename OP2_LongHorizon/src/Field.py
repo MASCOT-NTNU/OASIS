@@ -15,7 +15,7 @@ class Field:
 
     __grid = np.empty([0, 2])
     __neighbour_hash_table = dict()
-    __neighbour_distance = 360
+    __neighbour_distance = 360  # metres between neighbouring locations.
     __polygon_border = np.array([[14255.15453767, 5709.75943741],
                                  [6655.93266267, 6090.08594322],
                                  [6569.54877378, -217.02662071],
@@ -24,22 +24,7 @@ class Field:
                                  [8832.34529913, 11091.94966078],
                                  [11678.38384112, 10215.62113641],
                                  [14255.15453767, 5709.75943741]])
-    __polygon_obstacles = [[[]]]
-    # __polygon_obstacles = [np.array([[0, 0],
-    #                                  [.1, .1],
-    #                                  [.2, .2],
-    #                                  [0, 0]])]
-    # __polygon_obstacles = [np.array([[.4, .4],
-    #                                  [.6, .5],
-    #                                  [.5, .6],
-    #                                  [.3, .4]])]
-    __obs_free = True
     __polygon_border_shapely = Polygon(__polygon_border)
-    if not is_list_empty(__polygon_obstacles):
-        __polygon_obstacles_shapely = []
-        for po in __polygon_obstacles:
-            __polygon_obstacles_shapely.append(Polygon(po))
-        __obs_free = False
 
     """ Get the xy limits and gaps for the bigger box """
     xb = __polygon_border[:, 0]
@@ -63,10 +48,6 @@ class Field:
         """ Set the polygon border, only one Nx2 dimension allowed """
         self.__polygon_border = value
 
-    def set_polygon_obstacles(self, value: list) -> None:
-        """ Set the polygons for obstacles, can have multiple obstacles """
-        self.__polygon_obstacles = value
-
     @staticmethod
     def border_contains(loc: np.ndarray) -> bool:
         """ Test if point is within the border polygon """
@@ -75,39 +56,12 @@ class Field:
         return Field.__polygon_border_shapely.contains(point)
 
     @staticmethod
-    def obstacles_contain(loc: np.ndarray) -> bool:
-        """ Test if point is colliding with any obstacle polygons """
-        x, y = loc
-        point = Point(x, y)
-        obs = False
-        if not Field.__obs_free:
-            for posi in Field.__polygon_obstacles_shapely:
-                if posi.contains(point):
-                    obs = True
-                    break
-        return obs
-
-    @staticmethod
     def is_border_in_the_way(loc_start: np.ndarray, loc_end: np.ndarray) -> bool:
         """ Check if border is in the way between loc_start and loc_end. """
         xs, ys = loc_start
         xe, ye = loc_end
         line = LineString([(xs, ys), (xe, ye)])
         return Field.__polygon_border_shapely.intersects(line)
-
-    @staticmethod
-    def is_obstacle_in_the_way(loc_start: np.ndarray, loc_end: np.ndarray) -> bool:
-        """ Check if obstacles are in the way between loc_start and loc_end. """
-        xs, ys = loc_start
-        xe, ye = loc_end
-        line = LineString([(xs, ys), (xe, ye)])
-        collision = False
-        if not Field.__obs_free:
-            for posi in Field.__polygon_obstacles_shapely:
-                if posi.intersects(line):
-                    collision = True
-                    break
-        return collision
 
     def __construct_grid(self) -> None:
         """ Construct the field grid based on the instruction given above.
@@ -135,14 +89,9 @@ class Field:
                     y = gy[j]
                     x = gx[i]
                 loc = np.array([x, y])
-                if self.__obs_free:
-                    if self.border_contains(loc):
-                        grid2d.append([x, y])
-                        counter_grid2d += 1
-                else:
-                    if self.border_contains(loc) and not self.obstacles_contain(loc):
-                        grid2d.append([x, y])
-                        counter_grid2d += 1
+                if self.border_contains(loc):
+                    grid2d.append([x, y])
+                    counter_grid2d += 1
         self.__grid = np.array(grid2d)
         
     def __construct_hash_neighbours(self) -> None:
@@ -186,13 +135,6 @@ class Field:
         Returns: border polygon
         """
         return Field.__polygon_border
-
-    @staticmethod
-    def get_polygon_obstacles() -> list:
-        """
-        Returns: obstacles' polygons.
-        """
-        return Field.__polygon_obstacles
 
     def get_location_from_ind(self, ind: Union[int, list, np.ndarray]) -> np.ndarray:
         """
