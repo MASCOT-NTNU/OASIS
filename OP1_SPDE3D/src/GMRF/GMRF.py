@@ -20,8 +20,13 @@ class GMRF:
     __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
     __N_gmrf_grid = 0
-    __rotated_angle = .0
     __cnt = 0
+
+    # used for data assimilation
+    __xg = None
+    __yg = None
+    __zg = None
+    __Fgmrf = None
 
     def __init__(self):
         self.__spde = spde()
@@ -48,15 +53,21 @@ class GMRF:
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
+        self.__xg = self.__gmrf_grid[:, 0].reshape(-1, 1)
+        self.__yg = self.__gmrf_grid[:, 1].reshape(-1, 1)
+        self.__zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
+        self.__Fgmrf = np.ones([1, self.__N_gmrf_grid])
+
+        # import matplotlib.pyplot as plt
+        # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
+        # plt.show()
         """
         Get the rotation of the grid, used for later plotting.
         """
-        box = np.load(filepath + "grid.npy")
-        polygon = box[:, 2:]
-        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
-        polygon = sort_polygon_vertices(polygon)
-        self.__rotated_angle = np.math.atan2(polygon[-1, 0] - polygon[0, 0],
-                                             polygon[-1, 1] - polygon[0, 1])
+        # box = np.load(filepath + "grid.npy")
+        # polygon = box[:, 2:]
+        # polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
+        # polygon = sort_polygon_vertices(polygon)
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -74,15 +85,11 @@ class GMRF:
         xd = dataset[:, 0].reshape(-1, 1)
         yd = dataset[:, 1].reshape(-1, 1)
         zd = dataset[:, 2].reshape(-1, 1)
-        Fgmrf = np.ones([1, self.__N_gmrf_grid])
         Fdata = np.ones([dataset.shape[0], 1])
-        xg = self.__gmrf_grid[:, 0].reshape(-1, 1)
-        yg = self.__gmrf_grid[:, 1].reshape(-1, 1)
-        zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
         # t1 = time.time()
-        dx = (xd @ Fgmrf - Fdata @ xg.T) ** 2
-        dy = (yd @ Fgmrf - Fdata @ yg.T) ** 2
-        dz = ((zd @ Fgmrf - Fdata @ zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
+        dx = (xd @ self.__Fgmrf - Fdata @ self.__xg.T) ** 2
+        dy = (yd @ self.__Fgmrf - Fdata @ self.__yg.T) ** 2
+        dz = ((zd @ self.__Fgmrf - Fdata @ self.__zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
         dist = dx + dy + dz
         ind_min_distance = np.argmin(dist, axis=1)  # used only for unittest.
         ind_assimilated = np.unique(ind_min_distance)
@@ -177,12 +184,6 @@ class GMRF:
         Returns: gmrf_grid (private variable)
         """
         return self.__gmrf_grid
-
-    def get_rotated_angle(self):
-        """
-        Returns: rotated angle of the gmrf grid.
-        """
-        return self.__rotated_angle
 
     def get_mu(self):
         """
