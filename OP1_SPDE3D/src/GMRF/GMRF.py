@@ -20,6 +20,7 @@ class GMRF:
     __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
     __N_gmrf_grid = 0
+    __rotated_angle = .0
     __cnt = 0
 
     # used for data assimilation
@@ -58,16 +59,18 @@ class GMRF:
         self.__zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
         self.__Fgmrf = np.ones([1, self.__N_gmrf_grid])
 
-        # import matplotlib.pyplot as plt
-        # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
-        # plt.show()
+        import matplotlib.pyplot as plt
+        plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
+        plt.show()
         """
-        Get the rotation of the grid, used for later plotting.
-        """
-        # box = np.load(filepath + "grid.npy")
-        # polygon = box[:, 2:]
-        # polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
-        # polygon = sort_polygon_vertices(polygon)
+          Get the rotation of the grid, used for later plotting.
+          """
+        box = np.load(filepath + "grid.npy")
+        polygon = box[:, 2:]
+        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
+        polygon = sort_polygon_vertices(polygon)
+        self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
+                                             polygon[1, 1] - polygon[0, 1])
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -184,6 +187,12 @@ class GMRF:
         Returns: gmrf_grid (private variable)
         """
         return self.__gmrf_grid
+
+    def get_rotated_angle(self):
+        """
+        Returns: rotated angle of the gmrf grid.
+        """
+        return self.__rotated_angle
 
     def get_mu(self):
         """
