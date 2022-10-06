@@ -3,7 +3,6 @@
 from Config import Config
 from GRF import GRF
 from CostValley.Budget import Budget
-from CostValley.Obstacle import Obstacle
 from CostValley.Direction import Direction
 import numpy as np
 import time
@@ -16,7 +15,6 @@ class CostValley:
     __field = __grf.field
     __grid = __field.get_grid()
     __Budget = Budget(__grid)
-    __Obstacle = Obstacle(__grid, __field)
     __Direction = Direction(__grid)
 
     __Budget.set_loc_prev(__config.get_loc_start())
@@ -24,11 +22,9 @@ class CostValley:
 
     # fundamental layers
     __eibv_field, __ivr_field = __grf.get_ei_field_total()
-    __obstacle_field = __Obstacle.get_obstacle_field()
     __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
     __budget_field = __Budget.get_budget_field(__x_now, __y_now)
-    __cost_valley = (__obstacle_field +
-                     __eibv_field +
+    __cost_valley = (__eibv_field +
                      __ivr_field +
                      __azimuth_field +
                      __budget_field)
@@ -39,8 +35,7 @@ class CostValley:
         self.__budget_field = self.__Budget.get_budget_field(x_now, y_now)
         self.__azimuth_field = self.__Direction.get_direction_field(x_now, y_now)
         self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field_total()
-        self.__cost_valley = (self.__obstacle_field +
-                              self.__eibv_field +
+        self.__cost_valley = (self.__eibv_field +
                               self.__ivr_field +
                               self.__azimuth_field +
                               self.__budget_field)
@@ -58,9 +53,6 @@ class CostValley:
 
     def get_direction_field(self) -> np.ndarray:
         return self.__azimuth_field
-
-    def get_obstacle_field(self) -> np.ndarray:
-        return self.__obstacle_field
 
     def get_budget_field(self) -> np.ndarray:
         return self.__budget_field

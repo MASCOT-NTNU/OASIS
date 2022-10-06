@@ -186,7 +186,7 @@ class WaypointGraph:
         """
         return self.__waypoints
 
-    def get_hash_neighbour(self):
+    def get_hash_neighbours(self):
         """
         Returns: neighbour hash table
         """
