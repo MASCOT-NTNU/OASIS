@@ -1,5 +1,8 @@
 
 
+from numpy import quantile
+
+
 class GradientDetection:
     def __init__(self, 
                 salinity,
@@ -42,6 +45,43 @@ def set_max_salinity(self, max_salinity):
 
 def set_min_salinity(self, min_salinity):
     self.min_salinity = min_salinity
+
+def update_salinity(self, salinity):
+    self.salinity = salinity
+    self.salinity_average = moving_average(self, self.salinity, self.window)
+    update_max_salinity(self)
+    self.diff, self.change_direction = detect_change(self)
+    self.consecutive_change = get_consecutive_change(self)
+    self.events = find_event(self)
+    calculate_event_statistics(self)
+
+    # Filtering the events
+    self.positive_events = remove_events(self,dirr=[1])
+    self.negative_events = remove_events(self,dirr=[-1])
+
+    self.positive_events_joined = join_treshold(self, self.positive_events, mode = self.threshold_mode)
+    self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
+
+    self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+  
+
+
+def update_max_salinity(self):
+    
+    # This is not a good idea for the min salinity
+    percentage = 0.95
+    max_salinity = np.max(self.salinity)
+    min_salinity = np.min(self.salinity)
+    self.max_salinity = min_salinity + (max_salinity - min_salinity)*percentage
+
+    # Filtering the events
+    self.positive_events = remove_events(self,dirr=[1])
+    self.negative_events = remove_events(self,dirr=[-1])
+
+    self.positive_events_joined = join_treshold(self, self.positive_events, mode = self.threshold_mode)
+    self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
+
+    self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
 
 
 # Some issues wher w/2 < len(x) < w
@@ -301,7 +341,8 @@ if __name__=="__main__":
     import time
 
     ## Get Data
-    data = np.load("data/transect1_raw.npz")
+    path = "/Users/ajolaise/OneDrive - NTNU/PhD/AUV Missions/Porto October 2022/code/data"
+    data = np.load(path + "/transect1_raw.npz")
     salinity = data['salinity']
     #lat = data['lat']
     #lon = data['lon']
@@ -309,7 +350,7 @@ if __name__=="__main__":
 
     #salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
     a = time.time()
-    threshold_detector = GradientDetection(salinity,salinity_max=100,salinity_min=0, window = 3, min_event_length = 3)
+    threshold_detector = GradientDetection(salinity[0:4000],salinity_max=100,salinity_min=15, window = 201, min_event_length = 5)
 
 
 
@@ -321,6 +362,10 @@ if __name__=="__main__":
     #print(threshold_detector.positive_events_joined)
     #print(threshold_detector.negative_events_joined)
     print(threshold_detector.threshold)
-    
+    update_salinity(threshold_detector, [])
+    update_max_salinity(threshold_detector)
+    print(threshold_detector.threshold)
+    update_salinity(threshold_detector, salinity)
+    print(threshold_detector.threshold)
 
 
