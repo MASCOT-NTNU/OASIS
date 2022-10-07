@@ -24,7 +24,7 @@ from numpy import vectorize
 class WGS:
     __CIRCUMFERENCE = 40075000  # [m], circumference
     __LATITUDE_ORIGIN = 41.065
-    __LONGITUDE_ORIGIN = -8.68281012789546
+    __LONGITUDE_ORIGIN = -8.74
 
     @staticmethod
     @vectorize

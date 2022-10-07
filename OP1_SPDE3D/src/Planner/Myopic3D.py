@@ -22,30 +22,24 @@ class Myopic3D(Planner):
     """
     Myopic3D planner determines the next waypoint according to minimum EIBV criterion.
     """
-    __BOX = np.load(os.getcwd() + "/GMRF/models/grid.npy")
-    __POLYGON = __BOX[:, 2:]
-    __POLYGON_XY = np.stack((WGS.latlon2xy(__POLYGON[:, 0], __POLYGON[:, 1])), axis=1)
-    __POLYGON_BORDER = sort_polygon_vertices(__POLYGON_XY)
-    __POLYGON_OBSTACLE = [[[]]]
-    __DEPTHS = [-0.5, -1.5, -2.5]
-    __NEIGHBOUR_DISTANCE = 120
+
 
     def __init__(self) -> None:
         super().__init__()
         self.wp = WaypointGraph()
-        self.setup_waypoint_graph()
+        # self.setup_waypoint_graph()
         self.gmrf = GMRF()
 
-    def setup_waypoint_graph(self) -> None:
-        """
-        Set the waypoint graph for the whole field according to those polygon constrains.
-        """
-        self.wp.set_neighbour_distance(self.__NEIGHBOUR_DISTANCE)
-        self.wp.set_depth_layers(self.__DEPTHS)
-        self.wp.set_polygon_border(self.__POLYGON_BORDER)
-        self.wp.set_polygon_obstacles(self.__POLYGON_OBSTACLE)
-        self.wp.construct_waypoints()
-        self.wp.construct_hash_neighbours()
+    # def setup_waypoint_graph(self) -> None:
+    #     """
+    #     Set the waypoint graph for the whole field according to those polygon constrains.
+    #     """
+    #     self.wp.set_neighbour_distance(self.__NEIGHBOUR_DISTANCE)
+    #     self.wp.set_depth_layers(self.__DEPTHS)
+    #     self.wp.set_polygon_border(self.__POLYGON_BORDER)
+    #     self.wp.set_polygon_obstacles(self.__POLYGON_OBSTACLE)
+    #     self.wp.construct_waypoints()
+    #     self.wp.construct_hash_neighbours()
 
     def get_candidates_indices(self):
         """
@@ -76,7 +70,7 @@ class Myopic3D(Planner):
         vec1 = self.wp.get_vector_between_two_waypoints(wp_curr, wp_next)
 
         # s2: get all neighbours.
-        id_neighbours = self.wp.get_ind_neighbours(id_next)
+        id_neighbours = self.wp.get_neighbour_indices(id_next)
 
         # s3: smooth neighbour locations.
         id_smooth = []

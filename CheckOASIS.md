@@ -24,6 +24,18 @@ static ip_address=10.0.10.123/16
 static routers=10.0.0.1
 static domain_name_servers=10.0.0.1 8.8.8.8
 
+# RPI installation steps:
+- Install [ROS](http://wiki.ros.org/noetic/Installation/Debian)
+- Install [adaframe](https://github.com/NTNU-Adaptive-Sampling-Group/adaframe_examples)
+- Install [python3.9](https://linuxize.com/post/how-to-install-python-3-9-on-debian-10/)
+- Install python packages
+  - pip3 install numpy
+  - pip3 install scipy
+  - pip3 install shapely
+  - sudo apt-get install -y libsuitesparse-dev
+  - pip3 install scikit-sparse
+  - pip3 install pandas
+
 
 Usr CPU: root@10.0.10.150
 passwd: root

@@ -8,6 +8,12 @@
 ---
 
 ---
+## Copy GPU server to local machine.
+`scp -r gpu03:/home/yaoling/OASIS/OP2/ .`
+
+---
+
+---
 ## Making animations: To change frame rate and vide filename
 
 `ffmpeg -r 15 -i P_%03d.png -vcodec libx264 -crf 20 -pix_fmt yuv420p mohid.mp4`
