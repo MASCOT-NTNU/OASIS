@@ -22,7 +22,7 @@ TODO: add a popup function
 """
 
 
-class EmptyExample:
+class HarbourExample:
     def __init__(self):
         self.node_name = 'Harbour_test'
         rospy.init_node(self.node_name,anonymous=True)
@@ -122,7 +122,7 @@ class EmptyExample:
 
 
 if __name__ == "__main__":
-    gpex = EmptyExample()
+    gpex = HarbourExample()
     try:
         gpex.run()
     except rospy.ROSInterruptException:
