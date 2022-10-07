@@ -112,6 +112,9 @@ class HarbourExample:
                     self.auv_handler.setWaypoint(math.radians(wp[0]), math.radians(wp[1]), depth=wp[2])
                     self.counter += 1
 
+                    if self.counter >= self.max_count:
+                        break
+                        rospy.signal_shutdown("Mission complete! ")
                     # if self.counter == 2:
                     #     #send message
                     #     self.auv_handler.sendSMS()
