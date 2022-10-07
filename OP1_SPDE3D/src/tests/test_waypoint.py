@@ -1,8 +1,6 @@
 """ Unit test for WaypointGraph
 This module tests the planner object.
-
 """
-
 from unittest import TestCase
 from WaypointGraph import WaypointGraph
 from usr_func.is_list_empty import is_list_empty
@@ -18,40 +16,52 @@ class TestWaypoint(TestCase):
     """ Common test class for the waypoint graph module
     """
 
-    def run_test_empty_waypoints(self):
+    def setUp(self) -> None:
+        self.wg = WaypointGraph()
+
+        self.waypoints = self.wg.get_waypoints()
+        self.polygon_border = self.wg.get_polygon_border()
+        self.neighbour_hash_tables = self.wg.get_neighbour_hash_table()
+        self.neighbour_distance = self.wg.get_neighbour_distance()
+        self.depths = self.wg.get_depth_layers()
+        # import plotly.graph_objects as go
+        # import plotly
+        # fig = go.Figure(data=go.Scatter3d(
+        #     x=self.__waypoints[:, 1],
+        #     y=self.__waypoints[:, 0],
+        #     z=self.__waypoints[:, 2],
+        #     mode='markers',
+        #     marker=dict(
+        #         size=2,
+        #         color='black',
+        #     )
+        # ))
+        # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
+
+    def test_empty_waypoints(self):
         """ Test if it generates empty waypoint. """
         actual_len = len(self.waypoints)
         min = 0
         self.assertGreater(actual_len, min, "Waypoints are empty! Test is not passed!")
 
-    def run_test_illegal_waypoints(self):
+    def test_illegal_waypoints(self):
         """ Test if any waypoints are not within the border polygon or colliding with obstacles. """
         pb = Polygon(self.polygon_border)
-        pos = []
-        if not is_list_empty(self.polygon_obstacle):
-            for po in self.polygon_obstacle:
-                pos.append(Polygon(po))
         s = True
-
         for i in range(len(self.waypoints)):
             p = Point(self.waypoints[i, :2])
             in_border = pb.contains(p)
-            in_obs = False
-            for po in pos:
-                if po.contains(p):
-                    in_obs = True
-                    break
-            if in_obs or not in_border:
+            if not in_border:
                 s = False
                 break
         self.assertTrue(s)
 
-    def run_test_illegal_lateral_neighbours(self):
+    def test_illegal_lateral_neighbours(self):
         """ Test if lateral neighbours are legal. """
         case = True
         ERROR_BUFFER = 1
-        for i in range(len(self.hash_neighbours)):
-            ind_n = self.hash_neighbours[i]
+        for i in range(len(self.neighbour_hash_tables)):
+            ind_n = self.neighbour_hash_tables[i]
             w = self.waypoints[i, :2]
             wn = self.waypoints[ind_n, :2]
             d = cdist(w.reshape(1, -1), wn)
@@ -60,20 +70,20 @@ class TestWaypoint(TestCase):
                 case = False
         self.assertTrue(case, msg="Neighbour lateral distance is illegal!")
 
-    def run_test_depths(self):
+    def test_depths(self):
         """ Test if depths are properly generated. """
-        ud = np.unique(self.waypoints[:, 2])
-        self.assertIsNone(testing.assert_array_almost_equal(ud, np.array(self.depths)))
+        ud = np.sort(np.unique(self.waypoints[:, 2]))
+        self.assertIsNone(testing.assert_array_almost_equal(ud, np.sort(np.array(self.depths))))
 
-    def run_test_get_vector_between_two_waypoints(self):
-        wp1 = [1, 2, 3]
-        wp2 = [3, 4, 5]
+    def test_get_vector_between_two_waypoints(self):
+        wp1 = np.array([1, 2, 3])
+        wp2 = np.array([3, 4, 5])
         vec = self.wg.get_vector_between_two_waypoints(wp1, wp2)
         self.assertIsNone(testing.assert_array_equal(np.array([[wp2[0]-wp1[0]],
-                                   [wp2[1]-wp1[1]],
-                                   [wp2[2]-wp1[2]]]), vec))
+                                                               [wp2[1]-wp1[1]],
+                                                               [wp2[2]-wp1[2]]]), vec))
 
-    def run_test_get_waypoints_from_ind(self):
+    def test_get_waypoints_from_ind(self):
         # c1: empty ind
         wp = self.wg.get_waypoint_from_ind([])
         self.assertEqual(wp.shape[0], 0)
@@ -86,7 +96,7 @@ class TestWaypoint(TestCase):
         wp = self.wg.get_waypoint_from_ind(ids)
         self.assertEqual(wp.shape[0], len(ids))
 
-    def run_test_get_ind_from_waypoints(self):
+    def test_get_ind_from_waypoints(self):
         """ Test waypoint interpolation works. Given random location, it should return indices for the nearest locations. """
         # c1: empty wp
         ind = self.wg.get_ind_from_waypoint([])
@@ -131,28 +141,24 @@ class TestWaypoint(TestCase):
         da = cdist(self.waypoints, wp)
         self.assertTrue(np.all(d == np.amin(da, axis=0)))
 
-        plt.plot(self.waypoints[:, 0], self.waypoints[:, 1], 'k.', alpha=.1)
+        plt.plot(self.waypoints[:, 1], self.waypoints[:, 0], 'k.', alpha=.1)
         for i in range(len(wp)):
-            plt.plot([wp[i, 0], wr[i, 0]], [wp[i, 1], wr[i, 1]], 'r.-')
+            plt.plot([wp[i, 1], wr[i, 1]], [wp[i, 0], wr[i, 0]], 'r.-')
             # plt.plot(wr[i, 0], wr[i, 1], '.', alpha=.3)
         plt.show()
 
-    def run_test_neighbours_plotting(self):
+    def test_neighbours_plotting(self):
+        # c1: test random location
         import matplotlib.pyplot as plt
-
-        plt.plot(self.waypoints[:, 0], self.waypoints[:, 1], 'k.')
-        plt.plot(self.polygon_border[:, 0], self.polygon_border[:, 1], 'r-.')
-        if not is_list_empty(self.polygon_obstacle):
-            for p in self.polygon_obstacle:
-               plt.plot(p[:, 0], p[:, 1], 'b-.')
-            plt.show()
-
+        plt.plot(self.waypoints[:, 1], self.waypoints[:, 0], 'k.')
+        plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
+        plt.show()
         import plotly
         import plotly.graph_objects as go
         ind_r = np.random.randint(0, self.waypoints.shape[0])
         fig = go.Figure(data=[go.Scatter3d(
-            x=self.waypoints[:, 0],
-            y=self.waypoints[:, 1],
+            x=self.waypoints[:, 1],
+            y=self.waypoints[:, 0],
             z=self.waypoints[:, 2],
             mode='markers',
             marker=dict(
@@ -162,8 +168,8 @@ class TestWaypoint(TestCase):
             )
         )])
         fig.add_trace(go.Scatter3d(
-            x=[self.waypoints[ind_r, 0]],
-            y=[self.waypoints[ind_r, 1]],
+            x=[self.waypoints[ind_r, 1]],
+            y=[self.waypoints[ind_r, 0]],
             z=[self.waypoints[ind_r, 2]],
             mode='markers',
             marker=dict(
@@ -173,9 +179,9 @@ class TestWaypoint(TestCase):
             )
         ))
         fig.add_trace(go.Scatter3d(
-            x=self.waypoints[self.hash_neighbours[ind_r], 0],
-            y=self.waypoints[self.hash_neighbours[ind_r], 1],
-            z=self.waypoints[self.hash_neighbours[ind_r], 2],
+            x=self.waypoints[self.neighbour_hash_tables[ind_r], 1],
+            y=self.waypoints[self.neighbour_hash_tables[ind_r], 0],
+            z=self.waypoints[self.neighbour_hash_tables[ind_r], 2],
             mode='markers',
             marker=dict(
                 size=10,
@@ -187,103 +193,7 @@ class TestWaypoint(TestCase):
         fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
         plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/test.html', auto_open=True)
 
-
-class TC1(TestWaypoint):
-
-    def setUp(self) -> None:
-        """
-        """
-        self.polygon_border = np.array([[0, 0],
-                                       [100, 0],
-                                       [110, 50],
-                                       [200, 100],
-                                       [100, 200],
-                                       [20, 100],
-                                       [-30, 200],
-                                       [-100, 100],
-                                       [-50, 50],
-                                       [-10, 50]])
-        self.polygon_obstacle = [np.array([[50, 50],
-                                          [80, 80],
-                                          [65, 90],
-                                          [25, 70]]),
-                                 np.array([[-25, 70],
-                                          [0, 90],
-                                          [-10, 100],
-                                          [-50, 100]]),
-                                 np.array([[100, 80],
-                                           [150, 100],
-                                           [90, 150],
-                                           [70, 125]])]
-
-        self.neighbour_distance = 12
-        self.depths = [0., 1., 1.5, 3.5, 10]
-        self.wg = WaypointGraph()
-        self.wg.set_neighbour_distance(self.neighbour_distance)
-        self.wg.set_depth_layers(self.depths)
-        self.wg.set_polygon_border(self.polygon_border)
-        self.wg.set_polygon_obstacles(self.polygon_obstacle)
-        self.wg.construct_waypoints()
-        self.wg.construct_hash_neighbours()
-        self.waypoints = self.wg.get_waypoints()
-        self.hash_neighbours = self.wg.get_hash_neighbours()
-
-    def test_all(self):
-        self.run_test_get_vector_between_two_waypoints()
-        self.run_test_illegal_waypoints()
-        self.run_test_get_ind_from_waypoints()
-        self.run_test_illegal_lateral_neighbours()
-        self.run_test_empty_waypoints()
-        self.run_test_depths()
-        self.run_test_neighbours_plotting()
-        self.run_test_get_waypoints_from_ind()
-
-
-class TC2(TestWaypoint):
-
-    def setUp(self) -> None:
-        """ setup parameters """
-        self.polygon_border = np.array([[0, 0],
-                                        [1000, 0],
-                                        [1000, 1000],
-                                        [0, 1000]])
-        self.polygon_obstacle = [np.array([[200, 200],
-                                  [400, 200],
-                                  [400, 400],
-                                  [200, 400]])]
-        self.depths = [-1, 2, 10]
-        self.neighbour_distance = 120
-
-        self.wg = WaypointGraph()
-        self.wg.set_neighbour_distance(self.neighbour_distance)
-        self.wg.set_depth_layers(self.depths)
-        self.wg.set_polygon_border(self.polygon_border)
-        self.wg.set_polygon_obstacles(self.polygon_obstacle)
-        self.wg.construct_waypoints()
-        self.wg.construct_hash_neighbours()
-        self.waypoints = self.wg.get_waypoints()
-        self.hash_neighbours = self.wg.get_hash_neighbours()
-
-    def test_all(self):
-        self.run_test_get_vector_between_two_waypoints()
-        self.run_test_illegal_waypoints()
-        self.run_test_get_ind_from_waypoints()
-        self.run_test_illegal_lateral_neighbours()
-        self.run_test_empty_waypoints()
-        self.run_test_depths()
-        self.run_test_neighbours_plotting()
-        self.run_test_get_waypoints_from_ind()
-
-
-if __name__ == "__main__":
-    # T1: test setup 1
-    tc1 = TC1()
-    tc1.test_all()
-
-    # T2: test setup 2
-    tc2 = TC2()
-    tc2.test_all()
-
-
+        # c2: test middle location
+        pass
 
 
