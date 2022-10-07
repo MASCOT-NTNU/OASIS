@@ -301,13 +301,13 @@ if __name__=="__main__":
     import time
 
     ## Get Data
-    #data = np.load("data/transect1_raw.npz")
-    #salinity = data['salinity']
+    data = np.load("data/transect1_raw.npz")
+    salinity = data['salinity']
     #lat = data['lat']
     #lon = data['lon']
     #depth = data['depth']
 
-    salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+    #salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
     a = time.time()
     threshold_detector = GradientDetection(salinity,salinity_max=100,salinity_min=0, window = 3, min_event_length = 3)
 
@@ -318,8 +318,8 @@ if __name__=="__main__":
 
     #print(threshold_detector.salinity_average)
     #print( threshold_detector.diff, threshold_detector.change_direction)
-    print(threshold_detector.positive_events_joined)
-    print(threshold_detector.negative_events_joined)
+    #print(threshold_detector.positive_events_joined)
+    #print(threshold_detector.negative_events_joined)
     print(threshold_detector.threshold)
     
 
