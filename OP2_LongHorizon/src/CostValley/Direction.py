@@ -1,4 +1,9 @@
-""" Direction components determines the cost field applied for the direction. """
+"""
+Direction module computes the directional penalty based on the current location, and previous location.
+It calculates the dot product between the vector from the previous location to the current location and
+the vector from the current location to the rest of the possible field. Based on this, it gives penalty to
+location which is located behind the agent's inertial path.
+"""
 
 from usr_func.vectorize import vectorize
 import numpy as np

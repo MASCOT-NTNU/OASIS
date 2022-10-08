@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Planner.RRTSCV.RRTStar import RRTStar
+from Planner.RRTSCV.RRTStarCV import RRTStarCV
 from CostValley.CostValley import CostValley
 from Config import Config
 import matplotlib.pyplot as plt
@@ -36,7 +36,7 @@ class TestRRTStar(TestCase):
 
     def setUp(self) -> None:
         self.config = Config()
-        self.rrtstar = RRTStar()
+        self.rrtstar = RRTStarCV()
         self.tp = TreePlotter()
         self.cv = CostValley()
         self.field = self.cv.get_field()

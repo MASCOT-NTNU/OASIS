@@ -1,12 +1,12 @@
 """
-Delft3D handles data manipulation based on Delft3D data source
+Delft3D takes the input from the Config class and then extract the data.
+It mainly uses the wind_dir and wind_level to prepare the prior mean field.
 """
 from WGS import WGS
 from Config import Config
-import os
-import pickle
+import pandas as pd
 import numpy as np
-import h5py
+import os
 from shapely.geometry import Point
 
 
@@ -18,15 +18,12 @@ class Delft3D:
     __polygon_operational_area_shapely = __config.get_polygon_operational_area_shapely()
 
     """ Delft3D data manipulation. """
-    __datapath_delft3d = os.getcwd() + "/../../../../Data/Porto/OASIS/delft3d/oct_prior.pickle"
-    with open(__datapath_delft3d, 'rb') as handle:
-        __data_delft3d = pickle.load(handle)
-
-    __lat_delft3d = __data_delft3d['lat']
-    __lon_delft3d = __data_delft3d['lon']
-    __salinity_delft3d = np.mean(__data_delft3d[__wind_dir][__wind_level], axis=0)
-    xd, yd = WGS.latlon2xy(__lat_delft3d, __lon_delft3d)
-    __dataset_delft3d = np.stack((xd, yd, __salinity_delft3d), axis=1)
+    __data = pd.read_csv(os.getcwd() + "/../prior/" + __wind_dir + "/" + __wind_level + ".csv").to_numpy()
+    __lat = __data[:, 0]
+    __lon = __data[:, 1]
+    __salinity = __data[:, 2]
+    xd, yd = WGS.latlon2xy(__lat, __lon)
+    __dataset = np.stack((xd, yd, __salinity), axis=1)
 
     @staticmethod
     def get_dataset() -> np.ndarray:
@@ -34,7 +31,7 @@ class Delft3D:
         Example:
              dataset = np.array([[lat, lon, salinity]])
         """
-        return Delft3D.__dataset_delft3d
+        return Delft3D.__dataset
 
 
 if __name__ == "__main__":

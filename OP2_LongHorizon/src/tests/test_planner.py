@@ -43,7 +43,7 @@ class TestPlanner(TestCase):
         wp_pion = self.planner.get_pioneer_waypoint()
         wp_next = self.planner.get_next_waypoint()
         wp_pion_new = np.array([12000, 10000])
-        self.planner.update_planner()
+        self.planner.update_knowledge()
         self.planner.set_pioneer_waypoint(wp_pion_new)
         self.assertIsNone(testing.assert_array_equal(wp_pion_new, self.planner.get_pioneer_waypoint()))
         self.assertIsNone(testing.assert_array_equal(wp_pion, self.planner.get_next_waypoint()))

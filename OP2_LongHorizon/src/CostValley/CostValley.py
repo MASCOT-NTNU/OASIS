@@ -1,4 +1,21 @@
-""" CostValley object handles CostValley-related functions. """
+"""
+CostValley module computes the overall cost field associated with a given grid.
+At the moment, we use four components to construct the cost field to guide the agent to conduct
+the adaptive sampling with a goal of balancing exploration and exploitation.
+
+Cost components:
+- Budget penalty: hard constraint and must-satisfy
+- Directional penalty: soft constraint
+- Obstacle penalty (not obvious for static island)
+- EIBV reward: exploitation component
+- IVR reward: exploration component
+
+Another critical construction is to select a suitable weightset for all the components. Different weights on different
+component might lead to different patterns of the final behaviour.
+
+It is flexible to add or remove elements from its construction. One can add their own component
+to make the system adaptive to their specific need and application.
+"""
 
 from Config import Config
 from GRF import GRF
@@ -88,4 +105,8 @@ class CostValley:
         """ Return minimum cost location. """
         ind = np.argmin(self.__cost_valley)
         return self.__grid[ind]
+
+
+if __name__ == "__main__":
+    cv = CostValley()
 
