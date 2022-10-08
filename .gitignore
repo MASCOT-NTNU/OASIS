@@ -5,4 +5,5 @@ __pycache__/
 **/.idea
 **/.ipynb_checkpoints/
 **.zip
-
+*.vscode
+**/.vscode
