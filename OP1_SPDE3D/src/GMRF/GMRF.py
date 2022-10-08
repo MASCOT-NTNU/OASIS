@@ -66,9 +66,9 @@ class GMRF:
         self.__zg = vectorize(self.__gmrf_grid[:, 2])
         self.__Fgmrf = np.ones([1, self.__N_gmrf_grid])
 
-        # import matplotlib.pyplot as plt
-        # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
-        # plt.show()
+        import matplotlib.pyplot as plt
+        plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
+        plt.show()
 
         # import plotly.graph_objects as go
         # import plotly
