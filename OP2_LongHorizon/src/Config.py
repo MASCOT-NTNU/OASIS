@@ -1,4 +1,17 @@
-""" Setup contains all essentials used for operations. """
+"""
+Config handles the most important parameter setting in the long horizon operation in MASCOT Porto mission 2022.
+- misssion date: "2022-10-01_2022-10-02"
+- wind direction: ["North", "East", "South", "West"]
+- wind level: ["Mild", "Moderate", "Heavy"], the corresponding wind speed: [0, 2.5, 6] m/s
+- clock_start: 10, when does the operation start: 10 o'clock.
+- clock_end: 16, when does the operation end: 16 o'clock.
+
+- polygon_operational_area: the polygon used to define the safe operational area.
+- polygon_operational_area_shapely: shapely object to detect collision or border.
+
+- starting location: (lat, lon) used to define the starting location for the long horizon operation.
+- home location: (lat, lon) used to define the end location for the home in the long horizon operation.
+"""
 from WGS import WGS
 import numpy as np
 from shapely.geometry import Polygon
