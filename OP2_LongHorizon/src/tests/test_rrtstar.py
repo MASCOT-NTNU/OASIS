@@ -48,11 +48,11 @@ class TestRRTStar(TestCase):
         loc_end = self.config.get_loc_home()
         wp = self.rrtstar.get_next_waypoint(loc_now, loc_end, cost_valley=self.cv)
         print(wp)
-        nodes = self.rrtstar.get_nodes()
+        nodes = self.rrtstar.get_tree_nodes()
         traj = self.rrtstar.get_trajectory()
         self.tp.update_trees(nodes)
         plt.figure(figsize=(15, 12))
-        cv = self.cv.get_cost_valley()
+        cv = self.cv.get_cost_field()
         plotf_vector(self.grid[:, 1], self.grid[:, 0], cv, xlabel='x', ylabel='y', title='RRTCV', cbar_title="Cost",
                      cmap=get_cmap("RdBu", 10), vmin=0, vmax=4, alpha=.3)
         self.tp.plot_tree()

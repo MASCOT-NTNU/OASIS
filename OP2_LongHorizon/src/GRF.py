@@ -17,7 +17,7 @@ class GRF:
     __sigma = 6.
     __lateral_range = 5000
     __nugget = .04
-    __threshold = 33
+    __threshold = 32
 
     # computed
     __eta = 4.5 / __lateral_range  # decay factor
