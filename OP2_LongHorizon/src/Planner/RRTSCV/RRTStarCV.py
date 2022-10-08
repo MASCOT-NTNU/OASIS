@@ -14,7 +14,7 @@ from shapely.geometry import Polygon, Point, LineString
 from Visualiser.TreePlotter import TreePlotter
 
 
-class RRTStar:
+class RRTStarCV:
     __planner = Planner()
 
     # load pre_generated locations
@@ -35,7 +35,7 @@ class RRTStar:
     __nodes = []  # all nodes in the tree.
     __trajectory = np.empty([0, 2])  # to save trajectory.
     __goal_sampling_rate = .01
-    __max_expansion_iteration = 1000
+    __max_expansion_iteration = 1000  # TODO: to run simulation and see if it is able to converage
     __step_size = Field.get_neighbour_distance()
     __home_radius = __step_size * .8
     __rrtstar_neighbour_radius = __step_size * 1.12
@@ -45,7 +45,7 @@ class RRTStar:
     __polygon_border_shapely = Polygon(__polygon_border)
     __line_border_shapely = LineString(__polygon_border)
 
-    __polygon_ellipse_shapely = None
+    __polygon_ellipse_shapely = None  # budget
     __line_ellipse_shapely = None
 
     # nodes
@@ -64,7 +64,7 @@ class RRTStar:
     # cost valley
     __cost_valley = None
 
-    # plot
+    # TODO: plot, delete
     polygon_border = np.append(__polygon_border, __polygon_border[0, :].reshape(1, -1), axis=0)
     cnt_plot = 0
 
@@ -308,7 +308,7 @@ class RRTStar:
 
 
 if __name__ == "__main__":
-    t = RRTStar()
+    t = RRTStarCV()
 
 
 

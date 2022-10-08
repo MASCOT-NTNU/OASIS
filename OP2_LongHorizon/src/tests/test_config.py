@@ -2,6 +2,8 @@ from unittest import TestCase
 from Config import Config
 from WGS import WGS
 import matplotlib.pyplot as plt
+from numpy import testing
+import numpy as np
 
 
 class TestConfig(TestCase):
@@ -9,9 +11,11 @@ class TestConfig(TestCase):
     def setUp(self) -> None:
         self.c = Config()
 
-    # def test_something(self):
-    #     pass
-        # self.assertEqual(True, False)  # add assertion here
+    def test_set_home_location(self):
+        loc_home = self.c.get_loc_home()
+        loc = np.array([41.12677, -8.68574])
+        x, y = WGS.latlon2xy(loc[0], loc[1])
+        self.assertIsNone(testing.assert_array_equal(loc_home, np.array([x, y])))
 
     def test_starting_home_location(self):
         loc_home = self.c.get_loc_home()

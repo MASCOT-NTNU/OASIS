@@ -11,7 +11,7 @@ Sense refers to the in-situ measurements. Once the agent obtains the sampled val
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
 from Config import Config
-from Planner.RRTSCV.RRTStar import RRTStar
+from Planner.RRTSCV.RRTStarCV import RRTStarCV
 from Planner.StraightLinePathPlanner import StraightLinePathPlanner
 from CostValley.CostValley import CostValley
 from AUVSimulator.AUVSimulator import AUVSimulator
@@ -31,16 +31,6 @@ field = Field()
 
 
 class Agent:
-    # s0: load configuration
-    __config = Config()
-
-    # s1: set up agent
-    __loc_start = __config.get_loc_start()
-    __loc_end = __config.get_loc_home()
-
-    __loc_min_cv = np.array([8000, 8000])
-    __loc_next = np.array([8000, 8000])
-
     __NUM_STEP = 10
     __home_radius = 150
     __counter = 0
@@ -55,15 +45,8 @@ class Agent:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
-        # s1: setup planner.
-        self.rrtstar = RRTStar()
-        self.slpp = StraightLinePathPlanner()
+        # s1: set up planner.
 
-        # s2: setup cost valley and kernel.
-        self.cv = CostValley()
-        self.Budget = self.cv.get_Budget()
-        self.grf = self.cv.get_grf_model()
-        self.grid = self.grf.grid
 
         # s2: setup AUV simulator.
         self.auv = AUVSimulator()
@@ -90,20 +73,6 @@ class Agent:
             # s2: sample
             ctd_data = self.auv.get_ctd_data()
 
-            # s3: update grf
-            self.grf.assimilate_data(ctd_data)
-
-            # s4: update cost valley
-            self.cv.update_cost_valley(loc)
-
-            # s5: get minimum cost location.
-            self.__loc_min_cv = self.cv.get_minimum_cost_location()
-
-            # s7: plan one step based on cost valley and rrt*
-            if not self.Budget.get_go_home_alert():
-                loc = self.rrtstar.get_next_waypoint(loc, self.__loc_min_cv, self.cv)
-            else:
-                loc = self.slpp.get_waypoint_from_straight_line(loc, self.__loc_end)
 
             # s8: check arrival
             dist = np.sqrt((loc[0] - self.__loc_end[0])**2 +

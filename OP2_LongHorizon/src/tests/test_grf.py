@@ -57,11 +57,6 @@ class TestGRF(TestCase):
         x = self.grid[:, 0]
         y = self.grid[:, 1]
         self.f = self.g.field
-        # mu_prior = 1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)
-        # mu_prior = (.5 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)) +
-        #             .5 * (1 - np.exp(- ((x - .0) ** 2 + (y - .5) ** 2) / .07)))
-        # mu_prior = mu_prior.reshape(-1, 1)
-        # self.g.set_mu(mu_prior)
         self.cov = self.g.get_Sigma()
         self.mu = self.g.get_mu()
 

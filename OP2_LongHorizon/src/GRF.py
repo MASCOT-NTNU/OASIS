@@ -2,6 +2,7 @@
 
 from Field import Field
 from Delft3D import Delft3D
+from usr_func.vectorize import vectorize
 from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
@@ -31,24 +32,20 @@ class GRF:
     # data sources
     __delft3d = Delft3D()
 
+    # field and grid
+    field = Field()
+    grid = field.get_grid()
+    Ngrid = len(grid)
+    __Fgrf = np.ones([1, Ngrid])
+    __xg = vectorize(grid[:, 0])
+    __yg = vectorize(grid[:, 1])
+
     def __init__(self) -> None:
-        # s1: set up field
-        self.field = Field()
-
-        # s2: get grid
-        self.grid = self.field.get_grid()
-        self.Ngrid = len(self.grid)
-
-        # s3: compute matern kernel
+        # s0: compute matern kernel
         self.__construct_grf_field()
 
-        # s4: update prior mean
+        # s1: update prior mean
         self.__construct_prior_mean()
-        # x = self.grid[:, 0]
-        # y = self.grid[:, 1]
-        # self.__mu = (.7 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)) +
-        #              .3 * (1 - np.exp(- ((x - .5) ** 2 + (y - 1.) ** 2) / .07))).reshape(-1, 1)
-        # self.__mu = (1. - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07)).reshape(-1, 1)
 
     def __construct_grf_field(self):
         """ Construct distance matrix and thus Covariance matrix for the kernel. """
@@ -63,10 +60,6 @@ class GRF:
         dm_grid_delft3d = cdist(self.grid, dataset_delft3d[:, :2])
         ind_close = np.argmin(dm_grid_delft3d, axis=1)
         self.__mu = dataset_delft3d[ind_close, 2].reshape(-1, 1)
-        # plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.__mu, cmap=get_cmap("BrBG", 10), vmin=10, vmax=36)
-        # plt.colorbar()
-        # plt.show()
-        # TODO: maybe krige mohid onto prior mean
 
     def assimilate_data(self, dataset: np.ndarray) -> None:
         """
@@ -78,13 +71,10 @@ class GRF:
         # t1 = time.time()
         xd = dataset[:, 0].reshape(-1, 1)
         yd = dataset[:, 1].reshape(-1, 1)
-        Fgrf = np.ones([1, self.Ngrid])
         Fdata = np.ones([dataset.shape[0], 1])
-        xg = self.grid[:, 0].reshape(-1, 1)
-        yg = self.grid[:, 1].reshape(-1, 1)
         # t1 = time.time()
-        dx = (xd @ Fgrf - Fdata @ xg.T) ** 2
-        dy = (yd @ Fgrf - Fdata @ yg.T) ** 2
+        dx = (xd @ self.__Fgrf - Fdata @ self.__xg.T) ** 2
+        dy = (yd @ self.__Fgrf - Fdata @ self.__yg.T) ** 2
         dist = dx + dy
         ind_min_distance = np.argmin(dist, axis=1)  # used only for unittest.
         ind_assimilated = np.unique(ind_min_distance)
@@ -197,9 +187,11 @@ class GRF:
         return self.__Sigma
 
     def get_eibv_field(self) -> np.ndarray:
+        """ Return the computed eibv field, given which method to be called. """
         return self.__eibv_field
 
     def get_ivr_field(self) -> np.ndarray:
+        """ Return the computed ivr field, given which method to be called. """
         return self.__ivr_field
 
 

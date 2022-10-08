@@ -1,4 +1,20 @@
-""" Budget object handles all budget-associated problems. """
+"""
+Budget module computes the penalty for each location within the field using the polynomial penalty function given
+the polygon formed by the remaining budget ellipse.
+The remaining budget ellipse is formed from the current location to the home location with the long-axis to be equal
+double the distance of the budget and the vertical axis to be equal sqrt(a**2-c**2), where c is the distance from
+current location to the home location.
+
+This module has two main functions:
+- Compute the remaining budget ellipse.
+    - This is later used for the rrtstar planning or other planning algorithms as a filtering process to remove illegal
+    waypoints.
+- Compute the budget field.
+    - This can be used to get the global minimum cost location so to set the next desired location to be wp_min_cost.
+
+:param
+- MARGIN: defines the minimum vertical distance to stop using rrt*
+"""
 
 from Config import Config
 import numpy as np
@@ -13,7 +29,7 @@ class Budget:
     # initial values
     __MARGIN = 100  # when ellipse b is smaller than this, should go home.
     __grid = None
-    __budget = 15000  # metres for the operation in the sea.
+    __budget = 20000  # metres for the operation in the sea.
     __goal = __config.get_loc_home()
     __x_now, __y_now = .0, .0
     __x_prev, __y_prev = .0, .0
@@ -147,4 +163,9 @@ class Budget:
 
     def get_border_warning(self) -> bool:
         return self.__border_warning
+
+
+if __name__ == "__main__":
+    grid = np.random.rand(10, 2)
+    b = Budget(grid)
 
