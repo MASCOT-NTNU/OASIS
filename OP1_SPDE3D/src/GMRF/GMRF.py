@@ -50,7 +50,7 @@ class GMRF:
         lon = np.load(filepath + "lons.npy")
         depth = np.load(filepath + "depth.npy")
         x, y = WGS.latlon2xy(lat, lon)
-        z = depth.flatten()
+        z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
@@ -66,9 +66,9 @@ class GMRF:
         import plotly.graph_objects as go
         import plotly
         fig = go.Figure(data=go.Scatter3d(
-            x=self.__waypoints[:, 1],
-            y=self.__waypoints[:, 0],
-            z=self.__waypoints[:, 2],
+            x=self.__gmrf_grid[:, 1],
+            y=self.__gmrf_grid[:, 0],
+            z=self.__gmrf_grid[:, 2],
             mode='markers',
             marker=dict(
                 size=2,
@@ -86,6 +86,8 @@ class GMRF:
         polygon = sort_polygon_vertices(polygon)
         self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
                                              polygon[1, 1] - polygon[0, 1])
+
+        print("Hello world")
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
