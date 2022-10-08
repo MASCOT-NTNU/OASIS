@@ -41,10 +41,13 @@ class CostValley:
     __eibv_field, __ivr_field = __grf.get_ei_field_total()
     __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
     __budget_field = __Budget.get_budget_field(__x_now, __y_now)
-    __cost_valley = (__eibv_field +
-                     __ivr_field +
-                     __azimuth_field +
-                     __budget_field)
+    __cost_field = (__eibv_field +
+                    __ivr_field +
+                    __azimuth_field +
+                    __budget_field)
+
+    def __init__(self) -> None:
+        pass
 
     def update_cost_valley(self, loc_now: np.ndarray):
         x_now, y_now = loc_now
@@ -52,15 +55,15 @@ class CostValley:
         self.__budget_field = self.__Budget.get_budget_field(x_now, y_now)
         self.__azimuth_field = self.__Direction.get_direction_field(x_now, y_now)
         self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field_total()
-        self.__cost_valley = (self.__eibv_field +
-                              self.__ivr_field +
-                              self.__azimuth_field +
-                              self.__budget_field)
+        self.__cost_field = (self.__eibv_field +
+                             self.__ivr_field +
+                             self.__azimuth_field +
+                             self.__budget_field)
         # t2 = time.time()
         # print("Update cost valley takes: ", t2 - t1)
 
-    def get_cost_valley(self) -> np.ndarray:
-        return self.__cost_valley
+    def get_cost_field(self) -> np.ndarray:
+        return self.__cost_field
 
     def get_eibv_field(self) -> np.ndarray:
         return self.__eibv_field
@@ -77,7 +80,7 @@ class CostValley:
     def get_grid(self):
         return self.__grid
 
-    def get_grf_model(self):  # TODO: delete
+    def get_grf_model(self):
         return self.__grf
 
     def get_Budget(self):
@@ -89,7 +92,7 @@ class CostValley:
     def get_cost_at_location(self, loc: np.ndarray) -> float:
         """ Return cost associated with location. """
         ind = self.__field.get_ind_from_location(loc)
-        return self.__cost_valley[ind]**10
+        return self.__cost_field[ind] ** 10
 
     def get_cost_along_path(self, loc_start: np.ndarray, loc_end: np.ndarray) -> float:
         """ Return cost associated with a path. """
@@ -103,7 +106,7 @@ class CostValley:
 
     def get_minimum_cost_location(self):
         """ Return minimum cost location. """
-        ind = np.argmin(self.__cost_valley)
+        ind = np.argmin(self.__cost_field)
         return self.__grid[ind]
 
 

@@ -47,7 +47,7 @@ class TestCostValley(TestCase):
 
     def test_minimum_cost_location(self):
         loc_m = self.cv.get_minimum_cost_location()
-        cv = self.cv.get_cost_valley()
+        cv = self.cv.get_cost_field()
         id = np.argmin(cv)
         loc = self.grf.grid[id]
         self.assertIsNone(testing.assert_array_equal(loc, loc_m))
@@ -63,7 +63,7 @@ class TestCostValley(TestCase):
 
     def plot_cost_valley(self):
         grid = self.cv.get_grid()
-        cv = self.cv.get_cost_valley()
+        cv = self.cv.get_cost_field()
         eibv = self.cv.get_eibv_field()
         ivr = self.cv.get_ivr_field()
         budget = self.cv.get_budget_field()

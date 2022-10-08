@@ -4,9 +4,8 @@ It employs RRT as the building block, and the cost associated with each tree bra
 determine the final tree discretization.
 """
 from Planner.RRTSCV.TreeNode import TreeNode
-from Planner.Planner import Planner
 from Field import Field
-from CostValley import CostValley
+from CostValley.CostValley import CostValley
 import numpy as np
 import os
 from shapely.geometry import Polygon, Point, LineString
@@ -15,13 +14,14 @@ from Visualiser.TreePlotter import TreePlotter
 
 
 class RRTStarCV:
-    __planner = Planner()
-
     # load pre_generated locations
     __filepath = os.getcwd() + "/Planner/RRTSCV/"
     __random_locations = np.load(__filepath + "RRT_Random_Locations.npy")
     __goal_indices = np.load(__filepath + "Goal_indices.npy")
     __N_random_locations = len(__random_locations)
+
+    # setup cost valley
+    __cost_valley = CostValley()
 
     # TODO: delete
     __figpath = os.getcwd() + "/../../fig/trees/"
@@ -36,9 +36,9 @@ class RRTStarCV:
     __trajectory = np.empty([0, 2])  # to save trajectory.
     __goal_sampling_rate = .01
     __max_expansion_iteration = 1000  # TODO: to run simulation and see if it is able to converage
-    __step_size = Field.get_neighbour_distance()
-    __home_radius = __step_size * .8
-    __rrtstar_neighbour_radius = __step_size * 1.12
+    __stepsize = Field.get_neighbour_distance()
+    __home_radius = __stepsize * .8
+    __rrtstar_neighbour_radius = __stepsize * 1.12
 
     # polygons and lines
     __polygon_border = Field.get_polygon_border()
@@ -61,14 +61,11 @@ class RRTStarCV:
     # budget
     __Budget = False
 
-    # cost valley
-    __cost_valley = None
-
     # TODO: plot, delete
     polygon_border = np.append(__polygon_border, __polygon_border[0, :].reshape(1, -1), axis=0)
     cnt_plot = 0
 
-    def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray, cost_valley: 'CostValley') -> np.ndarray:
+    def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray) -> np.ndarray:
         """
         Get the next waypoint according to RRT* path planning philosophy.
         :param loc_start: current location np.array([x, y])
@@ -83,7 +80,6 @@ class RRTStarCV:
         # s1: set starting location and target location in rrt*.
         self.__loc_start = loc_start
         self.__loc_target = loc_target
-        self.__cost_valley = cost_valley
         self.__Budget = self.__cost_valley.get_Budget()
         self.__starting_node = TreeNode(self.__loc_start)
         self.__target_node = TreeNode(self.__loc_target)
@@ -109,8 +105,8 @@ class RRTStarCV:
             loc_next = path_mc[-2, :]
         angle = np.math.atan2(loc_next[0] - loc_start[0],
                               loc_next[1] - loc_start[1])
-        y = loc_start[1] + self.__step_size * np.cos(angle)
-        x = loc_start[0] + self.__step_size * np.sin(angle)
+        y = loc_start[1] + self.__stepsize * np.cos(angle)
+        x = loc_start[0] + self.__stepsize * np.sin(angle)
         wp_next = np.array([x, y])
 
         # # s5: final check legal condition, if not produce a random next location.
@@ -148,12 +144,12 @@ class RRTStarCV:
             self.__get_nearest_node()
 
             # s3: steer new location to get the nearest tree node to this new location.
-            if TreeNode.get_distance_between_nodes(self.__nearest_node, self.__new_node) > self.__step_size:
+            if TreeNode.get_distance_between_nodes(self.__nearest_node, self.__new_node) > self.__stepsize:
                 xn, yn = self.__nearest_node.get_location()
                 angle = np.math.atan2(self.__loc_new[0] - xn,
                                       self.__loc_new[1] - yn)
-                y = yn + self.__step_size * np.cos(angle)
-                x = xn + self.__step_size * np.sin(angle)
+                y = yn + self.__stepsize * np.cos(angle)
+                x = xn + self.__stepsize * np.sin(angle)
                 loc = np.array([x, y])
                 self.__new_node = TreeNode(loc, parent=self.__nearest_node)
 
@@ -281,7 +277,7 @@ class RRTStarCV:
                 break
         self.__trajectory = np.append(self.__trajectory, self.__starting_node.get_location().reshape(1, -1), axis=0)
 
-    def get_nodes(self):
+    def get_tree_nodes(self):
         return self.__nodes
 
     def get_trajectory(self):
@@ -305,6 +301,15 @@ class RRTStarCV:
         if c1 or c2:
             islegal = False
         return islegal
+
+    def set_stepsize(self, value: float) -> None:
+        self.__stepsize = value
+
+    def get_stepsize(self) -> float:
+        return self.__stepsize
+
+    def get_CostValley(self) -> 'CostValley':
+        return self.__cost_valley
 
 
 if __name__ == "__main__":
