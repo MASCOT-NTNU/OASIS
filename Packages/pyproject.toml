@@ -1,6 +1,6 @@
 [project]
 name = "mascot_porto_op2_long_horizon"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Yaolin Ge", email="yaolin.ge@ntnu.no" },
 ]

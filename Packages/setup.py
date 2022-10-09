@@ -25,7 +25,7 @@ packages=find_packages(','),
 
 # Project version number:
 
-version='0.0.1',
+version='0.0.2',
 
 # List a license for the project, eg. MIT License
 
@@ -64,10 +64,10 @@ keywords=['autonomous ocean sampling'],
 # List project dependencies:
 
 install_requires=[
-'numpy==1.23.1',
+'numpy',
 'matplotlib',
-'plotly==5.10.0',
-'shapely==1.8.1',
+'plotly',
+'shapely',
 'scipy',
 'pandas'
 ],
