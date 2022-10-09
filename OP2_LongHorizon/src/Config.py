@@ -36,14 +36,26 @@ class Config:
                                            [41.168745, -8.74571]])
     __polygon_operational_area_shapely = Polygon(__polygon_operational_area)
 
+    # import matplotlib.pyplot as plt
+    # plt.plot(__polygon_operational_area[:, 1], __polygon_operational_area[:, 0], 'r-.')
+    # plt.show()
+
     """ Starting and end locations. """
+    # c1: start in the middle
     # __lat_start = 41.05947
     # __lon_start = -8.77732
-    x = 13000
-    y = 7000
-    lat, lon = WGS.xy2latlon(x, y)
-    __lat_start = lat
-    __lon_start = lon
+
+    # c2: start on top
+    # x = 13000
+    # y = 7000
+    # lat, lon = WGS.xy2latlon(x, y)
+    # __lat_start = lat
+    # __lon_start = lon
+
+    # c3: start close to home
+    __lat_start = 41.14
+    __lon_start = -8.7
+
     __lat_home = 41.12677
     __lon_home = -8.68574
 

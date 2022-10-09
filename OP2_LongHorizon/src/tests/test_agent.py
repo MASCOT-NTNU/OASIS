@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Agent import Agent
+from Agents.Agent import Agent
 
 
 class TestAgent(TestCase):

@@ -18,7 +18,7 @@ to make the system adaptive to their specific need and application.
 """
 
 from Config import Config
-from GRF import GRF
+from GRF.GRF import GRF
 from CostValley.Budget import Budget
 from CostValley.Direction import Direction
 import numpy as np

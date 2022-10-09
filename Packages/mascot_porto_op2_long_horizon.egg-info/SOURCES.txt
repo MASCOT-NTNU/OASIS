@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+mascot_porto_op2_long_horizon.egg-info/PKG-INFO
+mascot_porto_op2_long_horizon.egg-info/SOURCES.txt
+mascot_porto_op2_long_horizon.egg-info/dependency_links.txt
+mascot_porto_op2_long_horizon.egg-info/requires.txt
+mascot_porto_op2_long_horizon.egg-info/top_level.txt

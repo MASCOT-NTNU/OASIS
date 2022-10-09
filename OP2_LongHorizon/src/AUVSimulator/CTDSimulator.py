@@ -2,7 +2,7 @@
 CTDSimulator module simulates CTD sensor.
 """
 
-from GRF import GRF
+from GRF.GRF import GRF
 import numpy as np
 from typing import Union
 from scipy.spatial.distance import cdist
