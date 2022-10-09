@@ -68,8 +68,8 @@ install_requires=[
 'matplotlib',
 'plotly==5.10.0',
 'shapely==1.8.1',
-'scipy==1.7.3',
-'pandas==1.4.2'
+'scipy',
+'pandas'
 ],
 
 # python_requires="==3.9.12",
