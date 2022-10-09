@@ -53,11 +53,11 @@ class CostValley:
         x_now, y_now = loc_now
         # t1 = time.time()
         self.__budget_field = self.__Budget.get_budget_field(x_now, y_now)
-        self.__azimuth_field = self.__Direction.get_direction_field(x_now, y_now)
+        # self.__azimuth_field = self.__Direction.get_direction_field(x_now, y_now)
         self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field_total()
         self.__cost_field = (self.__eibv_field +
                              self.__ivr_field +
-                             self.__azimuth_field +
+                             # self.__azimuth_field +
                              self.__budget_field)
         # t2 = time.time()
         # print("Update cost valley takes: ", t2 - t1)
@@ -71,8 +71,8 @@ class CostValley:
     def get_ivr_field(self) -> np.ndarray:
         return self.__ivr_field
 
-    def get_direction_field(self) -> np.ndarray:
-        return self.__azimuth_field
+    # def get_direction_field(self) -> np.ndarray:
+    #     return self.__azimuth_field
 
     def get_budget_field(self) -> np.ndarray:
         return self.__budget_field
@@ -112,4 +112,6 @@ class CostValley:
 
 if __name__ == "__main__":
     cv = CostValley()
+
+
 

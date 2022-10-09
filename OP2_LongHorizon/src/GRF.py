@@ -14,7 +14,7 @@ import time
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = 1.
+    __sigma = 2.
     __lateral_range = 3000
     __nugget = .04
     __threshold = 30
