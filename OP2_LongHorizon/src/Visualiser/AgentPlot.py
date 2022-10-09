@@ -1,7 +1,7 @@
 """
 AgentPlot visualises the agent during the adaptive sampling.
 """
-
+from Config import Config
 import os
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
@@ -37,6 +37,10 @@ class AgentPlot:
         self.ygrid = self.grid[:, 1]
         self.plg = self.field.get_polygon_border()
         self.ylim, self.xlim = self.field.get_border_limits()
+
+        self.c = Config()
+        self.loc_home = self.c.get_loc_home()
+        self.loc_start = self.c.get_loc_start()
 
     def plot_agent(self):
         # s0: get updated field
@@ -77,9 +81,12 @@ class AgentPlot:
             ax.plot(wp_now[1], wp_now[0], 'r.', markersize=20, label="Current waypoint")
             ax.plot(wp_next[1], wp_next[0], 'b.', markersize=20, label="Next waypoint")
             ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=20, label="Pioneer waypoint")
+            ax.plot(self.loc_home[1], self.loc_home[0], 'ys', markersize=40, label="Home")
+            ax.plot(self.loc_start[1], self.loc_start[0], 'rs', markersize=40, label="Deploy")
             ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory", linewidth=3, markersize=20)
             ax.set_xlabel("East [m]")
             ax.set_ylabel("North [m]")
+            plt.legend()
 
         """ plot truth"""
         ax = fig.add_subplot(gs[0])
@@ -111,7 +118,7 @@ class AgentPlot:
                               cmap=get_cmap("GnBu", 10), vmin=0, vmax=4, stepsize=.25, cbar_title="Cost")
             ax.add_patch(be)
         else:
-            im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=4)
+            im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=400, cmap=get_cmap("GnBu", 10), vmin=0, vmax=4)
             plt.colorbar(im)
         plot_waypoints()
 
@@ -132,8 +139,9 @@ class AgentPlot:
                               cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, stepsize=.25, cbar_title="Cost")
             # ax.add_patch(be)
         else:
-            im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
+            im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=400, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
             plt.colorbar(im)
+        ax.set_title("EIBV field")
         plot_waypoints()
         for node in tree_nodes:
             if node.get_parent() is not None:
@@ -152,6 +160,7 @@ class AgentPlot:
         else:
             im = ax.scatter(self.ygrid, self.xgrid, c=cost_ivr, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
             plt.colorbar(im)
+        ax.set_title("IVR field")
         plot_waypoints()
         for node in tree_nodes:
             if node.get_parent() is not None:
