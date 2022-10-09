@@ -6,7 +6,7 @@ from numpy import quantile
 class GradientDetection:
     def __init__(self, 
                 salinity,
-                depth,
+                #depth,
                 depth_boundary = [0.5 - 0.25, 0.5 + 0.25],
                 window = 201,
                 salinity_max = 35,
@@ -17,11 +17,11 @@ class GradientDetection:
                 threshold_mode = "quantile_average"
                 ):
         self.salinity = salinity
-        self.depth = depth
+        #self.depth = depth
 
         self.window = window
         self.salinity_average = moving_average(self, self.salinity, self.window)
-        self.depth_average = moving_average(self, self.depth, self.window)
+        #self.depth_average = moving_average(self, self.depth, self.window)
         
         self.diff, self.change_direction = detect_change(self)
         self.consecutive_change = get_consecutive_change(self)
@@ -354,8 +354,15 @@ if __name__=="__main__":
     #depth = data['depth']
 
     #salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+    print(len(salinity))
+  
+    sal = salinity
+    for j in range(100):
+        sal = np.concatenate((sal, salinity))
+
     a = time.time()
-    threshold_detector = GradientDetection(salinity[0:4000],salinity_max=100,salinity_min=15, window = 201, min_event_length = 5)
+    threshold_detector = GradientDetection(sal,salinity_max=100,salinity_min=15, window = 201, min_event_length = 5)
+
 
 
 
@@ -374,4 +381,6 @@ if __name__=="__main__":
     print(threshold_detector.threshold)
 
 #TODO:
+# -- Add a return position for threshold
+# -- 
 # Account for å´poppups.   
