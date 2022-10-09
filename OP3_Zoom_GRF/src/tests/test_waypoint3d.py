@@ -9,19 +9,29 @@ class TestWaypoint3D(TestCase):
     def setUp(self) -> None:
         self.wp = WaypointGraph()
         self.wp.construct_waypoints()
-        self.wp.construct_hash_neighbours()
+        self.wp.construct_neighbour_hash_table()
         self.waypoints = self.wp.get_waypoints()
         self.neighbour_hash_table = self.wp.get_neighbour_hash_table()
 
     def test_different_setup(self):
         plt.plot(self.waypoints[:, 1], self.waypoints[:, 0], 'k.')
+        plt.xlim([0, 1000])
+        plt.ylim([0, 1000])
         plt.show()
         neighbour_distance = 50
         self.wp.set_neighbour_distance(neighbour_distance)
+        plg = np.array([[0, 0],
+                        [0, 500],
+                        [500, 500],
+                        [500, 0],
+                        [0, 0]])
+        self.wp.set_polygon_border(plg)
         self.wp.construct_waypoints()
-        self.wp.construct_hash_neighbours()
+        self.wp.construct_neighbour_hash_table()
         waypoints = self.wp.get_waypoints()
         plt.plot(waypoints[:, 1], waypoints[:, 0], 'k.')
+        plt.xlim([0, 1000])
+        plt.ylim([0, 1000])
         plt.show()
         pass
 
