@@ -37,8 +37,10 @@ class Config:
     __polygon_operational_area_shapely = Polygon(__polygon_operational_area)
 
     """ Starting and end locations. """
-    __lat_start = 41.05947
-    __lon_start = -8.77732
+    # __lat_start = 41.05947
+    # __lon_start = -8.77732
+    __lat_start = 41.04372
+    __lon_start = -8.68819
     __lat_home = 41.12677
     __lon_home = -8.68574
 

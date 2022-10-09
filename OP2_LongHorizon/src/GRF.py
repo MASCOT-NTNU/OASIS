@@ -14,10 +14,10 @@ import time
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = 6.
-    __lateral_range = 5000
+    __sigma = 1.
+    __lateral_range = 3000
     __nugget = .04
-    __threshold = 32
+    __threshold = 30
 
     # computed
     __eta = 4.5 / __lateral_range  # decay factor

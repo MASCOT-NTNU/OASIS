@@ -4,6 +4,7 @@ AgentPlot visualises the agent during the adaptive sampling.
 
 import os
 import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
 from matplotlib import tri
 from matplotlib.cm import get_cmap
 from shapely.geometry import Polygon, Point
@@ -35,6 +36,7 @@ class AgentPlot:
         self.xgrid = self.grid[:, 0]
         self.ygrid = self.grid[:, 1]
         self.plg = self.field.get_polygon_border()
+        self.ylim, self.xlim = self.field.get_border_limits()
 
     def plot_agent(self):
         # s0: get updated field
@@ -45,7 +47,12 @@ class AgentPlot:
         self.cnt = self.agent.get_counter()
         traj_past = np.array(self.planner.get_trajectory())
 
-        be = self.budget.get_ellipse()
+        ba = self.budget.get_ellipse_a()
+        bb = self.budget.get_ellipse_b()
+        balpha = self.budget.get_ellipse_rotation_angle()
+        bloc = self.budget.get_ellipse_middle_location()
+        be = Ellipse(xy=(bloc[1], bloc[0]), width=2 * ba, height=2 * bb, angle=np.math.degrees(balpha),
+                     edgecolor='r', fc='None', lw=2)
 
         # s1: get updated waypoints
         wp_now = self.planner.get_current_waypoint()
@@ -64,60 +71,52 @@ class AgentPlot:
 
         """ truth, mu, sigma, cost, eibv, ivr. """
 
+        def plot_waypoints():
+            ax = plt.gca()
+            ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
+            ax.plot(wp_now[1], wp_now[0], 'r.', markersize=20, label="Current waypoint")
+            ax.plot(wp_next[1], wp_next[0], 'b.', markersize=20, label="Next waypoint")
+            ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=20, label="Pioneer waypoint")
+            ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory", linewidth=3, markersize=20)
+            ax.set_xlabel("East [m]")
+            ax.set_ylabel("North [m]")
+
         """ plot truth"""
         ax = fig.add_subplot(gs[0])
         self.plotf_vector(self.ygrid, self.xgrid, self.mu_truth, title="Ground truth field",
                           cmap=get_cmap("BrBG", 10), vmin=15, vmax=36, cbar_title="Salinity", stepsize=1.5,
                           threshold=threshold)
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
+        plot_waypoints()
 
         """ plot mean """
         ax = fig.add_subplot(gs[1])
         self.plotf_vector(self.ygrid, self.xgrid, mu, title="Conditional salinity field", cmap=get_cmap("BrBG", 10),
                           vmin=15, vmax=36, cbar_title="Salinity", stepsize=1.5, threshold=threshold)
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
+        plot_waypoints()
 
         """ plot var """
         ax = fig.add_subplot(gs[2])
-        im = ax.scatter(self.ygrid, self.xgrid, c=np.sqrt(np.diag(Sigma)), s=200,
-                        cmap=get_cmap("RdBu", 10), vmin=0, vmax=2)
-        plt.title("Conditional uncertainty field")
-        plt.colorbar(im)
-        # self.plotf_vector(self.ygrid, self.xgrid, np.sqrt(np.diag(Sigma)), title="Conditional uncertainty field",
-        #                   cmap=get_cmap("RdBu", 10), cbar_title="Deviation")
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
-        ax.set_title("Conditional uncertainty field")
+        # im = ax.scatter(self.ygrid, self.xgrid, c=np.sqrt(np.diag(Sigma)), s=200,
+        #                 cmap=get_cmap("RdBu", 10), vmin=0, vmax=2)
+        # plt.title("Conditional uncertainty field")
+        # plt.colorbar(im)
+        self.plotf_vector(self.ygrid, self.xgrid, np.sqrt(np.diag(Sigma)), title="Conditional uncertainty field",
+                          cmap=get_cmap("RdBu", 10), cbar_title="Standard deviation")
+        plot_waypoints()
 
         """ plot cost valley and trees. """
         ax = fig.add_subplot(gs[3])
-        self.plotf_vector(self.ygrid, self.xgrid, cost_valley, title="Cost Valley",
-                          cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, cbar_title="Cost")
-        # im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=200, cmap=get_cmap("BrBG", 10), vmin=0, vmax=4)
-        # plt.colorbar(im)
-        ax.add_patch(be)
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
+        if not self.budget.get_go_home_alert():
+            self.plotf_vector(self.ygrid, self.xgrid, cost_valley, title="Cost Valley",
+                              cmap=get_cmap("GnBu", 10), vmin=0, vmax=4, stepsize=.25, cbar_title="Cost")
+            ax.add_patch(be)
+        else:
+            im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=4)
+            plt.colorbar(im)
+        plot_waypoints()
+
+        ax.set_xlim([self.xlim[0], self.xlim[1]])
+        ax.set_ylim([self.ylim[0], self.ylim[1]])
         for node in tree_nodes:
             if node.get_parent() is not None:
                 loc = node.get_location()
@@ -125,21 +124,17 @@ class AgentPlot:
                 ax.plot([loc[1], loc_p[1]],
                          [loc[0], loc_p[0]], "-g")
         ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
-        ax.set_title("Cost Valley")
 
         """ plot eibv field. """
         ax = fig.add_subplot(gs[4])
-        self.plotf_vector(self.ygrid, self.xgrid, cost_eibv, title="EIBV cost field",
-                          cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, cbar_title="Cost")
-        # im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=200, cmap=get_cmap("BrBG", 10), vmin=0, vmax=4)
-        # plt.colorbar(im)
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
+        if not self.budget.get_go_home_alert():
+            self.plotf_vector(self.ygrid, self.xgrid, cost_eibv, title="EIBV cost field",
+                              cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, stepsize=.25, cbar_title="Cost")
+            # ax.add_patch(be)
+        else:
+            im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
+            plt.colorbar(im)
+        plot_waypoints()
         for node in tree_nodes:
             if node.get_parent() is not None:
                 loc = node.get_location()
@@ -147,21 +142,17 @@ class AgentPlot:
                 ax.plot([loc[1], loc_p[1]],
                         [loc[0], loc_p[0]], "-g")
         ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
-        ax.set_title("Cost Valley")
 
         """ plot ivr field. """
         ax = fig.add_subplot(gs[5])
-        self.plotf_vector(self.ygrid, self.xgrid, cost_ivr, title="IVR cost field",
-                          cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, cbar_title="Cost")
-        # im = ax.scatter(self.ygrid, self.xgrid, c=cost_valley, s=200, cmap=get_cmap("BrBG", 10), vmin=0, vmax=4)
-        # plt.colorbar(im)
-        ax.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
-        ax.plot(wp_now[1], wp_now[0], 'r.', markersize=10, label="Current waypoint")
-        ax.plot(wp_next[1], wp_next[0], 'b.', markersize=10, label="Next waypoint")
-        ax.plot(wp_pion[1], wp_pion[0], 'g.', markersize=10, label="Pioneer waypoint")
-        ax.plot(traj_past[:, 1], traj_past[:, 0], 'y.-', label="Trajectory")
+        if not self.budget.get_go_home_alert():
+            self.plotf_vector(self.ygrid, self.xgrid, cost_ivr, title="IVR cost field",
+                              cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, stepsize=.25, cbar_title="Cost")
+            # ax.add_patch(be)
+        else:
+            im = ax.scatter(self.ygrid, self.xgrid, c=cost_ivr, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
+            plt.colorbar(im)
+        plot_waypoints()
         for node in tree_nodes:
             if node.get_parent() is not None:
                 loc = node.get_location()
@@ -169,10 +160,6 @@ class AgentPlot:
                 ax.plot([loc[1], loc_p[1]],
                         [loc[0], loc_p[0]], "-g")
         ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
-        ax.set_xlabel("East [m]")
-        ax.set_ylabel("North [m]")
-        ax.set_title("Cost Valley")
-
 
         plt.savefig(self.figpath + "P_{:03d}.png".format(self.cnt))
         # plt.show()
