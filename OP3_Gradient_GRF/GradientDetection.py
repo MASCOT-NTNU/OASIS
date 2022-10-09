@@ -6,6 +6,8 @@ from numpy import quantile
 class GradientDetection:
     def __init__(self, 
                 salinity,
+                depth,
+                depth_boundary = [0.5 - 0.25, 0.5 + 0.25],
                 window = 201,
                 salinity_max = 35,
                 salinity_min = 25,
@@ -15,9 +17,12 @@ class GradientDetection:
                 threshold_mode = "quantile_average"
                 ):
         self.salinity = salinity
+        self.depth = depth
 
         self.window = window
         self.salinity_average = moving_average(self, self.salinity, self.window)
+        self.depth_average = moving_average(self, self.depth, self.window)
+        
         self.diff, self.change_direction = detect_change(self)
         self.consecutive_change = get_consecutive_change(self)
         self.events = find_event(self)
@@ -368,4 +373,5 @@ if __name__=="__main__":
     update_salinity(threshold_detector, salinity)
     print(threshold_detector.threshold)
 
-
+#TODO:
+# Account for å´poppups.   
