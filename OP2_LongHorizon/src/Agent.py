@@ -94,7 +94,10 @@ class Agent:
                     print("POPUP")
                     t_pop_last = time.time()
 
+                t1 = time.time()
                 self.ap.plot_agent()
+                t2 = time.time()
+                print("Plotting takes ", t2 - t1)
 
                 # s0: update the planning trackers.
                 self.planner.update_planning_trackers()
@@ -107,13 +110,15 @@ class Agent:
                 ctd_data = self.auv.get_ctd_data()
 
                 # s3: update pioneer waypoint
+                t1 = time.time()
                 self.planner.update_pioneer_waypoint(ctd_data)
-
+                t2 = time.time()
+                print("Update pioneer waypoint takes: ", t2 - t1)
 
                 # s8: check arrival
                 dist = np.sqrt((wp_now[0] - wp_end[0]) ** 2 +
                                (wp_now[1] - wp_end[1]) ** 2)
-                if dist <= self.__home_radius:
+                if dist <= self.__home_radius or self.__counter >= 100:
                     break
                 print("counter: ", self.__counter)
                 self.__counter += 1
