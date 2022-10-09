@@ -1,0 +1,6 @@
+numpy==1.23.1
+matplotlib
+plotly==5.10.0
+shapely==1.8.1
+scipy==1.7.3
+pandas==1.4.2

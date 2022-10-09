@@ -4,7 +4,7 @@ This module tests the GRF object.
 
 
 from unittest import TestCase
-from GRF import GRF
+from GRF.GRF import GRF
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.gridspec import GridSpec
