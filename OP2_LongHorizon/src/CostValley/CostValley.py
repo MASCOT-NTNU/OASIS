@@ -39,11 +39,11 @@ class CostValley:
 
     # fundamental layers
     __eibv_field, __ivr_field = __grf.get_ei_field_total()
-    __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
+    # __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
     __budget_field = __Budget.get_budget_field(__x_now, __y_now)
     __cost_field = (__eibv_field +
                     __ivr_field +
-                    __azimuth_field +
+                    # __azimuth_field +
                     __budget_field)
 
     def __init__(self) -> None:
@@ -77,13 +77,13 @@ class CostValley:
     def get_budget_field(self) -> np.ndarray:
         return self.__budget_field
 
-    def get_grid(self):
+    def get_grid(self) -> np.ndarray:
         return self.__grid
 
-    def get_grf_model(self):
+    def get_grf_model(self) -> 'GRF':
         return self.__grf
 
-    def get_Budget(self):
+    def get_Budget(self) -> 'Budget':
         return self.__Budget
 
     def get_field(self):

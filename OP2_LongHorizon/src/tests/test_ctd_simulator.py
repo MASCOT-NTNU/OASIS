@@ -37,7 +37,7 @@ class TestCTDSimulator(TestCase):
         plg = self.f.get_polygon_border()
         plt.figure(figsize=(15, 12))
         plotf_vector(grid[:, 1], grid[:, 0], truth, cmap=get_cmap("RdBu", 10),
-                     vmin=5, vmax=45, stepsize=1.5, threshold=33, cbar_title="Value",
+                     vmin=10, vmax=36, stepsize=1.5, threshold=33, cbar_title="Value",
                      title="Ground field", xlabel="East", ylabel="North", polygon_border=plg)
         # plt.plot(plg[:, 1], plg[:, 0], 'r-.')
         plt.gca().set_aspect('equal')
