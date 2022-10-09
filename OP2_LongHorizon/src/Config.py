@@ -39,8 +39,11 @@ class Config:
     """ Starting and end locations. """
     # __lat_start = 41.05947
     # __lon_start = -8.77732
-    __lat_start = 41.04372
-    __lon_start = -8.68819
+    x = 2000
+    y = 10000
+    lat, lon = WGS.xy2latlon(x, y)
+    __lat_start = lat
+    __lon_start = lon
     __lat_home = 41.12677
     __lon_home = -8.68574
 
