@@ -3,7 +3,7 @@
 ---
 ## Here comes code to copy src to AUV.
 
-`scp -r * lauv-xp1:/home/lsts/catkin_ws/src/adaframe_examples/OP2/prior/.`
+`scp -r * xp1:/home/lsts/catkin_ws/src/adaframe_examples/OP2/src/.`
 ---
 
 ---

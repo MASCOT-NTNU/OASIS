@@ -114,7 +114,7 @@ class TestField(TestCase):
 
     def test_border_in_the_way(self):
         x1, y1 = 0, 0
-        x2, y2 = 100, 100
+        x2, y2 = 8000, 8000
         c = self.f.is_border_in_the_way(np.array([x1, y1]), np.array([x2, y2]))
         self.assertTrue(c)
         x1, y1 = -20, -20

@@ -43,7 +43,7 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        wp_depth = 1.
+        wp_depth = .5
         wp_start = self.planner.get_starting_waypoint()
         wp_end = self.planner.get_end_waypoint()
 
@@ -82,7 +82,6 @@ class Agent:
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
-
 
                     # s0: update the planning trackers.
                     self.planner.update_planning_trackers()

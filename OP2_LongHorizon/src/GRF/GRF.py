@@ -18,7 +18,7 @@ from joblib import Parallel, delayed
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = 2.
+    __sigma = 1.
     __lateral_range = 3000
     __nugget = .04
     __threshold = 30
@@ -154,7 +154,7 @@ class GRF:
             eibv = self.__get_ibv(self.__mu, sigma_diag)
             ivr = np.sum(np.diag(VR))
             return eibv, ivr
-        res = Parallel(n_jobs=3)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
+        res = Parallel(n_jobs=10)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
         eibv_field = np.array([item[0] for item in res])
         ivr_field = np.array([item[1] for item in res])
         self.__eibv_field = normalize(eibv_field)

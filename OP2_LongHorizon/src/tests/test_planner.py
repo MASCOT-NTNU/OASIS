@@ -69,9 +69,9 @@ class TestPlanner(TestCase):
         xnn, ynn = self.planner.get_next_waypoint()
 
         # s2: on the way to the current location, update field.
-        ctd_data = np.array([[1000, 2000, 30],
-                             [1100, 2000, 33],
-                             [1300, 2000, 33]])
+        ctd_data = np.array([[10000, 9000, 0, 20],
+                             [9000, 8000, 0, 23],
+                             [8900, 8900, 0, 30]])
 
         self.planner.update_pioneer_waypoint(ctd_data)
         xp, yp = self.planner.get_pioneer_waypoint()
@@ -82,8 +82,6 @@ class TestPlanner(TestCase):
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.show()
 
-
-
         # s0: update planning trackers
         self.planner.update_planning_trackers()
 
@@ -92,9 +90,9 @@ class TestPlanner(TestCase):
         xnn, ynn = self.planner.get_next_waypoint()
 
         # s2: on the way to the current location, update field.
-        ctd_data = np.array([[1000, 2500, 35],
-                             [2000, 2400, 33],
-                             [2100, 2300, 30]])
+        ctd_data = np.array([[6000, 10000, 0, 25],
+                             [7000, 8500, 0, 30],
+                             [8100, 8700, 0, 28]])
 
         self.planner.update_pioneer_waypoint(ctd_data)
         xp, yp = self.planner.get_pioneer_waypoint()
