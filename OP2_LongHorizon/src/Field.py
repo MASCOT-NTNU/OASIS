@@ -2,7 +2,8 @@
 Field object defines the desired field of operation. It has a border polygon determines the boundary region, and it uses
 list of obstacles to determine the area where operation needs to be avoided.
 """
-
+from Config import Config
+from WGS import WGS
 from usr_func.is_list_empty import is_list_empty
 import numpy as np
 from shapely.geometry import Polygon, Point, LineString
@@ -12,18 +13,21 @@ from typing import Union
 
 
 class Field:
-
+    __config = Config()
     __grid = np.empty([0, 2])
     __neighbour_hash_table = dict()
-    __neighbour_distance = 360  # metres between neighbouring locations.
-    __polygon_border = np.array([[14255.15453767, 5709.75943741],
-                                 [6655.93266267, 6090.08594322],
-                                 [6569.54877378, -217.02662071],
-                                 [0., 0.],
-                                 [2463.42533384, 11085.316791],
-                                 [8832.34529913, 11091.94966078],
-                                 [11678.38384112, 10215.62113641],
-                                 [14255.15453767, 5709.75943741]])
+    __neighbour_distance = 180  # metres between neighbouring locations.
+    __plg = __config.get_polygon_operational_area()
+    x, y = WGS.latlon2xy(__plg[:, 0], __plg[:, 1])
+    __polygon_border = np.stack((x, y), axis=1)
+    # __polygon_border = np.array([[14255.15453767, 5709.75943741],
+    #                              [6655.93266267, 6090.08594322],
+    #                              [6569.54877378, -217.02662071],
+    #                              [0., 0.],
+    #                              [2463.42533384, 11085.316791],
+    #                              [8832.34529913, 11091.94966078],
+    #                              [11678.38384112, 10215.62113641],
+    #                              [14255.15453767, 5709.75943741]])
     __polygon_border_shapely = Polygon(__polygon_border)
 
     """ Get the xy limits and gaps for the bigger box """

@@ -54,9 +54,10 @@ class GMRF:
         filepath = os.getcwd() + "/GMRF/models/"
         # x = np.load(filepath + "x.npy")
         # y = np.load(filepath + "y.npy")
-        x = np.load(filepath + "lats.npy")
-        y = np.load(filepath + "lons.npy")
+        lat = np.load(filepath + "lats.npy")
+        lon = np.load(filepath + "lons.npy")
         z = np.load(filepath + "depth.npy")
+        x, y = WGS.latlon2xy(lat, lon)
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
@@ -68,20 +69,20 @@ class GMRF:
         # import matplotlib.pyplot as plt
         # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
         # plt.show()
-        #
-        # import plotly.graph_objects as go
-        # import plotly
-        # fig = go.Figure(data=go.Scatter3d(
-        #     x=self.__gmrf_grid[:, 1],
-        #     y=self.__gmrf_grid[:, 0],
-        #     z=self.__gmrf_grid[:, 2],
-        #     mode='markers',
-        #     marker=dict(
-        #         size=2,
-        #         color='black',
-        #     )
-        # ))
-        # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
+
+        import plotly.graph_objects as go
+        import plotly
+        fig = go.Figure(data=go.Scatter3d(
+            x=self.__gmrf_grid[:, 1],
+            y=self.__gmrf_grid[:, 0],
+            z=self.__gmrf_grid[:, 2],
+            mode='markers',
+            marker=dict(
+                size=2,
+                color='black',
+            )
+        ))
+        plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
 
         """
         Get the rotation of the grid, used for later plotting.
@@ -105,8 +106,8 @@ class GMRF:
         # plt.xlim([-10, 10])
         # plt.ylim([8250, 8350])
         # plt.show()
-        # ra = math.degrees(self.__rotated_angle)
-        # ra
+        ra = math.degrees(self.__rotated_angle)
+        ra
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """

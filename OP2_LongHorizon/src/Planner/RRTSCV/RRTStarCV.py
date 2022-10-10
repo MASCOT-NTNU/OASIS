@@ -35,7 +35,7 @@ class RRTStarCV:
     __nodes = []  # all nodes in the tree.
     __trajectory = np.empty([0, 2])  # to save trajectory.
     __goal_sampling_rate = .01
-    __max_expansion_iteration = 1000  # TODO: to run simulation and see if it is able to converage
+    __max_expansion_iteration = 2000  # TODO: to run simulation and see if it is able to converage
     __stepsize = Field.get_neighbour_distance()
     __home_radius = __stepsize * .8
     __rrtstar_neighbour_radius = __stepsize * 1.12

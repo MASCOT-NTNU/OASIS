@@ -12,7 +12,7 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 
 from Planner.Myopic3D import Myopic3D
-from AUV.AUV1 import AUV
+from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
 import time
