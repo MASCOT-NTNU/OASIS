@@ -98,9 +98,10 @@ class AUVSimulator:
         if N != 0:
             x_path = np.linspace(x_start, x_end, N)
             y_path = np.linspace(y_start, y_end, N)
+            depth = np.zeros_like(x_path)
             loc = np.stack((x_path, y_path), axis=1)
             sal = self.ctd.get_salinity_at_loc(loc)
-            self.__ctd_data = np.stack((x_path, y_path, sal.flatten()), axis=1)
+            self.__ctd_data = np.stack((x_path, y_path, depth, sal.flatten()), axis=1)
 
     def arrive(self):
         self.__arrival = True
