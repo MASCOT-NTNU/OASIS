@@ -1,11 +1,13 @@
 
-from numpy import quantile
+from concurrent.futures import wait
+from re import S
+from turtle import update
+from numpy import empty, quantile
+import numpy as np
 
 
 class GradientDetection:
     def __init__(self,
-                 salinity,
-                 # depth,
                  depth_boundary = [0.5 - 0.25, 0.5 + 0.25],
                  window = 201,
                  salinity_max = 35,
@@ -15,25 +17,103 @@ class GradientDetection:
                  min_change = 0,
                  threshold_mode = "quantile_average"
                  ):
-        self.salinity = salinity
-        # self.depth = depth
+
+
+        self.salinity = np.array([])
+        self.salinity_average = np.array([])
+        self.depth = np.array([])
+        self.depth_average = np.array([])
+        self.x = np.array([])
+        self.y = np.array([])
+
+    
+        self.diff = np.empty([])
+        self.change_direction = np.empty([])
+        self.consecutive_change = self.diff = np.empty([])
+        self.events = []
+
+        # Filtering the events
+        self.positive_events = []
+        self.negative_events = []
+
+        self.positive_events_joined = []
+        self.negative_events_joined = []
+
+        self.threshold = 0
+
 
         self.window = window
-        self.salinity_average = moving_average(self, self.salinity, self.window)
-        # self.depth_average = moving_average(self, self.depth, self.window)
-
-        self.diff, self.change_direction = detect_change(self)
-        self.consecutive_change = get_consecutive_change(self)
-        self.events = find_event(self)
-        calculate_event_statistics(self)
-
-
-        self.max_salinity = salinity_max
+        
+        self.max_salinity_bound = salinity_max
         self.min_salinity = salinity_min
         self.min_gradient = min_gradient
         self.min_event_length = min_event_length
         self.min_change = min_change
         self.threshold_mode = threshold_mode
+
+   
+
+def boundary_found(self):
+    if len(self.salinity)< self.window:
+        return False
+    # Checks if we have reached ocean water
+
+  
+    return True
+
+
+def find_threshold_location(self):
+
+
+    if self.threshold != 0:
+    
+        indecies = np.where(np.logical_and(self.salinity_average < self.threshold + 1, self.threshold - 1), True, False)
+
+        current_x = self.x[-1]
+        current_y = self.y[-1]
+
+        x_values = self.x[indecies]
+        y_values = self.y[indecies]
+
+        x_dist = (current_x - x_values)**2
+        y_dist = (current_y - y_values)**2
+        dist = x_dist + y_dist
+        min_ind = np.argmin(dist)
+        print(min_ind)
+
+        return x_values[min_ind], y_values[min_ind]
+    return 0,0
+
+    
+def update_measurments(self, salinity, depth, x, y):
+    self.x = x
+    self.y = y
+
+    update_salinity_and_depth(self, salinity, depth)
+    
+
+def set_max_salinity(self, max_salinity):
+    self.max_salinity_bound = max_salinity
+
+def set_min_salinity(self, min_salinity):
+    self.min_salinity = min_salinity
+
+def update_salinity_and_depth(self, salinity, depth):
+    self.salinity = salinity
+    self.depth = depth
+
+
+    if len(self.salinity) > self.window:
+
+        # Update the rolling average
+        self.salinity_average = moving_average(self, self.salinity, self.window)
+        self.depth_average = moving_average(self, self.depth, self.window)
+
+        update_max_salinity(self)
+        self.diff, self.change_direction = detect_change(self)
+        self.consecutive_change = get_consecutive_change(self)
+        self.events = find_event(self)
+        calculate_event_statistics(self)
 
         # Filtering the events
         self.positive_events = remove_events(self ,dirr=[1])
@@ -44,39 +124,16 @@ class GradientDetection:
 
         self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
 
-def set_max_salinity(self, max_salinity):
-    self.max_salinity = max_salinity
-
-def set_min_salinity(self, min_salinity):
-    self.min_salinity = min_salinity
-
-def update_salinity(self, salinity):
-    self.salinity = salinity
-    self.salinity_average = moving_average(self, self.salinity, self.window)
-    update_max_salinity(self)
-    self.diff, self.change_direction = detect_change(self)
-    self.consecutive_change = get_consecutive_change(self)
-    self.events = find_event(self)
-    calculate_event_statistics(self)
-
-    # Filtering the events
-    self.positive_events = remove_events(self ,dirr=[1])
-    self.negative_events = remove_events(self ,dirr=[-1])
-
-    self.positive_events_joined = join_treshold(self, self.positive_events, mode = self.threshold_mode)
-    self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
-
-    self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
-
 
 
 def update_max_salinity(self):
 
     # This is not a good idea for the min salinity
-    percentage = 0.95
-    max_salinity = np.max(self.salinity)
-    min_salinity = np.min(self.salinity)
-    self.max_salinity = min_salinity + (max_salinity - min_salinity ) *percentage
+    percentage = 0.90
+    max_salinity = np.max(self.salinity_average)
+    min_salinity = np.min(self.salinity_average)
+    self.max_salinity_bound = min_salinity + (max_salinity - min_salinity ) * percentage
+
 
     # Filtering the events
     self.positive_events = remove_events(self ,dirr=[1])
@@ -214,31 +271,32 @@ def calculate_event_statistics(self, mode="average"):
     #       "threshold": the threshold for the event
 
     for event in self.events:
-        ind_start, ind_end = event["ind_start"], event["ind_end"]
-        salinity_event = np.array([salinity[event["ind_start"]]])
-        if event["length"] > 1:
-            salinity_event = self.salinity_average[ind_start: ind_end]
-        event["salinity"] = salinity_event
-        event["diff"] = np.diff(salinity_event)
-        event["max"] = max(salinity_event)
-        event["min"] = min(salinity_event)
-        event["change"] = (event["max"] - event["min"]) * event["dir"]
-        event["avg_gradient"] = event["change"] / event["length"]
-        event["max_gradient"] = max(abs(np.diff(salinity)))
-        if mode == "average":
-            event["threshold"] = np.mean(salinity_event)
-        if mode == "quantile":
-            salinity_sorted = np.sort(salinity_event)
-            quantile = 0.8
-            ind = round(len(salinity_sorted) * quantile)
-            event["threshold"] = salinity_sorted[ind]
+        if event["ind_start"] != event["ind_end"]:
+            ind_start, ind_end = event["ind_start"], event["ind_end"]
+            salinity_event = self.salinity[ind_start : ind_end]
+            if event["length"] > 1:
+                salinity_event = self.salinity_average[ind_start: ind_end]
+            event["salinity"] = salinity_event
+            event["diff"] = np.diff(salinity_event)
+            event["max"] = np.max(salinity_event)
+            event["min"] = np.min(salinity_event)
+            event["change"] = (event["max"] - event["min"]) * event["dir"]
+            event["avg_gradient"] = event["change"] / event["length"]
+            event["max_gradient"] = max(abs(np.diff(salinity)))
+            if mode == "average":
+                event["threshold"] = np.mean(salinity_event)
+            if mode == "quantile":
+                salinity_sorted = np.sort(salinity_event)
+                quantile = 0.8
+                ind = round(len(salinity_sorted) * quantile)
+                event["threshold"] = salinity_sorted[ind]
 
-        if mode == "quantile_mean":
-            salinity_sorted = np.sort(salinity_event)
-            quantile = 0.8
-            ind_low = round(len(salinity_sorted) * quantile)
-            ind_high = round(len(salinity_sorted) * (1 - quantile))
-            event["threshold"] = (salinity_sorted[ind_low] + salinity_sorted[ind_high]) / 2
+            if mode == "quantile_mean":
+                salinity_sorted = np.sort(salinity_event)
+                quantile = 0.8
+                ind_low = round(len(salinity_sorted) * quantile)
+                ind_high = round(len(salinity_sorted) * (1 - quantile))
+                event["threshold"] = (salinity_sorted[ind_low] + salinity_sorted[ind_high]) / 2
 
 
 def remove_events(self, dirr=[-1, 1]):
@@ -247,7 +305,7 @@ def remove_events(self, dirr=[-1, 1]):
     for event in self.events:
         if (event["length"] >= self.min_event_length) and np.abs(event["change"]) >= self.min_change and (
                 event["dir"] in dirr) and np.abs(event["avg_gradient"]) > self.min_gradient and event[
-            "max"] > self.min_salinity and event["min"] < self.max_salinity:
+            "max"] > self.min_salinity and event["min"] < self.max_salinity_bound:
             new_events.append(event)
     return new_events
 
@@ -334,33 +392,67 @@ if __name__ == "__main__":
     path = "/Users/ajolaise/OneDrive - NTNU/PhD/AUV Missions/Porto October 2022/code/data"
     data = np.load(path + "/transect1_raw.npz")
     salinity = data['salinity']
+    depth = data['depth']
+    x = data['lat']
+    y = data['lon']
     # lat = data['lat']
     # lon = data['lon']
     # depth = data['depth']
 
-    # salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
-    print(len(salinity))
+    test_case = 3
 
-    sal = salinity
-    for j in range(100):
-        sal = np.concatenate((sal, salinity))
+    if test_case == 1:
+        
+        print("#### Test case 1####")
+        salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+        depth =    np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+        x = np.arange(len(salinity + 1))
+        y = np.arange(len(salinity + 1))
+        threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
+        update_measurments(threshold_detector, salinity, depth, x, y)
+        
+        print(threshold_detector.salinity)
+        print(threshold_detector.change_direction)
+        print(len(salinity))
+        print(threshold_detector.threshold)
+        print(threshold_detector.max_salinity)
+        print(find_threshold_location(threshold_detector))
+        print(salinity[17])
 
-    a = time.time()
-    threshold_detector = GradientDetection(sal, salinity_max=100, salinity_min=15, window=201, min_event_length=5)
+        print("Test done")
 
-    b = time.time()
-    print(b - a)
+    if test_case == 2:
+        sal = salinity
+        for j in range(100):
+            sal = np.concatenate((sal, salinity))
 
-    # print(threshold_detector.salinity_average)
-    # print( threshold_detector.diff, threshold_detector.change_direction)
-    # print(threshold_detector.positive_events_joined)
-    # print(threshold_detector.negative_events_joined)
-    print(threshold_detector.threshold)
-    update_salinity(threshold_detector, [])
-    update_max_salinity(threshold_detector)
-    print(threshold_detector.threshold)
-    update_salinity(threshold_detector, salinity)
-    print(threshold_detector.threshold)
+        a = time.time()
+        threshold_detector = GradientDetection(sal, depth, salinity_max=25, salinity_min=15, window=201, min_event_length=5)
+
+        b = time.time()
+        print(b - a)
+
+    if test_case == 3:
+
+        print("Case 3")
+        a = time.time()
+        threshold_detector = GradientDetection(salinity_max=25, salinity_min=15)
+        i,j = 0,100
+        update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+        print(threshold_detector.threshold)
+        i,j = 0,1000
+        update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+        print(threshold_detector.threshold)
+        update_measurments(threshold_detector,  salinity, depth, x, y)
+        print(threshold_detector.threshold)
+        print(find_threshold_location(threshold_detector))
+        b = time.time()
+        print(b - a)
+        plt.scatter(x,y,c=salinity,
+           cmap="RdBu")
+        plt.colorbar()
+        plt.scatter(63.44804720899967, 10.418544113280312,c='yellow')
+        plt.show()
 
 # TODO:
 # -- Add a return position for threshold
