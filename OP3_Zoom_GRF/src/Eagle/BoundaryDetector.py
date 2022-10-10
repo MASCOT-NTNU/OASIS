@@ -4,6 +4,7 @@ from re import S
 from turtle import update
 from numpy import empty, quantile
 import numpy as np
+from sqlalchemy import case
 
 
 class GradientDetection:
@@ -43,7 +44,7 @@ class GradientDetection:
 
 
         self.window = window
-        
+        self.depth_boundary = depth_boundary
         self.max_salinity_bound = salinity_max
         self.min_salinity = salinity_min
         self.min_gradient = min_gradient
@@ -51,7 +52,15 @@ class GradientDetection:
         self.min_change = min_change
         self.threshold_mode = threshold_mode
 
-   
+
+def filter_measurments(self):
+    indecies = np.where(np.logical_and(self.depth < self.depth_boundary[1], self.depth > self.depth_boundary[0]), True, False)
+    self.depth = self.depth[indecies]
+    self.salinity = self.depth[indecies]
+    self.x = self.x[indecies]
+    self.y = self.y[indecies]
+
+
 
 def boundary_found(self):
     if len(self.salinity)< self.window:
@@ -67,7 +76,7 @@ def find_threshold_location(self):
 
     if self.threshold != 0:
     
-        indecies = np.where(np.logical_and(self.salinity_average < self.threshold + 1, self.threshold - 1), True, False)
+        indecies = np.where(np.logical_and(self.salinity_average < self.threshold + 1, self.salinity_average > self.threshold - 1), True, False)
 
         current_x = self.x[-1]
         current_y = self.y[-1]
@@ -99,6 +108,8 @@ def set_min_salinity(self, min_salinity):
     self.min_salinity = min_salinity
 
 def update_salinity_and_depth(self, salinity, depth):
+
+
     self.salinity = salinity
     self.depth = depth
 
@@ -399,8 +410,12 @@ if __name__ == "__main__":
     # lon = data['lon']
     # depth = data['depth']
 
-    test_case = 3
 
+
+
+
+    test_case = 4
+    print("hahfrsef")
     if test_case == 1:
         
         print("#### Test case 1####")
@@ -454,7 +469,20 @@ if __name__ == "__main__":
         plt.scatter(63.44804720899967, 10.418544113280312,c='yellow')
         plt.show()
 
+    if test_case == 4:
+        print("#### Test case 1####")
+        salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+        depth =    np.array([1,0.5,0.5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+        x = np.arange(len(salinity + 1))
+        y = np.arange(len(salinity + 1))
+        threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
+        update_measurments(threshold_detector, salinity, depth, x, y)
+        print(threshold_detector.salinity)
+        filter_measurments(threshold_detector)
+        print(threshold_detector.salinity)
+
+
+
 # TODO:
-# -- Add a return position for threshold
 # -- Add a threshold found true/false
 # Account for å´poppups.
