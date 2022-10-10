@@ -23,7 +23,6 @@ class Myopic3D(Planner):
     Myopic3D planner determines the next waypoint according to minimum EIBV criterion.
     """
 
-
     def __init__(self) -> None:
         super().__init__()
         self.wp = WaypointGraph()

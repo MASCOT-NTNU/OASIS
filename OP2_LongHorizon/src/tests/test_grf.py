@@ -86,59 +86,62 @@ class TestGRF(TestCase):
         # c1: no data assimilation
         print("S3")
         """ For now, it takes too much time to compute the entire EI field. """
-        # eibv, ivr = self.g.get_ei_field_total()
-        # plotf(self, v1=eibv, v2=ivr)
-        #
-        # # c2: with data assimilation
-        # dataset = np.array([[10000, 9000, 10],
-        #                     [12000, 8000, 15],
-        #                     [8000, 10000, 13],
-        #                     [2000, 2000, 33],
-        #                     [8000, 8000, 26],
-        #                     [4000, 8000, 24]])
-        # self.g.assimilate_data(dataset)
-        # eibv, ivr = self.g.get_ei_field_total()
-        # plotf(self, v1=eibv, v2=ivr)
-        # plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
-        print("End S3")
-
-    def test_get_ei_field_partial(self):
-        print("S4")
-        loc = np.array([6000, 8000])
-        ind_now = self.f.get_ind_from_location(loc)
-        loc_now = self.f.get_location_from_ind(ind_now)
-        ind_neighbours_layer1 = self.f.get_neighbour_indices(ind_now)
-        ind_neighbours_layer2 = self.f.get_neighbour_indices(ind_neighbours_layer1)
-        ind_neighbours_layer3 = self.f.get_neighbour_indices(ind_neighbours_layer2)
-        ind_neighbours_layer4 = self.f.get_neighbour_indices(ind_neighbours_layer3)
-        ind_neighbours_layer5 = self.f.get_neighbour_indices(ind_neighbours_layer4)
-
-        eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
-        plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
-
         eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
+        plotf(self, v1=eibv, v2=ivr)
+
+        eibv, ivr = self.g.get_ei_field_para()
+        plotf(self, v1=eibv, v2=ivr)
 
         # c2: with data assimilation
         dataset = np.array([[10000, 9000, 0, 10],
                             [12000, 8000, 0, 15],
                             [8000, 10000, 0, 13],
-                            [2000, 2000, 0, 33],
+                            [6000, 6000, 0, 33],
                             [8000, 8000, 0, 26],
-                            [4000, 8000, 0, 24]])
+                            [4000, 9000, 0, 24]])
         self.g.assimilate_data(dataset)
-        eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
-        plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
-
         eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
-        print("End S4")
+        plotf(self, v1=eibv, v2=ivr)
+        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
+        print("End S3")
 
-    def test_para_ei_field(self) -> None:
-        eibv, ivr = self.g.get_ei_field_total()
-        eibvp, ivrp = self.g.get_ei_field_para()
-        testing.assert_array_equal(eibv, eibvp)
-        testing.assert_array_equal(ivr, ivrp)
-        pass
+    # def test_get_ei_field_partial(self):
+    #     print("S4")
+    #     loc = np.array([6000, 8000])
+    #     ind_now = self.f.get_ind_from_location(loc)
+    #     loc_now = self.f.get_location_from_ind(ind_now)
+    #     ind_neighbours_layer1 = self.f.get_neighbour_indices(ind_now)
+    #     ind_neighbours_layer2 = self.f.get_neighbour_indices(ind_neighbours_layer1)
+    #     ind_neighbours_layer3 = self.f.get_neighbour_indices(ind_neighbours_layer2)
+    #     ind_neighbours_layer4 = self.f.get_neighbour_indices(ind_neighbours_layer3)
+    #     ind_neighbours_layer5 = self.f.get_neighbour_indices(ind_neighbours_layer4)
+    #
+    #     eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
+    #     plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
+    #
+    #     eibv, ivr = self.g.get_ei_field_total()
+    #     plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
+    #
+    #     # c2: with data assimilation
+    #     dataset = np.array([[10000, 9000, 0, 10],
+    #                         [12000, 8000, 0, 15],
+    #                         [8000, 10000, 0, 13],
+    #                         [2000, 2000, 0, 33],
+    #                         [8000, 8000, 0, 26],
+    #                         [4000, 8000, 0, 24]])
+    #     self.g.assimilate_data(dataset)
+    #     eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
+    #     plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
+    #     plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    #
+    #     eibv, ivr = self.g.get_ei_field_total()
+    #     plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
+    #     plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    #     print("End S4")
+
+    # def test_para_ei_field(self) -> None:
+    #     eibv, ivr = self.g.get_ei_field_total()
+    #     eibvp, ivrp = self.g.get_ei_field_para()
+    #     testing.assert_array_equal(eibv, eibvp)
+    #     testing.assert_array_equal(ivr, ivrp)
+    #     pass

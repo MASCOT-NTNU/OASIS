@@ -12,7 +12,7 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 
 from Planner.Myopic3D import Myopic3D
-from AUV.AUV1 import AUV
+from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
 import time
@@ -23,7 +23,7 @@ import rospy
 
 class Agent:
 
-    __loc_start = np.array([63.449292, 10.415054, 0.5])
+    __loc_start = np.array([41.12677, -8.68574, -0.5])
     __NUM_STEP = 50
     __counter = 0
 
@@ -43,8 +43,9 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-
-        id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
+        x, y = WGS.latlon2xy(self.__loc_start[0], self.__loc_start[1])
+        loc = np.array([x, y, self.__loc_start[2]])
+        id_start = self.myopic.wp.get_ind_from_waypoint(loc)
         id_curr = id_start
 
         # s1: setup the planner -> only once
@@ -60,7 +61,7 @@ class Agent:
         # a1: move to current location
         wp = self.myopic.wp.get_waypoint_from_ind(id_curr)
         lat, lon = WGS.xy2latlon(wp[0], wp[1])
-        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp[2], speed=speed)
+        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), np.abs(wp[2]), speed=speed)
 
         t_pop_last = time.time()
         update_time = rospy.get_time()
@@ -96,7 +97,7 @@ class Agent:
                         # p1: parallel move AUV to the first location
                         loc = self.myopic.wp.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), np.abs(loc[2]), speed=speed)
                         update_time = rospy.get_time()
 
                         # s3: update planner -> so curr and next waypoint is updated
@@ -115,7 +116,7 @@ class Agent:
                         ind = self.myopic.get_current_index()
                         loc = self.myopic.wp.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), np.abs(loc[2]), speed=speed)
                         update_time = rospy.get_time()
 
                         # a1: gather AUV data

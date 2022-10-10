@@ -2,6 +2,7 @@
 CTDSimulator module simulates CTD sensor.
 """
 from GMRF.GMRF import GMRF
+from usr_func.normalize import normalize
 import os
 import numpy as np
 import pandas as pd
@@ -23,7 +24,8 @@ class CTDSimulator:
         Set up the CTD simulated truth field.
         """
         self.__field_grid = self.__gmrf.get_gmrf_grid()
-        self.__field_salinity = self.__gmrf.get_mu()
+        value = normalize(self.__field_grid[:, 0] + self.__field_grid[:, 1]) * 3
+        self.__field_salinity = self.__gmrf.get_mu() + value
         # path = os.getcwd() + "/AUVSimulator/simulated_truth.csv"
         # self.__field = pd.read_csv(path).to_numpy()
         # self.__field_grid = self.__field[:, :3]

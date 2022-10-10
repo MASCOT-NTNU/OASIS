@@ -14,31 +14,29 @@ Config handles the most important parameter setting in the long horizon operatio
 """
 from WGS import WGS
 import numpy as np
-from shapely.geometry import Polygon
+import pandas as pd
+from shapely.geometry import Polygon, GeometryCollection
 
 
 class Config:
     """ Mission setup. """
-    __mission_date = "2022-10-01_2022-10-02"  # needs to have one day ahead.
+    __mission_date = "2022-10-11_2022-10-12"  # needs to have one day ahead.
     __wind_dir = "North"
     __wind_level = "Moderate"
     __clock_start = 10  # expected starting time, at o'clock
     __clock_end = 16  # expected ending time, at o'clock
 
     """ Operational Area. """
-    __polygon_operational_area = np.array([[41.168745, -8.74571],
-                                           [41.10048, -8.741247],
-                                           [41.099704, -8.816434],
-                                           [41.04068871469593, -8.813846858228182],
-                                           [41.06281805019644, -8.68177460501135],
-                                           [41.120031055499105, -8.6815804482062],
-                                           [41.14559746535853, -8.691982781217751],
-                                           [41.168745, -8.74571]])
+    __polygon_operational_area = pd.read_csv("OPA_GOOGLE_reduced.csv").to_numpy()
+    # __polygon_operational_area = np.array([[41.168745, -8.74571],
+    #                                        [41.10048, -8.741247],
+    #                                        [41.099704, -8.816434],
+    #                                        [41.04068871469593, -8.813846858228182],
+    #                                        [41.06281805019644, -8.68177460501135],
+    #                                        [41.120031055499105, -8.6815804482062],
+    #                                        [41.14559746535853, -8.691982781217751],
+    #                                        [41.168745, -8.74571]])
     __polygon_operational_area_shapely = Polygon(__polygon_operational_area)
-
-    # import matplotlib.pyplot as plt
-    # plt.plot(__polygon_operational_area[:, 1], __polygon_operational_area[:, 0], 'r-.')
-    # plt.show()
 
     """ Starting and end locations. """
     # c1: start in the middle
@@ -156,6 +154,42 @@ class Config:
         """ Return home location in (x, y). """
         x, y = WGS.latlon2xy(Config.__lat_home, Config.__lon_home)
         return np.array([x, y])
+
+    # def update_operational_area(self):
+        # x, y = WGS.latlon2xy(__polygon_operational_area[:, 0], __polygon_operational_area[:, 1])
+        # box = np.array([])
+        # import matplotlib.pyplot as plt
+        # plt.plot(__polygon_operational_area[:, 1], __polygon_operational_area[:, 0], 'r-.')
+        # plt.show()
+        # from matplotlib.patches import Ellipse
+        # plt.figure(figsize=(10, 10))
+        # xl = 11000
+        # yl = 8000
+        # cir = Ellipse(xy=(xl, yl), width=10000, height=10000, angle=0,
+        #               edgecolor='r', fc='None', lw=2)
+        # vertices = cir.get_verts()
+        # plg_xy = np.stack((x, y), axis=1)
+        # intersection = []
+        # intersection.append(Polygon(plg_xy).intersection(Polygon(np.fliplr(vertices))))
+        # operational_regions = GeometryCollection(intersection)
+        # operational_areas = operational_regions.geoms
+        # x_operational_area = operational_areas[0].exterior.xy[0]
+        # y_operational_area = operational_areas[0].exterior.xy[1]
+        # polygon_opa = np.stack((x_operational_area, y_operational_area), axis=1)
+        #
+        # lat, lon = WGS.xy2latlon(x_operational_area, y_operational_area)
+        # plg_opa = np.stack((lat, lon), axis=1)
+        # df = pd.DataFrame(plg_opa, columns=['lat', 'lon'])
+        # df.to_csv(os.getcwd() + "OPA_GOOGLE_reduced.csv", index=False)
+        # plt.gca().add_patch(cir)
+        # plt.plot(y, x, 'k-.')
+        # plt.plot(polygon_opa[:, 1], polygon_opa[:, 0], 'g-.')
+        # plt.xlim([0, 14000])
+        # plt.ylim([0, 14000])
+        # plt.axvline(xl)
+        # plt.axhline(yl)
+        # plt.show()
+        # pass
 
 
 if __name__ == "__main__":

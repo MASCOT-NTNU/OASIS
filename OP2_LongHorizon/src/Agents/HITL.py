@@ -43,7 +43,7 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        wp_depth = 1.
+        wp_depth = .5
         wp_start = self.planner.get_starting_waypoint()
         wp_end = self.planner.get_end_waypoint()
 
@@ -83,7 +83,6 @@ class Agent:
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
 
-
                     # s0: update the planning trackers.
                     self.planner.update_planning_trackers()
 
@@ -100,7 +99,7 @@ class Agent:
                     t1 = time.time()
                     self.planner.update_pioneer_waypoint(ctd_data)
                     t2 = time.time()
-                    print("Time consumed: ", t2 - t1)
+                    print("Planning time consumed: ", t2 - t1)
 
                     ctd_data = []
 

@@ -54,9 +54,10 @@ class GMRF:
         filepath = os.getcwd() + "/GMRF/models/"
         # x = np.load(filepath + "x.npy")
         # y = np.load(filepath + "y.npy")
-        x = np.load(filepath + "lats.npy")
-        y = np.load(filepath + "lons.npy")
+        lat = np.load(filepath + "lats.npy")
+        lon = np.load(filepath + "lons.npy")
         z = np.load(filepath + "depth.npy")
+        x, y = WGS.latlon2xy(lat, lon)
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
@@ -68,7 +69,7 @@ class GMRF:
         # import matplotlib.pyplot as plt
         # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
         # plt.show()
-        #
+
         # import plotly.graph_objects as go
         # import plotly
         # fig = go.Figure(data=go.Scatter3d(
