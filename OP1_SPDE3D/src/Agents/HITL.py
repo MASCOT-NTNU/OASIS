@@ -23,7 +23,7 @@ import rospy
 
 class Agent:
 
-    __loc_start = np.array([41.12677, -8.68574, 0.5])
+    __loc_start = np.array([41.12677, -8.68574, -0.5])
     __NUM_STEP = 50
     __counter = 0
 
@@ -43,7 +43,9 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
+        x, y = WGS.latlon2xy(self.__loc_start[0], self.__loc_start[1])
+        loc = np.array([x, y, self.__loc_start[2]])
+        id_start = self.myopic.wp.get_ind_from_waypoint(loc)
         id_curr = id_start
 
         # s1: setup the planner -> only once
