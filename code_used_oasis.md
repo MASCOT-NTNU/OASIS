@@ -3,8 +3,9 @@
 ---
 ## Here comes code to copy src to AUV.
 
-`scp -r * lauv-xp1:/home/lsts/catkin_ws/src/adaframe_examples/OP2/src/.`
+`scp -r * lauv-xp1:/home/lsts/catkin_ws/src/adaframe_examples/OP2/prior/.`
 ---
+`services dune restart`
 
 ---
 ## Copy figures from MOHID to local laptop to observe.
