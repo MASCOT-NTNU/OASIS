@@ -52,8 +52,10 @@ class GMRF:
         Construct GMRF grid by converting lats, lons to xy.
         """
         filepath = os.getcwd() + "/GMRF/models/"
-        x = np.load(filepath + "x.npy")
-        y = np.load(filepath + "y.npy")
+        # x = np.load(filepath + "x.npy")
+        # y = np.load(filepath + "y.npy")
+        x = np.load(filepath + "lats.npy")
+        y = np.load(filepath + "lons.npy")
         z = np.load(filepath + "depth.npy")
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
