@@ -8,6 +8,7 @@ from sqlalchemy import case
 
 
 class GradientDetection:
+
     def __init__(self,
                  depth_boundary = [0.5 - 0.25, 0.5 + 0.25],
                  window = 201,
@@ -16,7 +17,9 @@ class GradientDetection:
                  min_event_length = 5,
                  min_gradient = 0,
                  min_change = 0,
-                 threshold_mode = "quantile_average"
+                 threshold_mode = "quantile_average",
+                 ocean_salinity = 35,
+                 plume_salinity = 25
                  ):
 
 
@@ -32,6 +35,9 @@ class GradientDetection:
         self.change_direction = np.empty([])
         self.consecutive_change = self.diff = np.empty([])
         self.events = []
+
+        self.ocean_salinity = ocean_salinity
+        self.plume_salinity = plume_salinity 
 
         # Filtering the events
         self.positive_events = []
@@ -54,21 +60,25 @@ class GradientDetection:
 
 
 def filter_measurments(self):
-    indecies = np.where(np.logical_and(self.depth < self.depth_boundary[1], self.depth > self.depth_boundary[0]), True, False)
+    indecies = np.logical_and(self.depth < self.depth_boundary[1], self.depth > self.depth_boundary[0])
     self.depth = self.depth[indecies]
-    self.salinity = self.depth[indecies]
+    self.salinity = self.salinity[indecies]
     self.x = self.x[indecies]
     self.y = self.y[indecies]
 
 
 
-def boundary_found(self):
+def threshold_found(self):
     if len(self.salinity)< self.window:
         return False
-    # Checks if we have reached ocean water
 
+    # Checks if we have reached ocean water
+    salinity_close_to_max = self.salinity_average[self.salinity_average > (self.ocean_salinity - 1)]
+    salinity_close_to_min = self.salinity_average[self.salinity_average < (self.plume_salinity + 1)]
+    if len(salinity_close_to_max ) > 20 and len(salinity_close_to_min) > 20:
+        return True
   
-    return True
+    return False
 
 
 def find_threshold_location(self):
@@ -88,31 +98,21 @@ def find_threshold_location(self):
         y_dist = (current_y - y_values)**2
         dist = x_dist + y_dist
         min_ind = np.argmin(dist)
-        print(min_ind)
 
         return x_values[min_ind], y_values[min_ind]
     return 0,0
 
     
 def update_measurments(self, salinity, depth, x, y):
+
+    # Sets the four main variables
     self.x = x
     self.y = y
-
-    update_salinity_and_depth(self, salinity, depth)
-    
-
-def set_max_salinity(self, max_salinity):
-    self.max_salinity_bound = max_salinity
-
-def set_min_salinity(self, min_salinity):
-    self.min_salinity = min_salinity
-
-def update_salinity_and_depth(self, salinity, depth):
-
-
     self.salinity = salinity
     self.depth = depth
 
+    # Cleans avay the measurments that are not in the depth bound defined
+    filter_measurments(self)
 
     if len(self.salinity) > self.window:
 
@@ -120,7 +120,10 @@ def update_salinity_and_depth(self, salinity, depth):
         self.salinity_average = moving_average(self, self.salinity, self.window)
         self.depth_average = moving_average(self, self.depth, self.window)
 
+        # Update the max salinity based on the data
         update_max_salinity(self)
+
+        # Here we create the events and calculate the statistics
         self.diff, self.change_direction = detect_change(self)
         self.consecutive_change = get_consecutive_change(self)
         self.events = find_event(self)
@@ -134,6 +137,13 @@ def update_salinity_and_depth(self, salinity, depth):
         self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
 
         self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+    
+
+def set_max_salinity(self, max_salinity):
+    self.max_salinity_bound = max_salinity
+
+def set_min_salinity(self, min_salinity):
+    self.min_salinity = min_salinity
 
 
 
@@ -364,8 +374,8 @@ def join_treshold(self, event_dict, mode="average"):
                 all_salinity = np.concatenate((all_salinity, event["salinity"]))
             salinity_sorted = np.sort(all_salinity)
             quantile = 0.8
-            ind_low = round(len(salinity_sorted) * quantile)
-            ind_high = round(len(salinity_sorted) * (1 - quantile))
+            ind_low = round((len(salinity_sorted) - 1) * quantile)
+            ind_high = round((len(salinity_sorted) - 1) * (1 - quantile))
             joined_events["threshold"] = (salinity_sorted[ind_low] + salinity_sorted[ind_high]) / 2
 
         if mode == "longest":
@@ -414,7 +424,7 @@ if __name__ == "__main__":
 
 
 
-    test_case = 4
+    test_case = 5
     print("hahfrsef")
     if test_case == 1:
         
@@ -438,12 +448,13 @@ if __name__ == "__main__":
 
     if test_case == 2:
         sal = salinity
+        dep = depth
         for j in range(100):
             sal = np.concatenate((sal, salinity))
 
         a = time.time()
-        threshold_detector = GradientDetection(sal, depth, salinity_max=25, salinity_min=15, window=201, min_event_length=5)
-
+        threshold_detector = GradientDetection(salinity_max=25, salinity_min=15, window=201, min_event_length=5)
+        update_measurments(threshold_detector, sal, depth, x, y)
         b = time.time()
         print(b - a)
 
@@ -451,18 +462,22 @@ if __name__ == "__main__":
 
         print("Case 3")
         a = time.time()
-        threshold_detector = GradientDetection(salinity_max=25, salinity_min=15)
+        threshold_detector = GradientDetection(salinity_max=25, salinity_min=15, ocean_salinity=26, plume_salinity=15)
         i,j = 0,100
         update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+        print(threshold_found(threshold_detector))
         print(threshold_detector.threshold)
         i,j = 0,1000
         update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+        print(threshold_found(threshold_detector))
         print(threshold_detector.threshold)
         update_measurments(threshold_detector,  salinity, depth, x, y)
         print(threshold_detector.threshold)
         print(find_threshold_location(threshold_detector))
         b = time.time()
         print(b - a)
+
+        print(threshold_found(threshold_detector))
         plt.scatter(x,y,c=salinity,
            cmap="RdBu")
         plt.colorbar()
@@ -472,14 +487,36 @@ if __name__ == "__main__":
     if test_case == 4:
         print("#### Test case 1####")
         salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
-        depth =    np.array([1,0.5,0.5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+        depth =    np.array([1,0.5,0.5,0.5,0.5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
         x = np.arange(len(salinity + 1))
         y = np.arange(len(salinity + 1))
         threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
         update_measurments(threshold_detector, salinity, depth, x, y)
         print(threshold_detector.salinity)
+        print(depth)
         filter_measurments(threshold_detector)
         print(threshold_detector.salinity)
+
+    if test_case == 5:
+
+        print("Case 5")
+        a = time.time()
+        threshold_detector = GradientDetection(salinity_max=25,
+            salinity_min=15, ocean_salinity=25, plume_salinity=20, threshold_mode="quantile_average")
+        
+        for i in range(240):
+            k = 0
+            m = i * 100
+            if m > len(salinity) -1:
+                break
+                m = len(salinity) - 1
+            update_measurments(threshold_detector, salinity[k:m], depth[k:m], x[k:m], y[k:m])
+            if threshold_found(threshold_detector):
+                #print(find_threshold_location(threshold_detector))
+                pass
+            print(threshold_found(threshold_detector))
+            print(threshold_detector.threshold)
+
 
 
 
