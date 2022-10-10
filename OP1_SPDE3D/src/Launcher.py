@@ -2,7 +2,7 @@
 Launches the mission.
 """
 
-from Agents.HITL_adaptive import Agent
+from Agents.HITL import Agent
 
 
 if __name__ == "__main__":
