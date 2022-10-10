@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: mascot-porto-op2-long-horizon
+Version: 0.0.2
+Summary: Autonomous ocean sampling
+Home-page: 
+Download-URL: 
+Author: Yaolin Ge
+Author-email: Yaolin Ge <yaolin.ge@ntnu.no>
+License: MIT
+Project-URL: Homepage, https://github.com/pypa/sampleproject
+Project-URL: Bug Tracker, https://github.com/pypa/sampleproject/issues
+Keywords: autonomous ocean sampling
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
