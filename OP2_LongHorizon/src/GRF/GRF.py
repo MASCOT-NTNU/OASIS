@@ -83,7 +83,7 @@ class GRF:
             dataset: np.array([x, y, sal])
         """
         # ss1: save raw ctd
-        df = pd.DataFrame(dataset, columns=['x', 'y', 'salinity'])
+        df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
         df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
 
         # t1 = time.time()
