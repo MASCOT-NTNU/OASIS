@@ -48,10 +48,10 @@ class Visualiser:
 
         """ plot mean """
         value = mu[self.ind_remove_top_layer][ind_selected_to_plot]
-        vmin = 0
-        vmax = 36
+        vmin = 10
+        vmax = 33
         filename = self.figpath + "mu/P_{:03d}.html".format(self.cnt)
-        self.plot_figure(value, vmin=vmin, vmax=vmax, filename=filename, title="mean", cmap="YlGnBu")
+        self.plot_figure(value, vmin=vmin, vmax=vmax, filename=filename, title="mean", cmap="BrBG")
 
         """ plot mvar """
         filename = self.figpath + "mvar/P_{:03d}.html".format(self.cnt)
@@ -63,21 +63,36 @@ class Visualiser:
     def plot_figure(self, value, vmin=0, vmax=30, filename=None, title=None, cmap=None):
         # points_grid, values_grid = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scene'}]])
-        fig.add_trace(go.Volume(
+        fig.add_trace(go.Scatter3d(
             x=self.xplot,
             y=self.yplot,
             z=self.zplot,
-            value=value,
-            isomin=vmin,
-            isomax=vmax,
-            opacity=.3,
-            surface_count=15,
-            colorscale=cmap,
-            # coloraxis="coloraxis",
-            colorbar=dict(x=0.75, y=0.5, len=.5),
-            # reversescale=True,
-            caps=dict(x_show=False, y_show=False, z_show=False),
-        ))
+            mode="markers",
+            marker=dict(
+                size=10,
+                cmin=vmin,
+                cmax=vmax,
+                opacity=.3,
+                color=value,
+                colorscale=cmap,
+                showscale=True,
+                colorbar=dict(x=0.75, y=0.5, len=.5),
+            )))
+        # fig.add_trace(go.Volume(
+        #     x=self.xplot,
+        #     y=self.yplot,
+        #     z=self.zplot,
+        #     value=value,
+        #     isomin=vmin,
+        #     isomax=vmax,
+        #     opacity=.3,
+        #     surface_count=15,
+        #     colorscale=cmap,
+        #     # coloraxis="coloraxis",
+        #     colorbar=dict(x=0.75, y=0.5, len=.5),
+        #     # reversescale=True,
+        #     caps=dict(x_show=False, y_show=False, z_show=False),
+        # ))
 
         id = self.myopic.get_current_index()
         wp = self.myopic.wp.get_waypoint_from_ind(id)
@@ -86,7 +101,7 @@ class Visualiser:
             name="Current waypoint",
             x=[wp[1]],
             y=[wp[0]],
-            z=[-wp[2]],
+            z=[wp[2]],
             mode='markers',
             marker=dict(
                 size=20,
@@ -105,7 +120,7 @@ class Visualiser:
             name="Next waypoint",
             x=[wp[1]],
             y=[wp[0]],
-            z=[-wp[2]],
+            z=[wp[2]],
             mode='markers',
             marker=dict(
                 size=20,
@@ -124,7 +139,7 @@ class Visualiser:
             name="Pioneer waypoint",
             x=[wp[1]],
             y=[wp[0]],
-            z=[-wp[2]],
+            z=[wp[2]],
             mode='markers',
             marker=dict(
                 size=20,
@@ -144,7 +159,7 @@ class Visualiser:
                 name="Trajectory",
                 x=wp[:, 1],
                 y=wp[:, 0],
-                z=-wp[:, 2],
+                z=wp[:, 2],
                 mode='markers+lines',
                 marker=dict(
                     size=5,

@@ -22,6 +22,7 @@ class TestMyopic(TestCase):
     def setUp(self) -> None:
         self.myopic = Myopic3D()
         self.wp = self.myopic.wp
+        self.neighbour_distance = self.wp.get_neighbour_distance()
         self.waypoints = self.wp.get_waypoints()
 
     def test_get_candidates(self):
@@ -145,7 +146,7 @@ class TestMyopic(TestCase):
         dy = np.diff(trajectory[:, 1])
         dz = np.diff(trajectory[:, 2])
         dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
-        self.assertLess(np.amax(dist), 120.1)
+        self.assertLess(np.amax(dist), self.neighbour_distance + .1)
 
         # c2: check if it has sharp turns
         sharp_turn = False

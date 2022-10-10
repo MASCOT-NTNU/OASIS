@@ -70,19 +70,19 @@ class GMRF:
         # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
         # plt.show()
 
-        import plotly.graph_objects as go
-        import plotly
-        fig = go.Figure(data=go.Scatter3d(
-            x=self.__gmrf_grid[:, 1],
-            y=self.__gmrf_grid[:, 0],
-            z=self.__gmrf_grid[:, 2],
-            mode='markers',
-            marker=dict(
-                size=2,
-                color='black',
-            )
-        ))
-        plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
+        # import plotly.graph_objects as go
+        # import plotly
+        # fig = go.Figure(data=go.Scatter3d(
+        #     x=self.__gmrf_grid[:, 1],
+        #     y=self.__gmrf_grid[:, 0],
+        #     z=self.__gmrf_grid[:, 2],
+        #     mode='markers',
+        #     marker=dict(
+        #         size=2,
+        #         color='black',
+        #     )
+        # ))
+        # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
 
         """
         Get the rotation of the grid, used for later plotting.
@@ -106,8 +106,8 @@ class GMRF:
         # plt.xlim([-10, 10])
         # plt.ylim([8250, 8350])
         # plt.show()
-        ra = math.degrees(self.__rotated_angle)
-        ra
+        # ra = math.degrees(self.__rotated_angle)
+        # ra
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """

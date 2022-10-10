@@ -18,7 +18,6 @@ class TestWaypoint(TestCase):
 
     def setUp(self) -> None:
         self.wg = WaypointGraph()
-
         self.waypoints = self.wg.get_waypoints()
         self.polygon_border = self.wg.get_polygon_border()
         self.neighbour_hash_tables = self.wg.get_neighbour_hash_table()
@@ -27,9 +26,9 @@ class TestWaypoint(TestCase):
         # import plotly.graph_objects as go
         # import plotly
         # fig = go.Figure(data=go.Scatter3d(
-        #     x=self.__waypoints[:, 1],
-        #     y=self.__waypoints[:, 0],
-        #     z=self.__waypoints[:, 2],
+        #     x=self.waypoints[:, 1],
+        #     y=self.waypoints[:, 0],
+        #     z=self.waypoints[:, 2],
         #     mode='markers',
         #     marker=dict(
         #         size=2,
