@@ -12,6 +12,7 @@ from sys import maxsize
 import time
 import os
 import pandas as pd
+from joblib import Parallel, delayed
 
 
 class GRF:
@@ -140,6 +141,26 @@ class GRF:
         self.__ivr_field = 1 - normalize(ivr_field)
         t2 = time.time()
         print("Total EI field takes: ", t2 - t1, " seconds.")
+        return self.__eibv_field, self.__ivr_field
+
+    def get_ei_field_para(self) -> tuple:
+        t1 = time.time()
+        def get_eibv_ivr(i):
+            SF = self.__Sigma[:, i].reshape(-1, 1)
+            MD = 1 / (self.__Sigma[i, i] + self.__nugget)
+            VR = SF @ SF.T * MD
+            SP = self.__Sigma - VR
+            sigma_diag = np.diag(SP).reshape(-1, 1)
+            eibv = self.__get_ibv(self.__mu, sigma_diag)
+            ivr = np.sum(np.diag(VR))
+            return eibv, ivr
+        res = Parallel(n_jobs=3)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
+        eibv_field = np.array([item[0] for item in res])
+        ivr_field = np.array([item[1] for item in res])
+        self.__eibv_field = normalize(eibv_field)
+        self.__ivr_field = 1 - normalize(ivr_field)
+        t2 = time.time()
+        print("Para EI field takes: ", t2 - t1, " seconds.")
         return self.__eibv_field, self.__ivr_field
 
     def get_ei_field_partial(self, indices: np.ndarray) -> tuple:

@@ -10,6 +10,7 @@ import numpy as np
 from matplotlib.gridspec import GridSpec
 # from Visualiser.Visualiser import plotf_vector
 from matplotlib.cm import get_cmap
+from numpy import testing
 
 
 def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10),
@@ -68,15 +69,15 @@ class TestGRF(TestCase):
     def test_assimilate(self):
         # c2: one
         print("S2")
-        dataset = np.array([[6000, 8000, 30]])
+        dataset = np.array([[6000, 8000, 0, 30]])
         self.g.assimilate_data(dataset)
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
         # c3: multiple
-        dataset = np.array([[5500, 6000,  35],
-                            [6000, 9000, 20],
-                            [6200, 8500, 15],
-                            [6600, 8800, 20]])
+        dataset = np.array([[5500, 6000,  0, 35],
+                            [6000, 9000, 0, 20],
+                            [6200, 8500, 0, 15],
+                            [6600, 8800, 0, 20]])
         self.g.assimilate_data(dataset)
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
         print("End S2")
@@ -119,12 +120,12 @@ class TestGRF(TestCase):
         plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
 
         # c2: with data assimilation
-        dataset = np.array([[10000, 9000, 10],
-                            [12000, 8000, 15],
-                            [8000, 10000, 13],
-                            [2000, 2000, 33],
-                            [8000, 8000, 26],
-                            [4000, 8000, 24]])
+        dataset = np.array([[10000, 9000, 0, 10],
+                            [12000, 8000, 0, 15],
+                            [8000, 10000, 0, 13],
+                            [2000, 2000, 0, 33],
+                            [8000, 8000, 0, 26],
+                            [4000, 8000, 0, 24]])
         self.g.assimilate_data(dataset)
         eibv, ivr = self.g.get_ei_field_partial(ind_neighbours_layer5)
         plotf(self, v1=eibv, v2=ivr, vmin1=0, vmax1=1, vmin2=0, vmax2=1)
@@ -135,3 +136,9 @@ class TestGRF(TestCase):
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
         print("End S4")
 
+    def test_para_ei_field(self) -> None:
+        eibv, ivr = self.g.get_ei_field_total()
+        eibvp, ivrp = self.g.get_ei_field_para()
+        testing.assert_array_equal(eibv, eibvp)
+        testing.assert_array_equal(ivr, ivrp)
+        pass

@@ -53,11 +53,15 @@ class Config:
     # __lon_start = lon
 
     # c3: start close to home
-    __lat_start = 41.14
-    __lon_start = -8.7
+    # __lat_start = 41.14
+    # __lon_start = -8.7
 
     __lat_home = 41.12677
     __lon_home = -8.68574
+
+    # c4: start at home
+    __lat_start = __lat_home
+    __lon_start = __lon_home
 
     @staticmethod
     def set_mission_date(value: str) -> None:
