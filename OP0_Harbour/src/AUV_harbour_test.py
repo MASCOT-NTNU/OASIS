@@ -65,7 +65,7 @@ class HarbourTest:
         checkfolder(self.foldername)
 
         # Pre-scripted waypoints for the AUV to move in
-        # This will run for three "loops"
+        # This will run for five"loops"
         self.waypoints = np.array([[41.185881, -8.706053, 0],
                                    [41.185501, -8.706805, 0.5],
                                    [41.184888, -8.706172, 0],
