@@ -6,7 +6,7 @@
 - Andre's mac: 10.0.248.62
 - Andre's Ubuntu: 10.0.248.64
 
-## To start DUNE from hardware mode, use the following command. 
+## To start DUNE from hardware mode, use the following command.
 `services dune restart`
 
 # Raspberry pi [Tutorial](https://pimylifeup.com/raspberry-pi-static-ip-address/)
