@@ -21,7 +21,6 @@ import time
 import matplotlib.pyplot as plt
 
 
-
 class GMRF:
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
     __GMRF_DISTANCE_NEIGHBOUR = 1  # lateral distance used to scale depth comparison
@@ -53,11 +52,9 @@ class GMRF:
         Construct GMRF grid by converting lats, lons to xy.
         """
         filepath = os.getcwd() + "/GMRF/models/"
-        lat = np.load(filepath + "lats.npy")
-        lon = np.load(filepath + "lons.npy")
-        depth = np.load(filepath + "depth.npy")
-        x, y = WGS.latlon2xy(lat, lon)
-        z = depth
+        x = np.load(filepath + "x.npy")
+        y = np.load(filepath + "y.npy")
+        z = np.load(filepath + "depth.npy")
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
@@ -66,10 +63,10 @@ class GMRF:
         self.__zg = vectorize(self.__gmrf_grid[:, 2])
         self.__Fgmrf = np.ones([1, self.__N_gmrf_grid])
 
-        import matplotlib.pyplot as plt
-        plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
-        plt.show()
-
+        # import matplotlib.pyplot as plt
+        # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
+        # plt.show()
+        #
         # import plotly.graph_objects as go
         # import plotly
         # fig = go.Figure(data=go.Scatter3d(
@@ -85,8 +82,8 @@ class GMRF:
         # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
 
         """
-          Get the rotation of the grid, used for later plotting.
-          """
+        Get the rotation of the grid, used for later plotting.
+        """
         box = np.load(filepath + "grid.npy")
         polygon = box[:, 2:]
         polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
@@ -106,8 +103,8 @@ class GMRF:
         # plt.xlim([-10, 10])
         # plt.ylim([8250, 8350])
         # plt.show()
-
         # ra = math.degrees(self.__rotated_angle)
+        # ra
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
