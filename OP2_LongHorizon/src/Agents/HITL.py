@@ -99,7 +99,7 @@ class Agent:
                     t1 = time.time()
                     self.planner.update_pioneer_waypoint(ctd_data)
                     t2 = time.time()
-                    print("Time consumed: ", t2 - t1)
+                    print("Planning time consumed: ", t2 - t1)
 
                     ctd_data = []
 

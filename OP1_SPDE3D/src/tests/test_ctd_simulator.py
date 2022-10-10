@@ -4,7 +4,6 @@
 from unittest import TestCase
 from WGS import WGS
 from AUVSimulator.CTDSimulator import CTDSimulator
-from AUVSimulator.SINMOD import SINMOD
 from Planner.Myopic3D import Myopic3D
 import numpy as np
 from numpy import testing
@@ -38,12 +37,12 @@ class TestCTDSimulator(TestCase):
         # self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
         # c2: value within the field
-        lat, lon = 63.456175, 10.402070
-        x, y = WGS.latlon2xy(lat, lon)
-        z = 0.5
-        loc = np.array([x, y, z])
-        v = self.ctd.get_salinity_at_loc(loc)
-        loc_wgs = np.array([lat, lon, z]).reshape(1, -1)
+        # lat, lon = 63.456175, 10.402070
+        # x, y = WGS.latlon2xy(lat, lon)
+        # z = 0.5
+        # loc = np.array([x, y, z])
+        # v = self.ctd.get_salinity_at_loc(loc)
+        # loc_wgs = np.array([lat, lon, z]).reshape(1, -1)
         # ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
         # self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 

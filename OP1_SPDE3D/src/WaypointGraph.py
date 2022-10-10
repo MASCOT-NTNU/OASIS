@@ -50,6 +50,7 @@ class WaypointGraph:
     __xmin, __ymin = map(np.amin, [__polygon_border[:, 0], __polygon_border[:, 1]])
     __xmax, __ymax = map(np.amax, [__polygon_border[:, 0], __polygon_border[:, 1]])
     __depths = np.array([-0.5, -1.5, -2.5])
+    no_depth_layers = len(__depths)
     __neighbour_distance = 360
     __neighbour = dict()
     __ygap = __neighbour_distance * cos(radians(60)) * 2
@@ -120,8 +121,8 @@ class WaypointGraph:
         for i in range(WaypointGraph.no_depth_layers):
               for j in range(counter_grid2d):
                 WaypointGraph.__waypoints = np.append(WaypointGraph.__waypoints,
-                                             np.array([grid2d[j][0], grid2d[j][1],
-                                                       WaypointGraph.__depths[i]]).reshape(1, -1), axis=0)
+                                                      np.array([grid2d[j][0], grid2d[j][1],
+                                                                WaypointGraph.__depths[i]]).reshape(1, -1), axis=0)
         WaypointGraph.__waypoints = np.array(WaypointGraph.__waypoints)
 
     @staticmethod
