@@ -6,6 +6,9 @@
 - Andre's mac: 10.0.248.62
 - Andre's Ubuntu: 10.0.248.64
 
+## To start DUNE from hardware mode, use the following command. 
+`services dune restart`
+
 # Raspberry pi [Tutorial](https://pimylifeup.com/raspberry-pi-static-ip-address/)
 - `/etc/resolv.conf` contains DNS server.
 - `nameserver 192.168.1.1` change it to `nameserver 8.8.8.8`.
@@ -77,4 +80,4 @@ DNS: 8.8.8.8
 
 # x11vnc setup
 - Step I, `x11vnc -storepasswd`
-- Step II, 
+- Step II,
