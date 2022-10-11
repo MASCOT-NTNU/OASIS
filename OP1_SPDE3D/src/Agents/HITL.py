@@ -78,7 +78,7 @@ class Agent:
 
                 # s1: append data
                 loc_auv = self.auv.get_vehicle_pos()
-                ctd_data.append([loc_auv[0], loc_auv[1], loc_auv[2], self.auv.get_salinity()])
+                ctd_data.append([loc_auv[0], loc_auv[1], -loc_auv[2], self.auv.get_salinity()])
 
                 if self.__counter == 0:
                     if t_now - t_pop_last >= max_submerged_time:
