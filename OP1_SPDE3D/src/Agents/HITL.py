@@ -136,20 +136,6 @@ class Agent:
                         # ss3: plan ahead.
                         self.myopic.get_pioneer_waypoint_index()
 
-                        """ No blocking test """
-                        # def updates(ctd_data):
-                        #     self.myopic.gmrf.assimilate_data(ctd_data)
-                        #     self.myopic.update_planner()
-                        #     self.myopic.get_pioneer_waypoint_index()
-
-                        # print("CTD: ", ctd_data)
-                        # t1 = time.time()
-                        # self.pool.apply_async(updates)
-                        # t2 = time.time()
-                        # print("Skip time: ", t2 - t1)
-                        # ctd_data = []
-                        # print("After CTD: ", ctd_data)
-
                         if self.__counter >= self.__NUM_STEP:
                             self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                        phone_number=phone,

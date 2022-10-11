@@ -16,10 +16,6 @@ from usr_func.checkfolder import checkfolder
 from usr_func.vectorize import vectorize
 import time
 
-# TODO: There are many abundant code for loading polygons and so on, need to solve that.
-# TODO: delete
-import matplotlib.pyplot as plt
-
 
 class GMRF:
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
@@ -52,8 +48,6 @@ class GMRF:
         Construct GMRF grid by converting lats, lons to xy.
         """
         filepath = os.getcwd() + "/GMRF/models/"
-        # x = np.load(filepath + "x.npy")
-        # y = np.load(filepath + "y.npy")
         lat = np.load(filepath + "lats.npy")
         lon = np.load(filepath + "lons.npy")
         z = np.load(filepath + "depth.npy")
@@ -66,24 +60,6 @@ class GMRF:
         self.__zg = vectorize(self.__gmrf_grid[:, 2])
         self.__Fgmrf = np.ones([1, self.__N_gmrf_grid])
 
-        # import matplotlib.pyplot as plt
-        # plt.plot(self.__gmrf_grid[:, 1], self.__gmrf_grid[:, 0], 'k.')
-        # plt.show()
-
-        # import plotly.graph_objects as go
-        # import plotly
-        # fig = go.Figure(data=go.Scatter3d(
-        #     x=self.__gmrf_grid[:, 1],
-        #     y=self.__gmrf_grid[:, 0],
-        #     z=self.__gmrf_grid[:, 2],
-        #     mode='markers',
-        #     marker=dict(
-        #         size=2,
-        #         color='black',
-        #     )
-        # ))
-        # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
-
         """
         Get the rotation of the grid, used for later plotting.
         """
@@ -93,21 +69,6 @@ class GMRF:
         polygon = sort_polygon_vertices(polygon)
         self.__rotated_angle = np.math.atan2(polygon[-1, 0] - polygon[0, 0],
                                              polygon[-1, 1] - polygon[0, 1])
-
-        # plt.plot(polygon[:, 1], polygon[:, 0], 'r-.')
-        # plt.plot(polygon[0, 1], polygon[0, 0], 'r.')
-        # plt.plot(polygon[1, 1], polygon[1, 0], 'g.')
-        # plt.plot(polygon[2, 1], polygon[2, 0], 'b.')
-        # plt.plot(polygon[3, 1], polygon[3, 0], 'y.')
-        # plt.axhline(0)
-        # plt.axvline(0)
-        # plt.axvline(4800)
-        # plt.axhline(8300)
-        # plt.xlim([-10, 10])
-        # plt.ylim([8250, 8350])
-        # plt.show()
-        # ra = math.degrees(self.__rotated_angle)
-        # ra
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
