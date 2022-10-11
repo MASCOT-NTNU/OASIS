@@ -1,7 +1,12 @@
 # Note for André
 
-- Step I, launch the bridge `roslaunch bridge.launch`.
-- Step II, launch the mission script `python3 Launcher.py` in each src folder, OP1 and OP2. 
+- Step 0, whenever you are in a folder called `catkin_ws`, please set up the environment using `source devel/setup.bash`. 
+- Step I, launch the bridge `roslaunch bridge.launch` to check if everything is running correctly.
+- If so, launch the bridge in no-hop mode `roslaunch bridge.launch > /dev/null 2>&1 &`
+- Step II, launch the mission script `python3 Launcher.py` in each src folder, OP1 and OP2 first to check if everything is running correctly.
+- If so, launch the mission script in no-hop mode `python3 Launcher.py > /dev/null 2>&1 &`
+- Step III, check `htop` to obverse if all the processes are running properly.
+- If so, wait maybe roughly 30 seconds before activating the program in neptus.
 
 - launch everthing with `> /dev/null 2>&1 &`
 
