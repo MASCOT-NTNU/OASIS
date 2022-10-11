@@ -1,6 +1,7 @@
 # Checklist
 ## What to do before launching the mission
-- remove data folders and contents from grf modules in long-horizon or gmrf. 
+
+- remove data folders and contents from grf modules in long-horizon or gmrf.
 - check all parameters in config to make it compatible with mission operation condition "wind_dir, wind_level, clock_start, clock_end".
 - check set waypoint, depth needs to be positive in adaframe.
 - activate all numbers in neptus in system configuration
@@ -9,3 +10,9 @@
 - launch bridge and then script.
 
 - check all the scripts are launch in the no-hop mode.
+
+
+# Change during mission
+- change threshold in both op1 and op2. 
+- change waypoint number after the first run to 30/50.
+- [x] change iridium destination to the manta we use in the operation.

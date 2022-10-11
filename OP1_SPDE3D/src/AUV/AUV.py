@@ -15,8 +15,8 @@ class AUV:
     __depth = .0
     __max_submerged_time = 600  # sec can be submerged.
     __min_popup_time = 90  # sec to be on the surface.
-    __phone_number = "+4792526858"
-    __iridium_destination = "manta-ntnu-1"
+    __phone_number = "+4740040327"
+    __iridium_destination = "manta-1"
     __currentSalinity = .0
     __vehicle_pos = [0, 0, 0]
 
