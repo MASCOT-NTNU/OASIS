@@ -120,6 +120,8 @@ class GMRF:
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
         df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt_data_assimilation), index=False)
 
+        # print("Dataset: ", dataset)
+
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
         xd = dataset[:, 0].reshape(-1, 1)
