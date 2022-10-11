@@ -51,7 +51,7 @@ class WaypointGraph:
     __xmax, __ymax = map(np.amax, [__polygon_border[:, 0], __polygon_border[:, 1]])
     __depths = np.array([-0.5, -1.5, -2.5])
     no_depth_layers = len(__depths)
-    __neighbour_distance = 180
+    __neighbour_distance = 360  # updated waypoint stepsize
     __neighbour = dict()
     __ygap = __neighbour_distance * cos(radians(60)) * 2
     __xgap = __neighbour_distance * sin(radians(60))
