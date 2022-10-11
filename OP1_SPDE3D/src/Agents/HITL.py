@@ -19,12 +19,13 @@ import time
 import os
 import math
 import rospy
+import multiprocessing as mp
 
 
 class Agent:
 
     __loc_start = np.array([41.12677, -8.68574, -0.5])
-    __NUM_STEP = 50
+    __NUM_STEP = 10
     __counter = 0
 
     def __init__(self) -> None:
@@ -36,6 +37,9 @@ class Agent:
 
         # s2: setup AUV.
         self.auv = AUV()
+
+        # stest: set up pool
+        self.pool = mp.Pool(1)
 
     def run(self):
         """
@@ -132,6 +136,20 @@ class Agent:
                         # ss3: plan ahead.
                         self.myopic.get_pioneer_waypoint_index()
 
+                        """ No blocking test """
+                        # def updates(ctd_data):
+                        #     self.myopic.gmrf.assimilate_data(ctd_data)
+                        #     self.myopic.update_planner()
+                        #     self.myopic.get_pioneer_waypoint_index()
+
+                        # print("CTD: ", ctd_data)
+                        # t1 = time.time()
+                        # self.pool.apply_async(updates)
+                        # t2 = time.time()
+                        # print("Skip time: ", t2 - t1)
+                        # ctd_data = []
+                        # print("After CTD: ", ctd_data)
+
                         if self.__counter >= self.__NUM_STEP:
                             self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                        phone_number=phone,
@@ -156,5 +174,3 @@ class Agent:
 if __name__ == "__main__":
     a = Agent()
     a.run()
-
-

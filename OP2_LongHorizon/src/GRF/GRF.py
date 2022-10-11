@@ -59,7 +59,7 @@ class GRF:
         # self.foldername_thres = f + "/GRF/threshold/{:d}/".format(t)
         checkfolder(self.foldername)
         checkfolder(self.foldername_ctd)
-        self.__cnt = 0
+        self.__cnt_data_saving = 0
         # checkfolder(self.foldername_thres)
 
     def __construct_grf_field(self):
@@ -85,7 +85,7 @@ class GRF:
         """
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
-        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt_data_saving))
 
         # t1 = time.time()
         xd = dataset[:, 0].reshape(-1, 1)
@@ -108,7 +108,10 @@ class GRF:
         # ss2: save assimilated data
         data = np.hstack((ind_assimilated.reshape(-1, 1), salinity_assimilated))
         df = pd.DataFrame(data, columns=['ind', 'salinity'])
-        df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt_data_saving))
+
+        ## update counter
+        self.__cnt_data_saving += 1
 
     def __update(self, ind_measured: np.ndarray, salinity_measured: np.ndarray):
         """
