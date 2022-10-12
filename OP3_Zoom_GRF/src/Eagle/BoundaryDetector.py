@@ -1,4 +1,3 @@
-
 from concurrent.futures import wait
 from re import S
 from turtle import update
@@ -112,31 +111,31 @@ class GradientDetection:
         self.depth = depth
 
         # Cleans avay the measurments that are not in the depth bound defined
-        filter_measurments(self)
+        self.filter_measurments()
 
         if len(self.salinity) > self.window:
 
             # Update the rolling average
-            self.salinity_average = moving_average(self, self.salinity, self.window)
-            self.depth_average = moving_average(self, self.depth, self.window)
+            self.salinity_average = self.moving_average(self.salinity, self.window)
+            self.depth_average = self.moving_average(self.depth, self.window)
 
             # Update the max salinity based on the data
-            update_max_salinity(self)
+            self.update_max_salinity()
 
             # Here we create the events and calculate the statistics
-            self.diff, self.change_direction = detect_change(self)
-            self.consecutive_change = get_consecutive_change(self)
-            self.events = find_event(self)
-            calculate_event_statistics(self)
+            self.diff, self.change_direction = self.detect_change(self)
+            self.consecutive_change = self.get_consecutive_change(self)
+            self.events = self.find_event(self)
+            self.calculate_event_statistics()
 
             # Filtering the events
-            self.positive_events = remove_events(self ,dirr=[1])
-            self.negative_events = remove_events(self ,dirr=[-1])
+            self.positive_events = self.remove_events(self ,dirr=[1])
+            self.negative_events = self.remove_events(self ,dirr=[-1])
 
-            self.positive_events_joined = join_treshold(self, self.positive_events, mode = self.threshold_mode)
-            self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
+            self.positive_events_joined = self.join_treshold(self, self.positive_events, mode = self.threshold_mode)
+            self.negative_events_joined = self.join_treshold(self, self.negative_events, mode = self.threshold_mode)
 
-            self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+            self.threshold = self.get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
         
 
     def set_max_salinity(self, max_salinity):
@@ -157,13 +156,13 @@ class GradientDetection:
 
 
         # Filtering the events
-        self.positive_events = remove_events(self ,dirr=[1])
-        self.negative_events = remove_events(self ,dirr=[-1])
+        self.positive_events = self.remove_events(self ,dirr=[1])
+        self.negative_events = self.remove_events(self ,dirr=[-1])
 
-        self.positive_events_joined = join_treshold(self, self.positive_events, mode = self.threshold_mode)
-        self.negative_events_joined = join_treshold(self, self.negative_events, mode = self.threshold_mode)
+        self.positive_events_joined = self.join_treshold(self, self.positive_events, mode = self.threshold_mode)
+        self.negative_events_joined = self.join_treshold(self, self.negative_events, mode = self.threshold_mode)
 
-        self.threshold = get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+        self.threshold = self.get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
 
 
     # Some issues wher w/2 < len(x) < w
@@ -511,11 +510,11 @@ if __name__ == "__main__":
             if m > len(salinity) -1:
                 break
                 m = len(salinity) - 1
-            update_measurments(threshold_detector, salinity[k:m], depth[k:m], x[k:m], y[k:m])
-            if threshold_found(threshold_detector):
+            threshold_detector.update_measurments(salinity[k:m], depth[k:m], x[k:m], y[k:m])
+            if threshold_detector.threshold_found():
                 #print(find_threshold_location(threshold_detector))
                 pass
-            print(threshold_found(threshold_detector))
+            print(threshold_detector.threshold_found())
             print(threshold_detector.threshold)
 
 
