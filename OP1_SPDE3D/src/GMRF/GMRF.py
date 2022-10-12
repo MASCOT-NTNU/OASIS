@@ -108,7 +108,7 @@ class GMRF:
         df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt_data_assimilation), index=False)
 
         # ss3: save threshold
-        threshold = self.__spde.threshold
+        threshold = self.__spde.getThreshold()
         df = pd.DataFrame(threshold.reshape(1, -1), columns=['threshold'])
         df.to_csv(self.foldername_thres + "D_{:03d}.csv".format(self.__cnt_data_assimilation), index=False)
 

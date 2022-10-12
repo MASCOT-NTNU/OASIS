@@ -19,8 +19,7 @@ import os
 
 
 class Agent:
-
-    __loc_start = np.array([0, 0, 0])
+    __loc_start = np.array([6876.20208333, 4549.81267591, .5])
     __loc_end = np.array([0, 0, 0])
     __NUM_STEP = 50
     __counter = 0
@@ -44,12 +43,18 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        id_start = np.random.randint(0, len(self.myopic.wp.get_waypoints()))
+        id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
+        # id_start = np.random.randint(0, len(self.myopic.wp.get_waypoints()))
         id_curr = id_start
+        neighbour = self.myopic.wp.get_neighbour_indices(id_curr)
+        id_next = neighbour[np.random.randint(len(neighbour))]
+        neighbour2 = self.myopic.wp.get_neighbour_indices(id_next)
+        id_pion = neighbour2[np.random.randint(len(neighbour2))]
 
         # s1: setup the planner -> only once
         self.myopic.set_current_index(id_curr)
         self.myopic.set_next_index(id_curr)
+        self.myopic.set_pioneer_index(id_pion)
 
         # a1: move to current location
         self.auv.move_to_location(self.myopic.wp.get_waypoint_from_ind(id_curr))
@@ -81,45 +86,47 @@ class Agent:
                     print("POPUP")
                     t_pop_last = time.time()
 
-                if self.__counter == 0:
-                    # s2: get next index using get_pioneer_waypoint
-                    ind = self.myopic.get_pioneer_waypoint_index()
-                    self.myopic.set_next_index(ind)
+                # if self.__counter == 0:
+                #     # s2: get next index using get_pioneer_waypoint
+                #     ind = self.myopic.get_pioneer_waypoint_index()
+                #     self.myopic.set_next_index(ind)
+                #
+                #     # p1: parallel move AUV to the first location
+                #     loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                #     self.auv.move_to_location(loc)
+                #
+                #     # s3: update planner -> so curr and next waypoint is updated
+                #     self.myopic.update_planner()
+                #
+                #     # s4: get pioneer waypoint
+                #     self.myopic.get_pioneer_waypoint_index()
+                #
+                #     # # s5: obtain CTD data
+                #     ctd_data = self.auv.get_ctd_data()
+                #
+                #     # # s5: assimilate data
+                #     self.myopic.gmrf.assimilate_data(ctd_data)
+                # else:
 
-                    # p1: parallel move AUV to the first location
-                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
-                    self.auv.move_to_location(loc)
+                ind = self.myopic.get_next_index()
+                loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                self.auv.move_to_location(loc)
 
-                    # s3: update planner -> so curr and next waypoint is updated
-                    self.myopic.update_planner()
+                # a1: gather AUV data
+                ctd_data = self.auv.get_ctd_data()
 
-                    # s4: get pioneer waypoint
-                    self.myopic.get_pioneer_waypoint_index()
+                # a2: update GMRF field
+                self.myopic.gmrf.assimilate_data(ctd_data)
 
-                    # # s5: obtain CTD data
-                    ctd_data = self.auv.get_ctd_data()
+                # ss2: update planner
+                self.myopic.update_planner()
 
-                    # # s5: assimilate data
-                    self.myopic.gmrf.assimilate_data(ctd_data)
-                else:
-                    ind = self.myopic.get_current_index()
-                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
-                    self.auv.move_to_location(loc)
+                # ss3: plan ahead.
+                self.myopic.get_pioneer_waypoint_index()
 
-                    # a1: gather AUV data
-                    ctd_data = self.auv.get_ctd_data()
+                if self.__counter == self.__NUM_STEP:
+                    break
 
-                    # a2: update GMRF field
-                    self.myopic.gmrf.assimilate_data(ctd_data)
-
-                    # ss2: update planner
-                    self.myopic.update_planner()
-
-                    # ss3: plan ahead.
-                    self.myopic.get_pioneer_waypoint_index()
-
-                    if self.__counter == self.__NUM_STEP:
-                        break
                 print("counter: ", self.__counter)
                 print(self.myopic.get_current_index())
                 print(self.myopic.get_trajectory_indices())
