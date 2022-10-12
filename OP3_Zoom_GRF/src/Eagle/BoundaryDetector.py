@@ -4,7 +4,7 @@ from re import S
 from turtle import update
 from numpy import empty, quantile
 import numpy as np
-from sqlalchemy import case
+#from sqlalchemy import case
 
 
 class GradientDetection:
@@ -27,7 +27,7 @@ class GradientDetection:
         self.x = np.array([])
         self.y = np.array([])
 
-    
+
         self.diff = np.empty([])
         self.change_direction = np.empty([])
         self.consecutive_change = self.diff = np.empty([])
@@ -67,7 +67,7 @@ def boundary_found(self):
         return False
     # Checks if we have reached ocean water
 
-  
+
     return True
 
 
@@ -75,7 +75,7 @@ def find_threshold_location(self):
 
 
     if self.threshold != 0:
-    
+
         indecies = np.where(np.logical_and(self.salinity_average < self.threshold + 1, self.salinity_average > self.threshold - 1), True, False)
 
         current_x = self.x[-1]
@@ -93,13 +93,13 @@ def find_threshold_location(self):
         return x_values[min_ind], y_values[min_ind]
     return 0,0
 
-    
+
 def update_measurments(self, salinity, depth, x, y):
     self.x = x
     self.y = y
 
     update_salinity_and_depth(self, salinity, depth)
-    
+
 
 def set_max_salinity(self, max_salinity):
     self.max_salinity_bound = max_salinity
@@ -400,86 +400,86 @@ if __name__ == "__main__":
     import time
 
     ## Get Data
-    path = "/Users/ajolaise/OneDrive - NTNU/PhD/AUV Missions/Porto October 2022/code/data"
-    data = np.load(path + "/transect1_raw.npz")
-    salinity = data['salinity']
-    depth = data['depth']
-    x = data['lat']
-    y = data['lon']
-    # lat = data['lat']
-    # lon = data['lon']
+    # path = "/Users/ajolaise/OneDrive - NTNU/PhD/AUV Missions/Porto October 2022/code/data"
+    # data = np.load(path + "/transect1_raw.npz")
+    # salinity = data['salinity']
     # depth = data['depth']
+    # x = data['lat']
+    # y = data['lon']
+    # # lat = data['lat']
+    # # lon = data['lon']
+    # # depth = data['depth']
+    #
+    #
+    #
+    #
+    #
+    # test_case = 4
+    # print("hahfrsef")
+    # if test_case == 1:
+    #
+    #     print("#### Test case 1####")
+    #     salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+    #     depth =    np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+    #     x = np.arange(len(salinity + 1))
+    #     y = np.arange(len(salinity + 1))
+    #     threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
+    #     update_measurments(threshold_detector, salinity, depth, x, y)
+    #
+    #     print(threshold_detector.salinity)
+    #     print(threshold_detector.change_direction)
+    #     print(len(salinity))
+    #     print(threshold_detector.threshold)
+    #     print(threshold_detector.max_salinity)
+    #     print(find_threshold_location(threshold_detector))
+    #     print(salinity[17])
+    #
+    #     print("Test done")
+    #
+    # if test_case == 2:
+    #     sal = salinity
+    #     for j in range(100):
+    #         sal = np.concatenate((sal, salinity))
+    #
+    #     a = time.time()
+    #     threshold_detector = GradientDetection(sal, depth, salinity_max=25, salinity_min=15, window=201, min_event_length=5)
+    #
+    #     b = time.time()
+    #     print(b - a)
+    #
+    # if test_case == 3:
+    #
+    #     print("Case 3")
+    #     a = time.time()
+    #     threshold_detector = GradientDetection(salinity_max=25, salinity_min=15)
+    #     i,j = 0,100
+    #     update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+    #     print(threshold_detector.threshold)
+    #     i,j = 0,1000
+    #     update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
+    #     print(threshold_detector.threshold)
+    #     update_measurments(threshold_detector,  salinity, depth, x, y)
+    #     print(threshold_detector.threshold)
+    #     print(find_threshold_location(threshold_detector))
+    #     b = time.time()
+    #     print(b - a)
+    #     plt.scatter(x,y,c=salinity,
+    #        cmap="RdBu")
+    #     plt.colorbar()
+    #     plt.scatter(63.44804720899967, 10.418544113280312,c='yellow')
+    #     plt.show()
 
-
-
-
-
-    test_case = 4
-    print("hahfrsef")
-    if test_case == 1:
-        
-        print("#### Test case 1####")
-        salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
-        depth =    np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
-        x = np.arange(len(salinity + 1))
-        y = np.arange(len(salinity + 1))
-        threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
-        update_measurments(threshold_detector, salinity, depth, x, y)
-        
-        print(threshold_detector.salinity)
-        print(threshold_detector.change_direction)
-        print(len(salinity))
-        print(threshold_detector.threshold)
-        print(threshold_detector.max_salinity)
-        print(find_threshold_location(threshold_detector))
-        print(salinity[17])
-
-        print("Test done")
-
-    if test_case == 2:
-        sal = salinity
-        for j in range(100):
-            sal = np.concatenate((sal, salinity))
-
-        a = time.time()
-        threshold_detector = GradientDetection(sal, depth, salinity_max=25, salinity_min=15, window=201, min_event_length=5)
-
-        b = time.time()
-        print(b - a)
-
-    if test_case == 3:
-
-        print("Case 3")
-        a = time.time()
-        threshold_detector = GradientDetection(salinity_max=25, salinity_min=15)
-        i,j = 0,100
-        update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
-        print(threshold_detector.threshold)
-        i,j = 0,1000
-        update_measurments(threshold_detector, salinity[i:j], depth[i:j], x[i:j], y[i:j])
-        print(threshold_detector.threshold)
-        update_measurments(threshold_detector,  salinity, depth, x, y)
-        print(threshold_detector.threshold)
-        print(find_threshold_location(threshold_detector))
-        b = time.time()
-        print(b - a)
-        plt.scatter(x,y,c=salinity,
-           cmap="RdBu")
-        plt.colorbar()
-        plt.scatter(63.44804720899967, 10.418544113280312,c='yellow')
-        plt.show()
-
-    if test_case == 4:
-        print("#### Test case 1####")
-        salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
-        depth =    np.array([1,0.5,0.5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
-        x = np.arange(len(salinity + 1))
-        y = np.arange(len(salinity + 1))
-        threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
-        update_measurments(threshold_detector, salinity, depth, x, y)
-        print(threshold_detector.salinity)
-        filter_measurments(threshold_detector)
-        print(threshold_detector.salinity)
+    # if test_case == 4:
+    print("#### Test case 1####")
+    salinity = np.array([1,2,3,4,5,6,7,4,5,2,5,3,5,6,7,8,5,3,5,7])
+    depth =    np.array([1,0.5,0.5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+    x = np.arange(len(salinity + 1))
+    y = np.arange(len(salinity + 1))
+    threshold_detector = GradientDetection(salinity_max=7, salinity_min=3, window=3, min_event_length=2)
+    update_measurments(threshold_detector, salinity, depth, x, y)
+    print(threshold_detector.salinity)
+    filter_measurments(threshold_detector)
+    print(threshold_detector.salinity)
 
 
 
