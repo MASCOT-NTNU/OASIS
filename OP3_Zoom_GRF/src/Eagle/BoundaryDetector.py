@@ -123,19 +123,19 @@ class GradientDetection:
             self.update_max_salinity()
 
             # Here we create the events and calculate the statistics
-            self.diff, self.change_direction = self.detect_change(self)
-            self.consecutive_change = self.get_consecutive_change(self)
-            self.events = self.find_event(self)
+            self.diff, self.change_direction = self.detect_change()
+            self.consecutive_change = self.get_consecutive_change()
+            self.events = self.find_event()
             self.calculate_event_statistics()
 
             # Filtering the events
-            self.positive_events = self.remove_events(self ,dirr=[1])
-            self.negative_events = self.remove_events(self ,dirr=[-1])
+            self.positive_events = self.remove_events(dirr=[1])
+            self.negative_events = self.remove_events(dirr=[-1])
 
-            self.positive_events_joined = self.join_treshold(self, self.positive_events, mode = self.threshold_mode)
-            self.negative_events_joined = self.join_treshold(self, self.negative_events, mode = self.threshold_mode)
+            self.positive_events_joined = self.join_treshold(self.positive_events, mode = self.threshold_mode)
+            self.negative_events_joined = self.join_treshold(self.negative_events, mode = self.threshold_mode)
 
-            self.threshold = self.get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+            self.threshold = self.get_optimal_threshold(self.positive_events_joined, self.negative_events_joined)
         
 
     def set_max_salinity(self, max_salinity):
@@ -156,13 +156,13 @@ class GradientDetection:
 
 
         # Filtering the events
-        self.positive_events = self.remove_events(self ,dirr=[1])
-        self.negative_events = self.remove_events(self ,dirr=[-1])
+        self.positive_events = self.remove_events(dirr=[1])
+        self.negative_events = self.remove_events(dirr=[-1])
 
-        self.positive_events_joined = self.join_treshold(self, self.positive_events, mode = self.threshold_mode)
-        self.negative_events_joined = self.join_treshold(self, self.negative_events, mode = self.threshold_mode)
+        self.positive_events_joined = self.join_treshold(self.positive_events, mode = self.threshold_mode)
+        self.negative_events_joined = self.join_treshold(self.negative_events, mode = self.threshold_mode)
 
-        self.threshold = self.get_optimal_threshold(self, self.positive_events_joined, self.negative_events_joined)
+        self.threshold = self.get_optimal_threshold(self.positive_events_joined, self.negative_events_joined)
 
 
     # Some issues wher w/2 < len(x) < w
