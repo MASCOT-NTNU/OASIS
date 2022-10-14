@@ -12,8 +12,7 @@ from usr_func.checkfolder import checkfolder
 from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
-from usr_func.normalize import normalize
-from sys import maxsize
+from typing import Union
 import time
 import os
 import pandas as pd
@@ -22,7 +21,7 @@ from math import radians, cos, sin
 
 class GRF:
     # spatial resolution
-    __spatial_resolution = 60  # [m], neighbour distance among waypoints.
+    __spatial_resolution = 240  # [m], neighbour distance among waypoints.
 
     # parameters in Gaussian Matérn kernel
     __distance_matrix = None
@@ -122,7 +121,7 @@ class GRF:
         # s0: get delft3d dataset
         dataset_delft3d = self.__delft3d.get_dataset()
         # s1: interpolate onto grid.
-        dm_grid_delft3d = cdist(self.grid, dataset_delft3d[:, :2])
+        dm_grid_delft3d = cdist(self.__grf_grid[:, :2], dataset_delft3d[:, :2])
         ind_close = np.argmin(dm_grid_delft3d, axis=1)
         self.__mu = dataset_delft3d[ind_close, 2].reshape(-1, 1)
 
@@ -170,7 +169,7 @@ class GRF:
         :param salinity_measured: measurements at sampeld locations, dimension: m x 1
         """
         msamples = salinity_measured.shape[0]
-        F = np.zeros([msamples, self.Ngrid])
+        F = np.zeros([msamples, self.__Ngrid])
         for i in range(msamples):
             F[i, ind_measured[i]] = True
         R = np.eye(msamples) * self.__tau ** 2
@@ -178,66 +177,109 @@ class GRF:
         self.__mu = self.__mu + self.__Sigma @ F.T @ np.linalg.solve(C, (salinity_measured - F @ self.__mu))
         self.__Sigma = self.__Sigma - self.__Sigma @ F.T @ np.linalg.solve(C, F @ self.__Sigma)
 
-    def get_ei_field_total(self) -> tuple:
-        t1 = time.time()
-        eibv_field = np.zeros([self.Ngrid])
-        ivr_field = np.zeros([self.Ngrid])
-        for i in range(self.Ngrid):
-            SF = self.__Sigma[:, i].reshape(-1, 1)
-            MD = 1 / (self.__Sigma[i, i] + self.__nugget)
-            VR = SF @ SF.T * MD
-            SP = self.__Sigma - VR
-            sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv_field[i] = self.__get_ibv(self.__mu, sigma_diag)
-            ivr_field[i] = np.sum(np.diag(VR))
-        self.__eibv_field = normalize(eibv_field)
-        self.__ivr_field = 1 - normalize(ivr_field)
-        t2 = time.time()
-        print("Total EI field takes: ", t2 - t1, " seconds.")
-        return self.__eibv_field, self.__ivr_field
+    # def get_ei_field_total(self) -> tuple:
+    #     t1 = time.time()
+    #     eibv_field = np.zeros([self.__Ngrid])
+    #     ivr_field = np.zeros([self.Ngrid])
+    #     for i in range(self.Ngrid):
+    #         SF = self.__Sigma[:, i].reshape(-1, 1)
+    #         MD = 1 / (self.__Sigma[i, i] + self.__nugget)
+    #         VR = SF @ SF.T * MD
+    #         SP = self.__Sigma - VR
+    #         sigma_diag = np.diag(SP).reshape(-1, 1)
+    #         eibv_field[i] = self.__get_ibv(self.__mu, sigma_diag)
+    #         ivr_field[i] = np.sum(np.diag(VR))
+    #     self.__eibv_field = normalize(eibv_field)
+    #     self.__ivr_field = 1 - normalize(ivr_field)
+    #     t2 = time.time()
+    #     print("Total EI field takes: ", t2 - t1, " seconds.")
+    #     return self.__eibv_field, self.__ivr_field
+    #
+    # def get_ei_field_para(self) -> tuple:
+    #     t1 = time.time()
+    #     def get_eibv_ivr(i):
+    #         SF = self.__Sigma[:, i].reshape(-1, 1)
+    #         MD = 1 / (self.__Sigma[i, i] + self.__nugget)
+    #         VR = SF @ SF.T * MD
+    #         SP = self.__Sigma - VR
+    #         sigma_diag = np.diag(SP).reshape(-1, 1)
+    #         eibv = self.__get_ibv(self.__mu, sigma_diag)
+    #         ivr = np.sum(np.diag(VR))
+    #         return eibv, ivr
+    #     res = Parallel(n_jobs=10)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
+    #     eibv_field = np.array([item[0] for item in res])
+    #     ivr_field = np.array([item[1] for item in res])
+    #     self.__eibv_field = normalize(eibv_field)
+    #     self.__ivr_field = 1 - normalize(ivr_field)
+    #     t2 = time.time()
+    #     print("Para EI field takes: ", t2 - t1, " seconds.")
+    #     return self.__eibv_field, self.__ivr_field
+    #
+    # def get_ei_field_partial(self, indices: np.ndarray) -> tuple:
+    #     """ Get EI field only for selected indices.
+    #     Only compute EI field for the designated indices. Then the rest EI field is large numbers.
+    #     """
+    #     t1 = time.time()
+    #     eibv_field = np.ones([self.Ngrid]) * maxsize
+    #     ivr_field = np.ones([self.Ngrid]) * maxsize
+    #     for idx in indices:
+    #         SF = self.__Sigma[:, idx].reshape(-1, 1)
+    #         MD = 1 / (self.__Sigma[idx, idx] + self.__nugget)
+    #         VR = SF @ SF.T * MD
+    #         SP = self.__Sigma - VR
+    #         sigma_diag = np.diag(SP).reshape(-1, 1)
+    #         eibv_field[idx] = self.__get_ibv(self.__mu, sigma_diag)
+    #         ivr_field[idx] = np.sum(np.diag(VR))
+    #     eibv_field[indices] = normalize(eibv_field[indices])
+    #     ivr_field[indices] = 1 - normalize(ivr_field[indices])
+    #     self.__eibv_field = eibv_field
+    #     self.__ivr_field = ivr_field
+    #     t2 = time.time()
+    #     print("Partial EI field takes: ", t2 - t1, " seconds.")
+    #     return self.__eibv_field, self.__ivr_field
 
-    def get_ei_field_para(self) -> tuple:
-        t1 = time.time()
-        def get_eibv_ivr(i):
-            SF = self.__Sigma[:, i].reshape(-1, 1)
-            MD = 1 / (self.__Sigma[i, i] + self.__nugget)
-            VR = SF @ SF.T * MD
-            SP = self.__Sigma - VR
-            sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv = self.__get_ibv(self.__mu, sigma_diag)
-            ivr = np.sum(np.diag(VR))
-            return eibv, ivr
-        res = Parallel(n_jobs=10)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
-        eibv_field = np.array([item[0] for item in res])
-        ivr_field = np.array([item[1] for item in res])
-        self.__eibv_field = normalize(eibv_field)
-        self.__ivr_field = 1 - normalize(ivr_field)
-        t2 = time.time()
-        print("Para EI field takes: ", t2 - t1, " seconds.")
-        return self.__eibv_field, self.__ivr_field
-
-    def get_ei_field_partial(self, indices: np.ndarray) -> tuple:
-        """ Get EI field only for selected indices.
-        Only compute EI field for the designated indices. Then the rest EI field is large numbers.
+    def get_eibv_at_locations(self, loc: np.ndarray) -> np.ndarray:
         """
-        t1 = time.time()
-        eibv_field = np.ones([self.Ngrid]) * maxsize
-        ivr_field = np.ones([self.Ngrid]) * maxsize
-        for idx in indices:
-            SF = self.__Sigma[:, idx].reshape(-1, 1)
-            MD = 1 / (self.__Sigma[idx, idx] + self.__nugget)
-            VR = SF @ SF.T * MD
-            SP = self.__Sigma - VR
-            sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv_field[idx] = self.__get_ibv(self.__mu, sigma_diag)
-            ivr_field[idx] = np.sum(np.diag(VR))
-        eibv_field[indices] = normalize(eibv_field[indices])
-        ivr_field[indices] = 1 - normalize(ivr_field[indices])
-        self.__eibv_field = eibv_field
-        self.__ivr_field = ivr_field
-        t2 = time.time()
-        print("Partial EI field takes: ", t2 - t1, " seconds.")
-        return self.__eibv_field, self.__ivr_field
+        Get EIBV at candidate locations.
+
+        Args:
+            loc: np.array([[x1, y1, z1],
+                           [x2, y2, z2],
+                           ...
+                           [xn, yn, zn]])
+
+        Returns:
+            EIBV associated with each location.
+        """
+        # s1: get indices
+        id = self.get_ind_from_location(loc)
+        # s2: get post variance from spde
+
+        # s3: get eibv using post variance
+        eibv = []
+        for i in range(len(id)):
+            ibv = self.__get_ibv(self.__spde.threshold, self.__spde.mu, post_var[:, i])
+            eibv.append(ibv)
+        return np.array(eibv)
+
+    def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
+        """
+        Args:
+            loc: np.array([xp, yp, zp])
+        Returns: index of the closest waypoint.
+        """
+        if len(loc) > 0:
+            dm = loc.ndim
+            if dm == 1:
+                d = cdist(self.__grf_grid, loc.reshape(1, -1))
+                return np.argmin(d, axis=0)
+            elif dm == 2:
+                d = cdist(self.__grf_grid, loc)
+                return np.argmin(d, axis=0)
+            else:
+                return None
+        else:
+            return None
 
     def __get_ibv(self, mu: np.ndarray, sigma_diag: np.ndarray):
         """ !!! Be careful with dimensions, it can lead to serious problems.
@@ -262,6 +304,9 @@ class GRF:
     def set_threshold(self, value: float) -> None:
         self.__threshold = value
 
+    def get_grid(self) -> np.ndarray:
+        return self.__grf_grid
+
     def set_mu(self, value: np.ndarray) -> None:
         self.__mu = value
 
@@ -283,13 +328,13 @@ class GRF:
     def get_Sigma(self) -> np.ndarray:
         return self.__Sigma
 
-    def get_eibv_field(self) -> np.ndarray:
-        """ Return the computed eibv field, given which method to be called. """
-        return self.__eibv_field
-
-    def get_ivr_field(self) -> np.ndarray:
-        """ Return the computed ivr field, given which method to be called. """
-        return self.__ivr_field
+    # def get_eibv_field(self) -> np.ndarray:
+    #     """ Return the computed eibv field, given which method to be called. """
+    #     return self.__eibv_field
+    #
+    # def get_ivr_field(self) -> np.ndarray:
+    #     """ Return the computed ivr field, given which method to be called. """
+    #     return self.__ivr_field
 
 
 if __name__ == "__main__":

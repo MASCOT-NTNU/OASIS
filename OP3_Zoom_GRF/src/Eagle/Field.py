@@ -60,7 +60,7 @@ class Field:
         point = Point(x, y)
         return self.__polygon_border_shapely.contains(point)
 
-    def is_border_in_the_way(self, loc_start: np.ndarray, loc_end: np.ndarray) -> bool:
+    def is_path_legal(self, loc_start: np.ndarray, loc_end: np.ndarray) -> bool:
         """ Check if border is in the way between loc_start and loc_end. """
         xs, ys = loc_start
         xe, ye = loc_end
