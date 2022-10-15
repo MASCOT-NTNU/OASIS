@@ -9,8 +9,6 @@ from CostValley.CostValley import CostValley
 import numpy as np
 import os
 from shapely.geometry import Polygon, Point, LineString
-# TODO: delete
-from Visualiser.TreePlotter import TreePlotter
 
 
 class RRTStarCV:
@@ -22,9 +20,6 @@ class RRTStarCV:
 
     # setup cost valley
     __cost_valley = CostValley()
-
-    # TODO: delete
-    __figpath = os.getcwd() + "/../../fig/trees/"
 
     # loc
     __loc_start = np.array([1000, 1000])
@@ -61,10 +56,6 @@ class RRTStarCV:
     # budget
     __Budget = False
 
-    # TODO: plot, delete
-    polygon_border = np.append(__polygon_border, __polygon_border[0, :].reshape(1, -1), axis=0)
-    cnt_plot = 0
-
     def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray) -> np.ndarray:
         """
         Get the next waypoint according to RRT* path planning philosophy.
@@ -87,9 +78,6 @@ class RRTStarCV:
         # update polygons from budget.
         self.__polygon_ellipse_shapely = self.__Budget.get_polygon_ellipse()
         self.__line_ellipse_shapely = self.__Budget.get_line_ellipse()
-
-        # TODO: delete
-        self.tp = TreePlotter()
 
         # s2: expand the trees.
         self.__expand_trees()
@@ -170,43 +158,8 @@ class RRTStarCV:
                 self.__target_node.set_parent(self.__new_node)
             else:
                 self.__nodes.append(self.__new_node)
-
-            self.tp.update_trees(self.__nodes)
-
-            """ plot section """
-            # plt.figure(figsize=(10, 10))
-            # self.tp.plot_tree()
-            # plt.plot(self.__loc_start[1], self.__loc_start[0], 'r.', markersize=20)
-            # plt.plot(self.__loc_target[1], self.__loc_target[0], 'k*', markersize=20)
-            # plt.plot(self.polygon_border[:, 1], self.polygon_border[:, 0], 'r-.')
-            # if self.__isarrived():
-            #     # update new traj
-            #     self.__get_shortest_trajectory()
-            # traj = self.get_trajectory()
-            # plt.plot(traj[:, 1], traj[:, 0], 'k-', linewidth=4)
-            # plt.xlabel("East")
-            # plt.ylabel("North")
-            # plt.savefig(self.__figpath + "rrts/P_{:04d}.png".format(self.cnt_plot))
-            # self.cnt_plot += 1
-            # plt.close("all")
-            """ End of plot. """
         # t2 = time.time()
         # print("Tree expansion takes: ", t2 - t1)
-
-    # def __get_shrunk_border(self):
-    #     """ Return updated shrunk border. """
-    #     plg_box = Polygon(Field.get_polygon_border())
-    #     plg_ellipse = Polygon(self.__Budget.get_polygon_ellipse())
-    #     inters = [plg_ellipse.intersection(plg_box)]
-    #     reg = GeometryCollection(inters)
-    #     op = reg.geoms
-    #     x = op[0].exterior.xy[0]
-    #     y = op[0].exterior.xy[1]
-    #     plg = np.vstack((x, y)).T
-    #     self.__polygon_border = plg
-    #     self.__polygon_border_shapely = Polygon(plg)
-    #     self.__line_border_shapely = LineString(plg)
-    #     return plg
 
     def __get_nearest_node(self) -> None:
         """ Return nearest node in the tree graph, only use distance. """

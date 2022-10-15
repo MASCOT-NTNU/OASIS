@@ -1,4 +1,6 @@
-""" GRF object handles GRF-related functions. """
+"""
+GRF  
+"""
 
 from Field import Field
 from Delft3D import Delft3D
