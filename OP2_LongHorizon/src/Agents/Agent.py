@@ -35,7 +35,7 @@ class Agent:
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: set up planner.
-        loc_start = np.array([10000, 8000])
+        loc_start = np.array([6000, 8000])
         self.planner = Planner(loc_start)
 
         # s2: setup AUV simulator.
