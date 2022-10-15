@@ -20,14 +20,6 @@ class Field:
     __plg = __config.get_polygon_operational_area()
     x, y = WGS.latlon2xy(__plg[:, 0], __plg[:, 1])
     __polygon_border = np.stack((x, y), axis=1)
-    # __polygon_border = np.array([[14255.15453767, 5709.75943741],
-    #                              [6655.93266267, 6090.08594322],
-    #                              [6569.54877378, -217.02662071],
-    #                              [0., 0.],
-    #                              [2463.42533384, 11085.316791],
-    #                              [8832.34529913, 11091.94966078],
-    #                              [11678.38384112, 10215.62113641],
-    #                              [14255.15453767, 5709.75943741]])
     __polygon_border_shapely = Polygon(__polygon_border)
 
     """ Get the xy limits and gaps for the bigger box """

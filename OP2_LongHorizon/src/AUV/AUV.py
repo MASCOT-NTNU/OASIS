@@ -4,7 +4,7 @@ the sensor data through ROS-IMC bridge.
 """
 from WGS import WGS
 import rospy
-import math
+from math import degrees
 import numpy as np
 from auv_handler import AuvHandler
 from imc_ros_interface.msg import Temperature, Salinity, EstimatedState, Sms
@@ -39,12 +39,13 @@ class AUV:
         self.__currentSalinity = msg.value.data
 
     def EstimatedStateCB(self, msg):
-        lat_origin, lon_origin = WGS.get_origin()
-        circum = WGS.get_circumference()
-        offset_north = msg.lat.data - math.radians(lat_origin)
-        offset_east = msg.lon.data - math.radians(lon_origin)
-        N = offset_north * circum / (2.0 * np.pi)
-        E = offset_east * circum * np.cos(math.radians(lat_origin)) / (2.0 * np.pi)
+        # lat_origin, lon_origin = WGS.get_origin()
+        # circum = WGS.get_circumference()
+        # offset_north = msg.lat.data - math.radians(lat_origin)
+        # offset_east = msg.lon.data - math.radians(lon_origin)
+        # N = offset_north * circum / (2.0 * np.pi)
+        # E = offset_east * circum * np.cos(math.radians(lat_origin)) / (2.0 * np.pi)
+        N, E = WGS.latlon2xy(degrees(msg.lat.data), degrees(msg.lon.data))
         D = msg.depth.data
         self.__vehicle_pos = [N, E, D]
 

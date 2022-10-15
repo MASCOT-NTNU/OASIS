@@ -46,9 +46,6 @@ class CostValley:
                     # __azimuth_field +
                     __budget_field)
 
-    def __init__(self) -> None:
-        pass
-
     def update_cost_valley(self, loc_now: np.ndarray):
         x_now, y_now = loc_now
         # t1 = time.time()
