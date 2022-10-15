@@ -15,7 +15,6 @@ This module has two main functions:
 :param
 - MARGIN: defines the minimum vertical distance to stop using rrt*
 """
-
 from Config import Config
 import numpy as np
 from matplotlib.patches import Ellipse

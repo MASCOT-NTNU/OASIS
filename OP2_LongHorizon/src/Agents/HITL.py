@@ -31,11 +31,13 @@ class Agent:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
-        # s1: setup planner.
-        self.planner = Planner()
-
-        # s2: setup AUV.
+        # s0: setup AUV.
         self.auv = AUV()
+
+        # s1: setup planner.
+        loc_auv = self.auv.get_vehicle_pos()
+        loc_start = loc_auv[:2]
+        self.planner = Planner(loc_start)
 
     def run(self):
         """

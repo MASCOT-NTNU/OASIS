@@ -1,7 +1,9 @@
 """
-GRF  
+GRF handles the following functions
+- udpate the field.
+- assimilate data.
+- get eibv for a specific location.
 """
-
 from Field import Field
 from Delft3D import Delft3D
 from usr_func.vectorize import vectorize

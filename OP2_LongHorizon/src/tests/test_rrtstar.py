@@ -44,7 +44,7 @@ class TestRRTStar(TestCase):
         self.polygon_border = self.field.get_polygon_border()
 
     def test_get_new_location(self):
-        loc_now = np.array([6000, 7000])
+        loc_now = np.array([6000, 8000])
         # loc_now = self.config.get_loc_start()
         loc_end = self.config.get_loc_home()
         wp = self.rrtstar.get_next_waypoint(loc_now, loc_end)

@@ -74,10 +74,10 @@ class TestGRF(TestCase):
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
         # c3: multiple
-        dataset = np.array([[5500, 6000,  0, 35],
-                            [6000, 9000, 0, 20],
-                            [6200, 8500, 0, 15],
-                            [6600, 8800, 0, 20]])
+        dataset = np.array([[6500, 7000,  0, 35],
+                            [7000, 8000, 0, 20],
+                            [7200, 8500, 0, 15],
+                            [7600, 8800, 0, 20]])
         self.g.assimilate_data(dataset)
         plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
         print("End S2")
@@ -89,16 +89,16 @@ class TestGRF(TestCase):
         eibv, ivr = self.g.get_ei_field_total()
         plotf(self, v1=eibv, v2=ivr)
 
-        eibv, ivr = self.g.get_ei_field_para()
-        plotf(self, v1=eibv, v2=ivr)
+        # eibv, ivr = self.g.get_ei_field_para()
+        # plotf(self, v1=eibv, v2=ivr)
 
         # c2: with data assimilation
-        dataset = np.array([[10000, 9000, 0, 10],
-                            [12000, 8000, 0, 15],
-                            [8000, 10000, 0, 13],
-                            [6000, 6000, 0, 33],
-                            [8000, 8000, 0, 26],
-                            [4000, 9000, 0, 24]])
+        dataset = np.array([[8000, 8000, 0, 10],
+                            [9200, 9000, 0, 15],
+                            [7000, 8000, 0, 13],
+                            [8000, 7000, 0, 33],
+                            [6000, 8000, 0, 26],
+                            [5000, 9000, 0, 24]])
         self.g.assimilate_data(dataset)
         eibv, ivr = self.g.get_ei_field_total()
         plotf(self, v1=eibv, v2=ivr)
