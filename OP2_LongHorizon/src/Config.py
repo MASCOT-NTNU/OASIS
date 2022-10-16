@@ -20,7 +20,7 @@ from shapely.geometry import Polygon, GeometryCollection
 
 class Config:
     """ Mission setup. """
-    __mission_date = "2022-10-11_2022-10-12"  # needs to have one day ahead.
+    __mission_date = "2022-10-17_2022-10-18"  # needs to have one day ahead.
     __wind_dir = "North"
     __wind_level = "Moderate"
     __clock_start = 10  # expected starting time, at o'clock
@@ -37,6 +37,7 @@ class Config:
 
     __lat_home = 41.12677
     __lon_home = -8.68574
+    # TODO: add resume flag
 
     @staticmethod
     def set_mission_date(value: str) -> None:
