@@ -90,7 +90,7 @@ class GRF:
 
     def __load_conditional_field(self) -> None:
         """
-        Load data from # TODO: check automatically loading the suspended mean and covariance.
+        Load data from suspended conditional salinity field and covariance structure.
         """
         files_mu = os.listdir(self.foldername_mu)
         files_Sigma = os.listdir(self.foldername_Sigma)
@@ -98,12 +98,13 @@ class GRF:
             last_file = sorted(files_mu)[-1]
             self.__mu = np.load(self.foldername_mu + last_file)
             self.__Sigma = np.load(self.foldername_Sigma + last_file)
-            self.__cnt_data_saving = int(last_file[2:])
+            self.__cnt_data_saving = int(last_file[2:-4]) + 1
         else:
             self.__construct_grf_field()
             self.__construct_prior_mean()
+            self.__cnt_data_saving = 0
 
-    def assimilate_data(self, dataset: np.ndarray, cnt_waypoint: int) -> None:
+    def assimilate_data(self, dataset: np.ndarray) -> None:
         """
         Assimilate dataset to GRF kernel.
         It computes the distance matrix between gmrf grid and dataset grid. Then the values are averged to each cell.
