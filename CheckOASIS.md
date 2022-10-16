@@ -9,6 +9,10 @@
 # Mission Checklist
 - `last reboot` shows all possible reboot in the history, but it needs to be the local machine's time.
 - `grep -nrw . -e "storing"`
+- `journalctl --list-boots` to list reboot time.
+- `uptime -s` shows the system uptime for the duration.
+- `KillUserProcesses=yes` in `/etc/systemd/logind.conf`
+- `loginctl enable-linger` enables linearing. 
 
 ## To start DUNE from hardware mode, use the following command.
 `services dune restart`
