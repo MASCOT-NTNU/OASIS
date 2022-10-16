@@ -47,7 +47,7 @@ class GRF:
     __xg = vectorize(grid[:, 0])
     __yg = vectorize(grid[:, 1])
 
-    def __init__(self, resume: bool) -> None:
+    def __init__(self, resume: bool = False) -> None:
         # s0: check datafolders
         t = int(time.time())
         f = os.getcwd()
@@ -181,6 +181,7 @@ class GRF:
 
     def get_ei_field_para(self) -> tuple:
         t1 = time.time()
+
         def get_eibv_ivr(i):
             SF = self.__Sigma[:, i].reshape(-1, 1)
             MD = 1 / (self.__Sigma[i, i] + self.__nugget)
@@ -190,6 +191,7 @@ class GRF:
             eibv = self.__get_ibv(self.__mu, sigma_diag)
             ivr = np.sum(np.diag(VR))
             return eibv, ivr
+
         res = Parallel(n_jobs=10)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
         eibv_field = np.array([item[0] for item in res])
         ivr_field = np.array([item[1] for item in res])
@@ -277,4 +279,3 @@ class GRF:
 
 if __name__ == "__main__":
     g = GRF()
-
