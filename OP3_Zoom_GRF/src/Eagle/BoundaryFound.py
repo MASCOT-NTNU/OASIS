@@ -3,7 +3,6 @@ from re import S
 from turtle import update
 from numpy import empty, quantile
 import numpy as np
-from sqlalchemy import case
 
 class BoundaryFinder:
 
