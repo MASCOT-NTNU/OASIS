@@ -27,14 +27,7 @@ class Config:
     __clock_end = 16  # expected ending time, at o'clock
 
     """ Operational Area. """
-    __polygon_operational_area = np.array([[41.11150944, -8.42353952],
-                                           [41.11109417, -8.42445784],
-                                           [41.11065338, -8.42406074],
-                                           [41.11050592, -8.42352926],
-                                           [41.11054589, -8.42295312],
-                                           [41.11072454, -8.42262321],
-                                           [41.11150944, -8.42353952]])
-    # __polygon_operational_area = pd.read_csv("OPA.csv").to_numpy()
+    __polygon_operational_area = pd.read_csv("OPA.csv").to_numpy()
     __polygon_operational_area_shapely = Polygon(__polygon_operational_area)
 
     # import matplotlib.pyplot as plt
@@ -47,7 +40,7 @@ class Config:
     __lat_start = 41.11150944
     __lon_start = -8.42353952
 
-    __lat_home = 41.11150944
+    __lat_home = 41.111508
     __lon_home = -8.42353952
 
     @staticmethod

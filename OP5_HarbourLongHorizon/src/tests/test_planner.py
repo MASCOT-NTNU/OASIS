@@ -22,7 +22,7 @@ class TestPlanner(TestCase):
 
     def setUp(self) -> None:
         set_resume_state(False)
-        loc_start = np.array([10000, 10000])
+        loc_start = np.array([40, 50])
         self.planner = Planner(loc_start)
         self.cv = CostValley()
         self.rrtstarcv = RRTStarCV()
@@ -65,7 +65,7 @@ class TestPlanner(TestCase):
         plt.plot(yn, xn, 'r.')
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
-                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
+                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=2, alpha=.4)
         plt.colorbar()
         plt.show()
 
@@ -77,9 +77,9 @@ class TestPlanner(TestCase):
         xnn, ynn = self.planner.get_next_waypoint()
 
         # s2: on the way to the current location, update field.
-        ctd_data = np.array([[10000, 9000, 0, 20],
-                             [9000, 8000, 0, 23],
-                             [8900, 8900, 0, 30]])
+        ctd_data = np.array([[60, 90, 0, 20],
+                             [70, 80, 0, 23],
+                             [90, 90, 0, 30]])
 
         self.planner.update_pioneer_waypoint(ctd_data)
         xp, yp = self.planner.get_pioneer_waypoint()
@@ -88,7 +88,7 @@ class TestPlanner(TestCase):
         plt.plot(ynn, xnn, 'b.')
         plt.plot(yn, xn, 'r.')
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
-                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
+                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=2, alpha=.4)
         plt.colorbar()
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.show()
@@ -101,9 +101,9 @@ class TestPlanner(TestCase):
         xnn, ynn = self.planner.get_next_waypoint()
 
         # s2: on the way to the current location, update field.
-        ctd_data = np.array([[6000, 10000, 0, 25],
-                             [7000, 8500, 0, 30],
-                             [8100, 8700, 0, 28]])
+        ctd_data = np.array([[60, 100, 0, 25],
+                             [70, 85, 0, 30],
+                             [81, 87, 0, 28]])
 
         self.planner.update_pioneer_waypoint(ctd_data)
         xp, yp = self.planner.get_pioneer_waypoint()
@@ -112,7 +112,7 @@ class TestPlanner(TestCase):
         plt.plot(ynn, xnn, 'b.')
         plt.plot(yn, xn, 'r.')
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
-                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
+                    cmap=get_cmap("BrBG", 10), vmin=0, vmax=2, alpha=.4)
         plt.colorbar()
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.show()

@@ -29,7 +29,7 @@ class TestCTDSimulator(TestCase):
         np.random.seed(0)
         grid = self.grf.grid
         # c1: value at the corners
-        loc = np.array([7000, 8000])
+        loc = np.array([70, 80])
         self.ctd.get_salinity_at_loc(loc)
         truth = self.ctd.get_ground_truth()
         # value = normalize(truth, 16, 32)
@@ -38,8 +38,8 @@ class TestCTDSimulator(TestCase):
         plt.figure(figsize=(15, 12))
         # plt.scatter(grid[:, 1], grid[:, 0], c=truth, cmap=get_cmap("BrBG", 10), vmin=10, vmax=35)
         # plt.colorbar()
-        plotf_vector(grid[:, 1], grid[:, 0], values=truth, cmap=get_cmap("RdBu", 10),
-                     vmin=10, vmax=36, stepsize=1.5, threshold=30, cbar_title="Value",
+        plotf_vector(grid[:, 1], grid[:, 0], values=truth, cmap=get_cmap("BrBG", 10),
+                     vmin=.0, vmax=36.5, stepsize=1.5, threshold=30, cbar_title="Value",
                      title="Ground field", xlabel="East", ylabel="North", polygon_border=plg)
         # plt.plot(plg[:, 1], plg[:, 0], 'r-.')
         plt.gca().set_aspect('equal')

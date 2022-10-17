@@ -21,9 +21,9 @@ import pandas as pd
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = 1.
-    __lateral_range = 50
-    __nugget = .04
+    __sigma = 2.
+    __lateral_range = 30
+    __nugget = .4
     __threshold = 30
 
     # computed
@@ -82,7 +82,7 @@ class GRF:
         # s1: interpolate onto grid.
         x = self.grid[:, 0]
         y = self.grid[:, 1]
-        value = np.exp(-((x - 60)**2 + (y-80)**2)/10**2)
+        value = np.exp(-((x - 60)**2 + (y-80)**2)/100**2)
         self.__mu = normalize(value, 0, 36).reshape(-1, 1)
 
     def __load_conditional_field(self) -> None:

@@ -22,7 +22,7 @@ from Visualiser.AgentPlot import AgentPlot
 class Agent:
 
     __NUM_STEP = 40
-    __home_radius = 150
+    __home_radius = 5
 
     # s3: set up trajectory
     traj = np.empty([0, 2])
@@ -35,7 +35,7 @@ class Agent:
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: set up planner.
-        loc_start = np.array([10000, 7200])
+        loc_start = np.array([20, 100])
         self.planner = Planner(loc_start)
 
         # s2: setup AUV simulator.
@@ -50,7 +50,7 @@ class Agent:
 
         # s4: setup Visualiser.
         # self.tp = TreePlotter()
-        self.ap = AgentPlot(self, figpath=os.getcwd() + "/../../fig/OP2_LongHorizon/")
+        self.ap = AgentPlot(self, figpath=os.getcwd() + "/../../fig/OP5_Harbour/")
         # self.visualiser = Visualiser(self, figpath=os.getcwd() + "/../fig/Myopic3D/")
 
     def run(self):

@@ -27,3 +27,8 @@
 `ffmpeg -r 15 -i P_%03d.png -vcodec libx264 -crf 20 -pix_fmt yuv420p mohid.mp4`
 
 ---
+
+---
+## Remove large files from git history
+`git filter-branch --force --index-filter "git rm --cached --ignore-unmatch OP2_LongHorizon/src/Planner/RRTSCV/RRT_Random_Locations.npy" --prune-empty --tag-name-filter cat -- --all`
+---
