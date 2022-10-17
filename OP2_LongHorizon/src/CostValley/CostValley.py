@@ -17,7 +17,6 @@ It is flexible to add or remove elements from its construction. One can add thei
 to make the system adaptive to their specific need and application.
 """
 
-from Config import Config
 from GRF.GRF import GRF
 from CostValley.Budget import Budget
 from CostValley.Direction import Direction
@@ -26,25 +25,26 @@ import time
 
 
 class CostValley:
-    # fundamental components
-    __config = Config()
-    __grf = GRF()
-    __field = __grf.field
-    __grid = __field.get_grid()
-    __Budget = Budget(__grid)
-    __Direction = Direction(__grid)
 
-    __Budget.set_loc_prev(__config.get_loc_start())
-    __x_now, __y_now = __config.get_loc_start()
+    def __init__(self, resume: bool = False) -> None:
+        # fundamental components
+        self.__grf = GRF(resume=resume)
+        self.__field = self.__grf.field
+        self.__grid = self.__field.get_grid()
+        self.__Budget = Budget(self.__grid)
+        self.__Direction = Direction(self.__grid)
 
-    # fundamental layers
-    __eibv_field, __ivr_field = __grf.get_ei_field_total()
-    # __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
-    __budget_field = __Budget.get_budget_field(__x_now, __y_now)
-    __cost_field = (__eibv_field +
-                    __ivr_field +
-                    # __azimuth_field +
-                    __budget_field)
+        # get current location.
+        self.__x_now, self.__y_now = self.__Budget.get_loc_now()
+
+        # fundamental layers
+        self.__eibv_field, self.__ivr_field = self.__grf.get_ei_field_total()
+        # __azimuth_field = __Direction.get_direction_field(__x_now, __y_now)
+        self.__budget_field = self.__Budget.get_budget_field(self.__x_now, self.__y_now)
+        self.__cost_field = (self.__eibv_field +
+                             self.__ivr_field +
+                             # __azimuth_field +
+                             self.__budget_field)
 
     def update_cost_valley(self, loc_now: np.ndarray):
         x_now, y_now = loc_now

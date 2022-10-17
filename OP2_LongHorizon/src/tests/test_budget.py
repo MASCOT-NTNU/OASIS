@@ -26,14 +26,15 @@ class TestBudget(TestCase):
         self.assertEqual(lc[1], l[1])
 
         # c2: test now location
+        x, y = self.c.get_loc_start()
         l = self.b.get_loc_prev()
-        self.assertEqual(0, l[0])
-        self.assertEqual(.0, l[1])
+        self.assertEqual(x, l[0])
+        self.assertEqual(y, l[1])
 
         # c3: test previous location
         l = self.b.get_loc_now()
-        self.assertEqual(.0, l[0])
-        self.assertEqual(.0, l[1])
+        self.assertEqual(x, l[0])
+        self.assertEqual(y, l[1])
 
     def run_update_budget(self, loc, ls, BU, bf):
         l = self.b.get_loc_now()

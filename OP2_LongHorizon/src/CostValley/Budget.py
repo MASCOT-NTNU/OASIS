@@ -30,8 +30,8 @@ class Budget:
     __grid = None
     __budget = 100000  # metres for the operation in the sea.
     __goal = __config.get_loc_home()
-    __x_now, __y_now = .0, .0
-    __x_prev, __y_prev = .0, .0
+    __x_now, __y_now = __config.get_loc_start()
+    __x_prev, __y_prev = __config.get_loc_start()
     __budget_field = None
 
     # ellipse parameters

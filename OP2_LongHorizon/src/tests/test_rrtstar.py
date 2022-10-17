@@ -1,6 +1,5 @@
 from unittest import TestCase
 from Planner.RRTSCV.RRTStarCV import RRTStarCV
-from CostValley.CostValley import CostValley
 from Config import Config
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,9 +35,10 @@ class TestRRTStar(TestCase):
 
     def setUp(self) -> None:
         self.config = Config()
-        self.rrtstar = RRTStarCV()
+        resume = False
+        self.rrtstar = RRTStarCV(resume=resume)  # TODO: can chdange resume state to generate different trees.
         self.tp = TreePlotter()
-        self.cv = CostValley()
+        self.cv = self.rrtstar.get_CostValley()
         self.field = self.cv.get_field()
         self.grid = self.cv.get_grid()
         self.polygon_border = self.field.get_polygon_border()

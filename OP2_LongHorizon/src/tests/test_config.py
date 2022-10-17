@@ -29,14 +29,28 @@ class TestConfig(TestCase):
         plt.show()
 
     def test_get_resume_state(self):
-        resume = self.c.get_resume_state()
+        # s1: check false state
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
         self.assertFalse(resume)
-        np.save("resume_flag.npy", np.array([10.]))
-        c = Config()
-        re = c.get_resume_state()
-        self.assertTrue(re)
-        np.save("resume_flag.npy", np.array([.0]))
-        c = Config()
-        re = c.get_resume_state()
-        self.assertFalse(re)
+
+        # s2: check true state
+        Config.set_resume_state(True)
+        resume = Config.get_resume_state()
+        self.assertTrue(resume)
+
+        # s3: check false again
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
+        self.assertFalse(resume)
+
+        # s4: check true
+        Config.set_resume_state(True)
+        resume = Config.get_resume_state()
+        self.assertTrue(resume)
+
+        # s5: check false
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
+        self.assertFalse(resume)
 

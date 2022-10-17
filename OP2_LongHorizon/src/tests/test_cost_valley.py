@@ -1,5 +1,6 @@
 from unittest import TestCase
 from CostValley.CostValley import CostValley
+from Config import Config
 # from Visualiser.Visualiser import plotf_vector
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -35,7 +36,7 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
 class TestCostValley(TestCase):
 
     def setUp(self) -> None:
-        self.cv = CostValley()
+        self.cv = CostValley(resume=False)
         self.grf = self.cv.get_grf_model()
         self.field = self.grf.field
         self.polygon_border = self.field.get_polygon_border()
@@ -155,5 +156,46 @@ class TestCostValley(TestCase):
         dataset = np.array([[9500, 9800, 0, 10]])
         self.grf.assimilate_data(dataset)
         self.cv.update_cost_valley(dataset[0, :2])
+        self.plot_cost_valley()
+
+    def test_resuming_features(self) -> None:
+        # s1: move and sample
+        dataset = np.array([[6000, 7400, 0, 30]])
+        cv = CostValley(resume=False)
+        grf = cv.get_grf_model()
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # s2: move more and sample
+        dataset = np.array([[7000, 8000, 0, 25]])
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # s3: move more and sample
+        dataset = np.array([[7500, 8500, 0, 20]])
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # c1: resume state is False.
+        cv1 = CostValley(resume=False)
+        grf1 = cv1.get_grf_model()
+        self.cv = cv1
+        self.grf = grf1
+        self.plot_cost_valley()
+
+        # c2: resume state is True.
+        cv2 = CostValley(resume=True)
+        grf2 = cv2.get_grf_model()
+        self.cv = cv2
+        self.grf = grf2
         self.plot_cost_valley()
 

@@ -91,7 +91,7 @@ class Config:
     @staticmethod
     def set_resume_state(resume: bool = False) -> None:
         Config.__resume = resume
-        if resume:
+        if Config.__resume:
             np.save("resume_flag.npy", np.array([10.0]))
         else:
             np.save("resume_flag.npy", np.array([.0]))

@@ -17,11 +17,12 @@ import numpy as np
 class Planner:
     # s0: load configuration
     __config = Config()
+    __resume = __config.get_resume_state()
     __wp_start = __config.get_loc_start()
     __wp_end = __config.get_loc_home()
 
     # s1: set up path planning strategies
-    __rrtstarcv = RRTStarCV()
+    __rrtstarcv = RRTStarCV(resume=__resume)
     __stepsize = __rrtstarcv.get_stepsize()
     __slpp = StraightLinePathPlanner()
 
