@@ -7,13 +7,19 @@ from unittest import TestCase
 from Planner.Planner import Planner
 from CostValley.CostValley import CostValley
 from Planner.RRTSCV.RRTStarCV import RRTStarCV
+<<<<<<< HEAD
 from usr_func.set_resume_state import set_resume_state
+=======
+>>>>>>> refs/remotes/origin/main
 from Field import Field
 from numpy import testing
 import numpy as np
 from numpy import testing
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
 from matplotlib.cm import get_cmap
+=======
+>>>>>>> refs/remotes/origin/main
 
 
 class TestPlanner(TestCase):
@@ -21,7 +27,10 @@ class TestPlanner(TestCase):
     """
 
     def setUp(self) -> None:
+<<<<<<< HEAD
         set_resume_state(False)
+=======
+>>>>>>> refs/remotes/origin/main
         loc_start = np.array([10000, 10000])
         self.planner = Planner(loc_start)
         self.cv = CostValley()
@@ -29,7 +38,10 @@ class TestPlanner(TestCase):
         self.stepsize = self.rrtstarcv.get_stepsize()
         self.cv = CostValley()
         self.field = Field()
+<<<<<<< HEAD
         self.grid = self.cv.get_grid()
+=======
+>>>>>>> refs/remotes/origin/main
         self.plg = self.field.get_polygon_border()
 
     # def test_initial_waypoints(self):
@@ -64,9 +76,12 @@ class TestPlanner(TestCase):
         plt.plot(ynn, xnn, 'b.')
         plt.plot(yn, xn, 'r.')
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
+<<<<<<< HEAD
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
                     cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
         plt.colorbar()
+=======
+>>>>>>> refs/remotes/origin/main
         plt.show()
 
         # s0: update planning trackers
@@ -87,9 +102,12 @@ class TestPlanner(TestCase):
         plt.plot(yp, xp, 'g.')
         plt.plot(ynn, xnn, 'b.')
         plt.plot(yn, xn, 'r.')
+<<<<<<< HEAD
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
                     cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
         plt.colorbar()
+=======
+>>>>>>> refs/remotes/origin/main
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.show()
 
@@ -111,9 +129,12 @@ class TestPlanner(TestCase):
         plt.plot(yp, xp, 'g.')
         plt.plot(ynn, xnn, 'b.')
         plt.plot(yn, xn, 'r.')
+<<<<<<< HEAD
         plt.scatter(self.grid[:, 1], self.grid[:, 0], c=self.cv.get_cost_field(), s=300,
                     cmap=get_cmap("BrBG", 10), vmin=0, vmax=4, alpha=.1)
         plt.colorbar()
+=======
+>>>>>>> refs/remotes/origin/main
         plt.plot(self.plg[:, 1], self.plg[:, 0], 'r-.')
         plt.show()
 

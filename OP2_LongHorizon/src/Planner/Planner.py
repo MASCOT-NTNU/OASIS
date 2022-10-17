@@ -22,6 +22,7 @@ class Planner:
         - Update current waypoint to be starting location.
         - Calculate two steps ahead in the pioneer planning.
         """
+
         # s0: load configuration
         self.__config = Config()
         self.__wp_start = self.__config.get_loc_start()

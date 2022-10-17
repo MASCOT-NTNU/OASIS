@@ -12,7 +12,10 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 
 from Planner.Planner import Planner
+<<<<<<< HEAD
 from usr_func.get_resume_state import get_resume_state
+=======
+>>>>>>> refs/remotes/origin/main
 from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
@@ -26,6 +29,10 @@ class Agent:
 
     __NUM_STEP = 40
     __home_radius = 150  # [m] for the radius to the home.
+<<<<<<< HEAD
+=======
+    __counter = 0
+>>>>>>> refs/remotes/origin/main
 
     def __init__(self) -> None:
         """
@@ -39,6 +46,7 @@ class Agent:
         loc_start = loc_auv[:2]
         self.planner = Planner(loc_start)
 
+<<<<<<< HEAD
         # s2: load the counter
         resume = get_resume_state()
         if not resume:
@@ -46,6 +54,8 @@ class Agent:
         else:
             self.__counter = int(np.loadtxt("counter.txt")) + 1
 
+=======
+>>>>>>> refs/remotes/origin/main
     def run(self):
         """
         Run the autonomous operation according to Sense, Plan, Act philosophy.
@@ -124,11 +134,16 @@ class Agent:
                         self.auv.send_SMS_mission_complete()
                         rospy.signal_shutdown("Mission completed!!!")
                         break
+<<<<<<< HEAD
 
                     print("counter: ", self.__counter)
                     self.__counter += 1
                     np.savetxt("counter.txt", np.array([self.__counter]))
 
+=======
+                    print("counter: ", self.__counter)
+                    self.__counter += 1
+>>>>>>> refs/remotes/origin/main
                 self.auv.last_state = self.auv.auv_handler.getState()
                 self.auv.auv_handler.spin()
             self.auv.rate.sleep()
@@ -142,4 +157,7 @@ if __name__ == "__main__":
     a.run()
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/main
