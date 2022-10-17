@@ -7,6 +7,7 @@ from unittest import TestCase
 from GRF.GRF import GRF
 import matplotlib.pyplot as plt
 import numpy as np
+from usr_func.set_resume_state import set_resume_state
 from matplotlib.gridspec import GridSpec
 # from Visualiser.Visualiser import plotf_vector
 from matplotlib.cm import get_cmap
@@ -53,7 +54,8 @@ def plotf(self, v1, v2, title1="mean", title2="cov", vmin1=None, vmax1=None, vmi
 class TestGRF(TestCase):
 
     def setUp(self) -> None:
-        self.g = GRF(resume=False)
+        set_resume_state(False)
+        self.g = GRF()
         self.grid = self.g.field.get_grid()
         x = self.grid[:, 0]
         y = self.grid[:, 1]
@@ -108,7 +110,8 @@ class TestGRF(TestCase):
     def test_resuming_features(self):
         # s1: start assimilating multiple steps before resuming.
         print("Start S4")
-        g1 = GRF(resume=False)
+        set_resume_state(False)
+        g1 = GRF()
         dataset = np.array([[6500, 7000,  0, 35],
                             [7000, 8000, 0, 20],
                             [7200, 8500, 0, 15],
@@ -130,19 +133,16 @@ class TestGRF(TestCase):
         g1.assimilate_data(dataset)
         plotf(self, v1=g1.get_mu(), v2=np.diag(g1.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        Config.set_resume_state(False)
-        resume = Config.get_resume_state()
-        g2 = GRF(resume=resume)
+        set_resume_state(False)
+        g2 = GRF()
         plotf(self, v1=g2.get_mu(), v2=np.diag(g2.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        Config.set_resume_state(True)
-        resume = Config.get_resume_state()
-        g3 = GRF(resume=resume)
+        set_resume_state(True)
+        g3 = GRF()
         plotf(self, v1=g3.get_mu(), v2=np.diag(g3.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        Config.set_resume_state(False)
-        resume = Config.get_resume_state()
-        g4 = GRF(resume=resume)
+        set_resume_state(False)
+        g4 = GRF()
         plotf(self, v1=g4.get_mu(), v2=np.diag(g4.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
         print("End S4")
 
