@@ -56,33 +56,9 @@ class WaypointGraph:
     __ygap = __neighbour_distance * cos(radians(60)) * 2
     __xgap = __neighbour_distance * sin(radians(60))
 
-    # TODO: delete debug
-    # origin = __polygon_border[0, :]
-    # plt.plot(__polygon_border[:, 1], __polygon_border[:, 0], 'k-.')
-    # plt.plot(__polygon_border[0, 1], __polygon_border[0, 0], 'r.', markersize=20)
-    # plt.plot(__polygon_border[1, 1], __polygon_border[1, 0], 'b.', markersize=20)
-    # plt.plot(__polygon_border[2, 1], __polygon_border[2, 0], 'g.', markersize=20)
-    # plt.plot(__polygon_border[3, 1], __polygon_border[3, 0], 'y.', markersize=20)
-    # plt.show()
-
     def __init__(self):
         self.__construct_waypoints()
         self.__construct_hash_neighbours()
-
-        # TODO: delete
-        # import plotly.graph_objects as go
-        # import plotly
-        # fig = go.Figure(data=go.Scatter3d(
-        #     x=self.__waypoints[:, 1],
-        #     y=self.__waypoints[:, 0],
-        #     z=self.__waypoints[:, 2],
-        #     mode='markers',
-        #     marker=dict(
-        #         size=2,
-        #         color='black',
-        #     )
-        # ))
-        # plotly.offline.plot(fig, filename="/Users/yaolin/Downloads/test.html", auto_open=True)
 
     @staticmethod
     def __construct_waypoints() -> None:

@@ -25,7 +25,7 @@ import multiprocessing as mp
 class Agent:
 
     __loc_start = np.array([41.12677, -8.68574, -0.5])
-    __NUM_STEP = 10
+    __NUM_STEP = 40
     __counter = 0
 
     def __init__(self) -> None:
@@ -78,7 +78,7 @@ class Agent:
 
                 # s1: append data
                 loc_auv = self.auv.get_vehicle_pos()
-                ctd_data.append([loc_auv[0], loc_auv[1], loc_auv[2], self.auv.get_salinity()])
+                ctd_data.append([loc_auv[0], loc_auv[1], -loc_auv[2], self.auv.get_salinity()])
 
                 if self.__counter == 0:
                     if t_now - t_pop_last >= max_submerged_time:
@@ -135,20 +135,6 @@ class Agent:
 
                         # ss3: plan ahead.
                         self.myopic.get_pioneer_waypoint_index()
-
-                        """ No blocking test """
-                        # def updates(ctd_data):
-                        #     self.myopic.gmrf.assimilate_data(ctd_data)
-                        #     self.myopic.update_planner()
-                        #     self.myopic.get_pioneer_waypoint_index()
-
-                        # print("CTD: ", ctd_data)
-                        # t1 = time.time()
-                        # self.pool.apply_async(updates)
-                        # t2 = time.time()
-                        # print("Skip time: ", t2 - t1)
-                        # ctd_data = []
-                        # print("After CTD: ", ctd_data)
 
                         if self.__counter >= self.__NUM_STEP:
                             self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,

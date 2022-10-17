@@ -3,13 +3,13 @@ from re import S
 from turtle import update
 from numpy import empty, quantile
 import numpy as np
-from sqlalchemy import case
+#from sqlalchemy import case
 
 
 class GradientDetection:
 
     def __init__(self,
-                 depth_boundary = [0.5 - 0.25, 0.5 + 0.25],
+                 depth_boundary = [0.5 - 0.1, 0.5 + 0.1],
                  window = 201,
                  salinity_max = 35,
                  salinity_min = 25,
@@ -29,7 +29,7 @@ class GradientDetection:
         self.x = np.array([])
         self.y = np.array([])
 
-    
+
         self.diff = np.empty([])
         self.change_direction = np.empty([])
         self.consecutive_change = self.diff = np.empty([])
@@ -149,7 +149,7 @@ class GradientDetection:
     def update_max_salinity(self):
 
         # This is not a good idea for the min salinity
-        percentage = 0.90
+        percentage = 0.95
         max_salinity = np.max(self.salinity_average)
         min_salinity = np.min(self.salinity_average)
         self.max_salinity_bound = min_salinity + (max_salinity - min_salinity ) * percentage
@@ -215,7 +215,11 @@ class GradientDetection:
         # [1,1,1,1,-1,-1,1,1] ->  [1,2,3,4,-1,-2,1,2]
 
         n = len(self.change_direction)
+
+        # The event length vector
         event_length = np.zeros(n)
+
+        # Gets the first step
         if self.change_direction[0] > 0:
             event_length[0] = 1
         else:
@@ -292,10 +296,13 @@ class GradientDetection:
 
         for event in self.events:
             if event["ind_start"] != event["ind_end"]:
+
                 ind_start, ind_end = event["ind_start"], event["ind_end"]
-                salinity_event = self.salinity[ind_start : ind_end]
                 if event["length"] > 1:
                     salinity_event = self.salinity_average[ind_start: ind_end]
+                if event["length"] == 1:
+                    salinity_event = np.array(self.salinity_average[ind_start])
+
                 event["salinity"] = salinity_event
                 event["diff"] = np.diff(salinity_event)
                 event["max"] = np.max(salinity_event)
@@ -303,20 +310,18 @@ class GradientDetection:
                 event["change"] = (event["max"] - event["min"]) * event["dir"]
                 event["avg_gradient"] = event["change"] / event["length"]
                 event["max_gradient"] = max(abs(np.diff(salinity)))
+
+
                 if mode == "average":
                     event["threshold"] = np.mean(salinity_event)
+
                 if mode == "quantile":
-                    salinity_sorted = np.sort(salinity_event)
-                    quantile = 0.8
-                    ind = round(len(salinity_sorted) * quantile)
-                    event["threshold"] = salinity_sorted[ind]
+                    event["threshold"] = np.quantile(salinity_event, quantile)
 
                 if mode == "quantile_mean":
-                    salinity_sorted = np.sort(salinity_event)
-                    quantile = 0.8
-                    ind_low = round(len(salinity_sorted) * quantile)
-                    ind_high = round(len(salinity_sorted) * (1 - quantile))
-                    event["threshold"] = (salinity_sorted[ind_low] + salinity_sorted[ind_high]) / 2
+                    quantile_low = np.quantile(salinity_event, quantile)
+                    quantile_high = np.quantile(salinity_event, 1 - quantile)
+                    event["threshold"] = (quantile_low + quantile_high) / 2
 
 
     def remove_events(self, dirr=[-1, 1]):
@@ -338,6 +343,7 @@ class GradientDetection:
 
 
     def join_treshold(self, event_dict, mode="average"):
+
         joined_events = {
             "comulative_change": 0,
             "total_length": 0,
@@ -348,6 +354,7 @@ class GradientDetection:
             "max_diff": 0,
             "max_diff_index": 0,
         }
+
         for event in event_dict:
             joined_events["comulative_change"] += np.sum(np.abs(event["diff"]))
             joined_events["salinity"] = np.concatenate((joined_events["salinity"], event["salinity"]))
@@ -355,6 +362,7 @@ class GradientDetection:
             joined_events["indecies"] = np.concatenate((joined_events["indecies"],
                                                         np.arange(event["ind_start"], event["ind_end"])))
             joined_events["total_length"] += event["length"]
+
 
         if joined_events["total_length"] > 0:
             if mode == "average":
@@ -368,14 +376,18 @@ class GradientDetection:
             if mode == "quantile_average":
 
                 # returns (x_q +  x_q-1)/2, wher q is the quantile
-                all_salinity = np.array([])
-                for i, event in enumerate(event_dict):
-                    all_salinity = np.concatenate((all_salinity, event["salinity"]))
-                salinity_sorted = np.sort(all_salinity)
+                #all_salinity = np.array([])
+                #for i, event in enumerate(event_dict):
+                #    all_salinity = np.concatenate((all_salinity, event["salinity"]))
+                
                 quantile = 0.8
-                ind_low = round((len(salinity_sorted) - 1) * quantile)
-                ind_high = round((len(salinity_sorted) - 1) * (1 - quantile))
-                joined_events["threshold"] = (salinity_sorted[ind_low] + salinity_sorted[ind_high]) / 2
+                quantile_low = np.quantile(joined_events["salinity"], 1 -quantile)
+                quantile_high = np.quantile(joined_events["salinity"], quantile)
+                #salinity_sorted = np.sort(all_salinity)
+                
+                #ind_low = round((len(salinity_sorted) - 1) * quantile)
+                #ind_high = round((len(salinity_sorted) - 1) * (1 - quantile))
+                joined_events["threshold"] = (quantile_low + quantile_high) / 2
 
             if mode == "longest":
                 longest = 0
@@ -416,9 +428,7 @@ if __name__ == "__main__":
     depth = data['depth']
     x = data['lat']
     y = data['lon']
-    # lat = data['lat']
-    # lon = data['lon']
-    # depth = data['depth']
+
 
 
 
@@ -518,8 +528,15 @@ if __name__ == "__main__":
             print(threshold_detector.threshold)
 
 
+        plt.plot(threshold_detector.salinity_average)
+        plt.plot(threshold_detector.depth_average * 10)
+        x_1, x_2  = 0, len(threshold_detector.salinity_average)
+        y_1, y_2  =  threshold_detector.threshold, threshold_detector.threshold
+        plt.plot([x_1,x_2],[y_1,y_2], c = "green")
+        for ev in threshold_detector.positive_events:
+            x_1, x_2  = ev["ind_start"], ev["ind_end"]
+            y_1, y_2  = ev["threshold"], ev["threshold"] 
+            plt.plot([x_1,x_2],[y_1,y_2], c = "red")
+        plt.show()
 
 
-# TODO:
-# -- Add a threshold found true/false
-# Account for å´poppups.
