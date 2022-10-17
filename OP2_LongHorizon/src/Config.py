@@ -15,7 +15,7 @@ Config handles the most important parameter setting in the long horizon operatio
 from WGS import WGS
 import numpy as np
 import pandas as pd
-from shapely.geometry import Polygon, GeometryCollection
+from shapely.geometry import Polygon
 
 
 class Config:
@@ -37,7 +37,9 @@ class Config:
 
     __lat_home = 41.12677
     __lon_home = -8.68574
-    # TODO: add resume flag
+
+    """ Create a resume state. """
+    __resume = False
 
     @staticmethod
     def set_mission_date(value: str) -> None:
@@ -87,6 +89,14 @@ class Config:
         Config.__lat_home, Config.__lon_home = loc
 
     @staticmethod
+    def set_resume_state(resume: bool = False) -> None:
+        Config.__resume = resume
+        if resume:
+            np.save("resume_flag.npy", np.array([10.0]))
+        else:
+            np.save("resume_flag.npy", np.array([.0]))
+
+    @staticmethod
     def get_mission_date() -> str:
         """ Return pre-set mission date string. """
         return Config.__mission_date
@@ -132,6 +142,15 @@ class Config:
         """ Return home location in (x, y). """
         x, y = WGS.latlon2xy(Config.__lat_home, Config.__lon_home)
         return np.array([x, y])
+
+    @staticmethod
+    def get_resume_state() -> bool:
+        resume_flag = np.load("resume_flag.npy")
+        if resume_flag == .0:
+            Config.__resume = False
+        else:
+            Config.__resume = True
+        return Config.__resume
 
 
 if __name__ == "__main__":
