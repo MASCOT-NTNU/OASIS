@@ -6,7 +6,7 @@ from usr_func.set_resume_state import set_resume_state
 class TestAgent(TestCase):
 
     def setUp(self) -> None:
-        set_resume_state(False)
+        set_resume_state(True)  # TODO: RESUME: change it to True for resume.
         self.ag = Agent()
 
     def test_agent_run(self):

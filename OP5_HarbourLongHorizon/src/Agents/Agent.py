@@ -21,7 +21,7 @@ from Visualiser.AgentPlot import AgentPlot
 
 class Agent:
 
-    __NUM_STEP = 40
+    __NUM_STEP = 40  # TODO: RESUME: change it to a longer step
     __home_radius = 5
 
     # s3: set up trajectory
@@ -35,7 +35,7 @@ class Agent:
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: set up planner.
-        loc_start = np.array([20, 100])
+        loc_start = np.array([40, 80])  # TODO: RESUME: change it to close location
         self.planner = Planner(loc_start)
 
         # s2: setup AUV simulator.

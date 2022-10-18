@@ -25,7 +25,7 @@ import rospy
 class Agent:
 
     __NUM_STEP = 40
-    __home_radius = 150  # [m] for the radius to the home.
+    __home_radius = 5  # [m] for the radius to the home.
 
     def __init__(self) -> None:
         """
