@@ -21,7 +21,7 @@ from Visualiser.AgentPlot import AgentPlot
 
 class Agent:
 
-    __NUM_STEP = 40  # TODO: RESUME: change it to a longer step
+    __NUM_STEP = 20  # TODO: RESUME: change it to a longer step
     __home_radius = 5
 
     # s3: set up trajectory

@@ -89,11 +89,11 @@ class AgentPlot:
             plt.legend()
 
         """ plot truth"""
-        ax = fig.add_subplot(gs[0])
-        self.plotf_vector(self.ygrid, self.xgrid, self.mu_truth, title="Ground truth field",
-                          cmap=get_cmap("BrBG", 10), vmin=15, vmax=36, cbar_title="Salinity", stepsize=1.5,
-                          threshold=threshold)
-        plot_waypoints()
+        # ax = fig.add_subplot(gs[0])
+        # self.plotf_vector(self.ygrid, self.xgrid, self.mu_truth, title="Ground truth field",
+        #                   cmap=get_cmap("BrBG", 10), vmin=15, vmax=36, cbar_title="Salinity", stepsize=1.5,
+        #                   threshold=threshold)
+        # plot_waypoints()
 
         """ plot mean """
         ax = fig.add_subplot(gs[1])
@@ -133,42 +133,42 @@ class AgentPlot:
         ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
 
         """ plot eibv field. """
-        ax = fig.add_subplot(gs[4])
-        if not self.budget.get_go_home_alert():
-            self.plotf_vector(self.ygrid, self.xgrid, cost_eibv, title="EIBV cost field",
-                              cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
-            # ax.add_patch(be)
-        else:
-            im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=400, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
-            plt.colorbar(im)
-        ax.set_title("EIBV field")
-        plot_waypoints()
-        for node in tree_nodes:
-            if node.get_parent() is not None:
-                loc = node.get_location()
-                loc_p = node.get_parent().get_location()
-                ax.plot([loc[1], loc_p[1]],
-                        [loc[0], loc_p[0]], "-g")
-        ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
+        # ax = fig.add_subplot(gs[4])
+        # if not self.budget.get_go_home_alert():
+        #     self.plotf_vector(self.ygrid, self.xgrid, cost_eibv, title="EIBV cost field",
+        #                       cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
+        #     # ax.add_patch(be)
+        # else:
+        #     im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=400, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
+        #     plt.colorbar(im)
+        # ax.set_title("EIBV field")
+        # plot_waypoints()
+        # for node in tree_nodes:
+        #     if node.get_parent() is not None:
+        #         loc = node.get_location()
+        #         loc_p = node.get_parent().get_location()
+        #         ax.plot([loc[1], loc_p[1]],
+        #                 [loc[0], loc_p[0]], "-g")
+        # ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
 
         """ plot ivr field. """
-        ax = fig.add_subplot(gs[5])
-        if not self.budget.get_go_home_alert():
-            self.plotf_vector(self.ygrid, self.xgrid, cost_ivr, title="IVR cost field",
-                              cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
-            # ax.add_patch(be)
-        else:
-            im = ax.scatter(self.ygrid, self.xgrid, c=cost_ivr, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
-            plt.colorbar(im)
-        ax.set_title("IVR field")
-        plot_waypoints()
-        for node in tree_nodes:
-            if node.get_parent() is not None:
-                loc = node.get_location()
-                loc_p = node.get_parent().get_location()
-                ax.plot([loc[1], loc_p[1]],
-                        [loc[0], loc_p[0]], "-g")
-        ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
+        # ax = fig.add_subplot(gs[5])
+        # if not self.budget.get_go_home_alert():
+        #     self.plotf_vector(self.ygrid, self.xgrid, cost_ivr, title="IVR cost field",
+        #                       cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
+        #     # ax.add_patch(be)
+        # else:
+        #     im = ax.scatter(self.ygrid, self.xgrid, c=cost_ivr, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
+        #     plt.colorbar(im)
+        # ax.set_title("IVR field")
+        # plot_waypoints()
+        # for node in tree_nodes:
+        #     if node.get_parent() is not None:
+        #         loc = node.get_location()
+        #         loc_p = node.get_parent().get_location()
+        #         ax.plot([loc[1], loc_p[1]],
+        #                 [loc[0], loc_p[0]], "-g")
+        # ax.plot(rrt_traj[:, 1], rrt_traj[:, 0], 'k-', linewidth=2)
 
         plt.savefig(self.figpath + "P_{:03d}.png".format(self.cnt))
         # plt.show()

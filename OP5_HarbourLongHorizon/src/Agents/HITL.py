@@ -24,7 +24,7 @@ import rospy
 
 class Agent:
 
-    __NUM_STEP = 40
+    __NUM_STEP = 150
     __home_radius = 5  # [m] for the radius to the home.
 
     def __init__(self) -> None:
@@ -37,6 +37,7 @@ class Agent:
         # s1: setup planner.
         loc_auv = self.auv.get_vehicle_pos()
         loc_start = loc_auv[:2]
+        # loc_start = np.array([60, 80])
         self.planner = Planner(loc_start)
 
         # s2: load the counter
