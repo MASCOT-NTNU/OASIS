@@ -16,7 +16,7 @@ class Field:
     __config = Config()
     __grid = np.empty([0, 2])
     __neighbour_hash_table = dict()
-    __neighbour_distance = 4  # metres between neighbouring locations.
+    __neighbour_distance = 10  # metres between neighbouring locations.
     __plg = __config.get_polygon_operational_area()
     x, y = WGS.latlon2xy(__plg[:, 0], __plg[:, 1])
     __polygon_border = np.stack((x, y), axis=1)

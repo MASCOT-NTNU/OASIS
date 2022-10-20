@@ -16,6 +16,7 @@ from usr_func.get_resume_state import get_resume_state
 from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
+import pandas as pd
 import time
 import os
 import math
@@ -47,6 +48,9 @@ class Agent:
         else:
             self.__counter = int(np.loadtxt("counter.txt")) + 1
 
+        # s3: TODO: just for harbour test, remove rrt, only use fixed waypoints
+        self.waypoints = pd.read_csv("waypoints.csv").to_numpy()
+
     def run(self):
         """
         Run the autonomous operation according to Sense, Plan, Act philosophy.
@@ -64,8 +68,10 @@ class Agent:
         iridium = self.auv.get_iridium()
 
         # a1: move to current location
-        lat, lon = WGS.xy2latlon(wp_start[0], wp_start[1])
-        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp_depth, speed=speed)
+        # lat, lon = WGS.xy2latlon(wp_start[0], wp_start[1])
+        # self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp_depth, speed=speed)
+        lat, lon, depth = self.waypoints[self.__counter, :]
+        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), depth, speed=speed)
 
         t_pop_last = time.time()
         update_time = rospy.get_time()
@@ -98,8 +104,10 @@ class Agent:
 
                     # s1: parallel move AUV to the first location
                     wp_now = self.planner.get_current_waypoint()
-                    lat, lon = WGS.xy2latlon(wp_now[0], wp_now[1])
-                    self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp_depth, speed=speed)
+                    # lat, lon = WGS.xy2latlon(wp_now[0], wp_now[1])
+                    # self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp_depth, speed=speed)
+                    lat, lon, depth = self.waypoints[self.__counter, :]
+                    self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), depth, speed=speed)
                     update_time = rospy.get_time()
 
                     # s2: obtain CTD data
