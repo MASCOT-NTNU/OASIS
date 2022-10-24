@@ -1,10 +1,14 @@
 from unittest import TestCase
 from Planner.RRTSCV.RRTStarCV import RRTStarCV
+<<<<<<< HEAD
+=======
 from CostValley.CostValley import CostValley
+>>>>>>> refs/remotes/origin/main
 from Config import Config
 import matplotlib.pyplot as plt
 import numpy as np
 from Visualiser.TreePlotter import TreePlotter
+from usr_func.set_resume_state import set_resume_state
 # from Visualiser.Visualiser import plotf_vector
 from matplotlib.cm import get_cmap
 import os
@@ -35,10 +39,11 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
 class TestRRTStar(TestCase):
 
     def setUp(self) -> None:
+        set_resume_state(False)
         self.config = Config()
         self.rrtstar = RRTStarCV()
         self.tp = TreePlotter()
-        self.cv = CostValley()
+        self.cv = self.rrtstar.get_CostValley()
         self.field = self.cv.get_field()
         self.grid = self.cv.get_grid()
         self.polygon_border = self.field.get_polygon_border()

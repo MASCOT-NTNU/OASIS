@@ -12,6 +12,7 @@ from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
 from usr_func.normalize import normalize
+from usr_func.get_resume_state import get_resume_state
 from sys import maxsize
 import time
 import os
@@ -47,7 +48,7 @@ class GRF:
     __xg = vectorize(grid[:, 0])
     __yg = vectorize(grid[:, 1])
 
-    def __init__(self, resume: bool = False) -> None:
+    def __init__(self) -> None:
         # s0: check datafolders
         t = int(time.time())
         f = os.getcwd()
@@ -60,6 +61,7 @@ class GRF:
         checkfolder(self.foldername_mu)
         checkfolder(self.foldername_Sigma)
 
+        resume = get_resume_state()
         # s1: setup
         if not resume:
             # s0: compute matern kernel

@@ -1,5 +1,7 @@
 from unittest import TestCase
 from CostValley.CostValley import CostValley
+from Config import Config
+from usr_func.set_resume_state import set_resume_state
 # from Visualiser.Visualiser import plotf_vector
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -35,6 +37,7 @@ def plotf_vector(x, y, values, title=None, alpha=None, cmap=get_cmap("BrBG", 10)
 class TestCostValley(TestCase):
 
     def setUp(self) -> None:
+        set_resume_state(False)
         self.cv = CostValley()
         self.grf = self.cv.get_grf_model()
         self.field = self.grf.field
@@ -156,4 +159,57 @@ class TestCostValley(TestCase):
         self.grf.assimilate_data(dataset)
         self.cv.update_cost_valley(dataset[0, :2])
         self.plot_cost_valley()
+
+    def test_resuming_features(self) -> None:
+        # s1: move and sample
+        dataset = np.array([[6000, 7400, 0, 30]])
+        set_resume_state(False)
+        cv = CostValley()
+        grf = cv.get_grf_model()
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # s2: move more and sample
+        dataset = np.array([[7000, 8000, 0, 25]])
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # s3: move more and sample
+        dataset = np.array([[7500, 8500, 0, 20]])
+        grf.assimilate_data(dataset)
+        cv.update_cost_valley(dataset[0, :2])
+        self.cv = cv
+        self.grf = grf
+        self.plot_cost_valley()
+
+        # c1: resume state is False.
+        set_resume_state(False)
+        cv1 = CostValley()
+        grf1 = cv1.get_grf_model()
+        self.cv = cv1
+        self.grf = grf1
+        self.plot_cost_valley()
+
+        # c2: resume state is True.
+        set_resume_state(True)
+        cv2 = CostValley()
+        grf2 = cv2.get_grf_model()
+        self.cv = cv2
+        self.grf = grf2
+        self.plot_cost_valley()
+
+        # c1: resume state is False.
+        set_resume_state(False)
+        cv3 = CostValley()
+        grf3 = cv3.get_grf_model()
+        self.cv = cv3
+        self.grf = grf3
+        self.plot_cost_valley()
+
 

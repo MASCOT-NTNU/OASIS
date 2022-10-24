@@ -12,49 +12,51 @@ from shapely.geometry import Polygon, Point, LineString
 
 
 class RRTStarCV:
-    # load pre_generated locations
-    __filepath = os.getcwd() + "/Planner/RRTSCV/"
-    __random_locations = np.load(__filepath + "RRT_Random_Locations.npy")
-    __goal_indices = np.load(__filepath + "Goal_indices.npy")
-    __N_random_locations = len(__random_locations)
 
-    # setup cost valley
-    __cost_valley = CostValley()
+    def __init__(self) -> None:
+        # load pre_generated locations
+        self.__filepath = os.getcwd() + "/Planner/RRTSCV/"
+        self.__random_locations = np.load(self.__filepath + "RRT_Random_Locations.npy")
+        self.__goal_indices = np.load(self.__filepath + "Goal_indices.npy")
+        self.__N_random_locations = len(self.__random_locations)
 
-    # loc
-    __loc_start = np.array([1000, 1000])
-    __loc_target = np.array([1000, 1000])
-    __loc_new = np.array([1000, 1000])
+        # setup cost valley
+        self.__cost_valley = CostValley()
 
-    # tree
-    __nodes = []  # all nodes in the tree.
-    __trajectory = np.empty([0, 2])  # to save trajectory.
-    __goal_sampling_rate = .01
-    __max_expansion_iteration = 1000  # TODO: to run simulation and see if it is able to converage
-    __stepsize = Field.get_neighbour_distance()
-    __home_radius = __stepsize * .8
-    __rrtstar_neighbour_radius = __stepsize * 1.12
+        # loc
+        self.__loc_start = np.array([1000, 1000])
+        self.__loc_target = np.array([1000, 1000])
+        self.__loc_new = np.array([1000, 1000])
 
-    # polygons and lines
-    __polygon_border = Field.get_polygon_border()
-    __polygon_border_shapely = Polygon(__polygon_border)
-    __line_border_shapely = LineString(__polygon_border)
+        # tree
+        self.__nodes = []  # all nodes in the tree.
+        self.__trajectory = np.empty([0, 2])  # to save trajectory.
+        self.__goal_sampling_rate = .01
+        self.__max_expansion_iteration = 1000  # TODO: to run simulation and see if it is able to converage
+        self.__stepsize = Field.get_neighbour_distance()
+        self.__home_radius = self.__stepsize * .8
+        self.__rrtstar_neighbour_radius = self.__stepsize * 1.12
 
-    __polygon_ellipse_shapely = None  # budget
-    __line_ellipse_shapely = None
+        # polygons and lines
+        self.__polygon_border = Field.get_polygon_border()
+        self.__polygon_border_shapely = Polygon(self.__polygon_border)
+        self.__line_border_shapely = LineString(self.__polygon_border)
 
-    # nodes
-    __starting_node = TreeNode(__loc_start)
-    __target_node = TreeNode(__loc_target)
-    __nearest_node = None
-    __new_node = None
-    __neighbour_nodes = []
+        self.__polygon_ellipse_shapely = None  # budget
+        self.__line_ellipse_shapely = None
 
-    # field
-    __xlim, __ylim = Field.get_border_limits()
+        # nodes
+        self.__starting_node = TreeNode(self.__loc_start)
+        self.__target_node = TreeNode(self.__loc_target)
+        self.__nearest_node = None
+        self.__new_node = None
+        self.__neighbour_nodes = []
 
-    # budget
-    __Budget = False
+        # field
+        self.__xlim, self.__ylim = Field.get_border_limits()
+
+        # budget
+        self.__Budget = False
 
     def get_next_waypoint(self, loc_start: np.ndarray, loc_target: np.ndarray) -> np.ndarray:
         """

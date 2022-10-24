@@ -7,3 +7,5 @@ __pycache__/
 **.zip
 *.vscode
 **/.vscode
+**.npy
+*.npy

@@ -15,24 +15,6 @@ import numpy as np
 
 
 class Planner:
-    # s0: load configuration
-    __config = Config()
-    __wp_start = __config.get_loc_start()
-    __wp_end = __config.get_loc_home()
-
-    # s1: set up path planning strategies
-    __rrtstarcv = RRTStarCV()
-    __stepsize = __rrtstarcv.get_stepsize()
-    __slpp = StraightLinePathPlanner()
-
-    # s1: setup cost valley.
-    __cv = __rrtstarcv.get_CostValley()
-    __Budget = __cv.get_Budget()
-    __wp_min_cv = __cv.get_minimum_cost_location()
-
-    # s2: set up data assimilation kernel
-    __grf = __cv.get_grf_model()
-    __grid = __grf.grid
 
     def __init__(self, loc_start: np.ndarray) -> None:
         """ Initial phase
@@ -40,17 +22,37 @@ class Planner:
         - Update current waypoint to be starting location.
         - Calculate two steps ahead in the pioneer planning.
         """
-        # s0: update the current waypoint location and append to traj and then get the minimum cost location.
+
+        # s0: load configuration
+        self.__config = Config()
+        self.__wp_start = self.__config.get_loc_start()
+        self.__wp_end = self.__config.get_loc_home()
+
+        # s1: set up path planning strategies
+        self.__rrtstarcv = RRTStarCV()
+        self.__stepsize = self.__rrtstarcv.get_stepsize()
+        self.__slpp = StraightLinePathPlanner()
+
+        # s1: setup cost valley.
+        self.__cv = self.__rrtstarcv.get_CostValley()
+        self.__Budget = self.__cv.get_Budget()
+        self.__wp_min_cv = self.__cv.get_minimum_cost_location()
+
+        # s2: set up data assimilation kernel
+        self.__grf = self.__cv.get_grf_model()
+        self.__grid = self.__grf.grid
+
+        # s3: update the current waypoint location and append to traj and then get the minimum cost location.
         self.__wp_start = loc_start
         self.__wp_now = self.__wp_start
         self.__traj = [[self.__wp_now[0], self.__wp_now[1]]]
         self.__wp_min_cv = self.__cv.get_minimum_cost_location()
 
-        # s1: compute angle between the starting location to the minimum cost location.
+        # s4: compute angle between the starting location to the minimum cost location.
         angle = np.math.atan2(self.__wp_min_cv[0] - self.__wp_now[0],
                               self.__wp_min_cv[1] - self.__wp_now[1])
 
-        # s2: compute next location and pioneer location.
+        # s5: compute next location and pioneer location.
         xn = self.__wp_now[0] + self.__stepsize * np.sin(angle)
         yn = self.__wp_now[1] + self.__stepsize * np.cos(angle)
         self.__wp_next = np.array([xn, yn])

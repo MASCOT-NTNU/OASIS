@@ -29,6 +29,32 @@ class TestConfig(TestCase):
         plt.show()
 
     def test_get_resume_state(self):
+<<<<<<< HEAD
+        # s1: check false state
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
+        self.assertFalse(resume)
+
+        # s2: check true state
+        Config.set_resume_state(True)
+        resume = Config.get_resume_state()
+        self.assertTrue(resume)
+
+        # s3: check false again
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
+        self.assertFalse(resume)
+
+        # s4: check true
+        Config.set_resume_state(True)
+        resume = Config.get_resume_state()
+        self.assertTrue(resume)
+
+        # s5: check false
+        Config.set_resume_state(False)
+        resume = Config.get_resume_state()
+        self.assertFalse(resume)
+=======
         resume = self.c.get_resume_state()
         self.assertFalse(resume)
         np.save("resume_flag.npy", np.array([10.]))
@@ -39,4 +65,5 @@ class TestConfig(TestCase):
         c = Config()
         re = c.get_resume_state()
         self.assertFalse(re)
+>>>>>>> refs/remotes/origin/main
 
