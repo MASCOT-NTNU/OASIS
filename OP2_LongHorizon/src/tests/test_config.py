@@ -28,3 +28,15 @@ class TestConfig(TestCase):
         plt.plot(loc_home[1], loc_home[0], 'b.')
         plt.show()
 
+    def test_get_resume_state(self):
+        resume = self.c.get_resume_state()
+        self.assertFalse(resume)
+        np.save("resume_flag.npy", np.array([10.]))
+        c = Config()
+        re = c.get_resume_state()
+        self.assertTrue(re)
+        np.save("resume_flag.npy", np.array([.0]))
+        c = Config()
+        re = c.get_resume_state()
+        self.assertFalse(re)
+

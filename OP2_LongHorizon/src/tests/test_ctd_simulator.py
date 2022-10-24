@@ -3,7 +3,7 @@
 
 from unittest import TestCase
 from AUVSimulator.CTDSimulator import CTDSimulator
-from GRF import GRF
+from GRF.GRF import GRF
 from Field import Field
 import numpy as np
 from numpy import testing
@@ -29,15 +29,17 @@ class TestCTDSimulator(TestCase):
         np.random.seed(0)
         grid = self.grf.grid
         # c1: value at the corners
-        loc = np.array([.0, .0])
+        loc = np.array([7000, 8000])
         self.ctd.get_salinity_at_loc(loc)
         truth = self.ctd.get_ground_truth()
         # value = normalize(truth, 16, 32)
         value = truth
         plg = self.f.get_polygon_border()
         plt.figure(figsize=(15, 12))
-        plotf_vector(grid[:, 1], grid[:, 0], truth, cmap=get_cmap("RdBu", 10),
-                     vmin=10, vmax=36, stepsize=1.5, threshold=33, cbar_title="Value",
+        # plt.scatter(grid[:, 1], grid[:, 0], c=truth, cmap=get_cmap("BrBG", 10), vmin=10, vmax=35)
+        # plt.colorbar()
+        plotf_vector(grid[:, 1], grid[:, 0], values=truth, cmap=get_cmap("RdBu", 10),
+                     vmin=10, vmax=36, stepsize=1.5, threshold=30, cbar_title="Value",
                      title="Ground field", xlabel="East", ylabel="North", polygon_border=plg)
         # plt.plot(plg[:, 1], plg[:, 0], 'r-.')
         plt.gca().set_aspect('equal')

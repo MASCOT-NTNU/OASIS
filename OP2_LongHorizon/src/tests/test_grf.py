@@ -53,7 +53,7 @@ def plotf(self, v1, v2, title1="mean", title2="cov", vmin1=None, vmax1=None, vmi
 class TestGRF(TestCase):
 
     def setUp(self) -> None:
-        self.g = GRF()
+        self.g = GRF(resume=False)
         self.grid = self.g.field.get_grid()
         x = self.grid[:, 0]
         y = self.grid[:, 1]
@@ -61,49 +61,81 @@ class TestGRF(TestCase):
         self.cov = self.g.get_Sigma()
         self.mu = self.g.get_mu()
 
-    def test_prior_matern_covariance(self):
-        print("S1")
-        plotf(self, v1=self.g.get_mu(), v2 = np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
-        print("END S1")
+    # def test_prior_matern_covariance(self):
+    #     print("S1")
+    #     plotf(self, v1=self.g.get_mu(), v2 = np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    #     print("END S1")
+    #
+    # def test_assimilate(self):
+    #     # c2: one
+    #     print("S2")
+    #     dataset = np.array([[6000, 8000, 0, 30]])
+    #     self.g.assimilate_data(dataset)
+    #     plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    #
+    #     # c3: multiple
+    #     dataset = np.array([[6500, 7000,  0, 35],
+    #                         [7000, 8000, 0, 20],
+    #                         [7200, 8500, 0, 15],
+    #                         [7600, 8800, 0, 20]])
+    #     self.g.assimilate_data(dataset)
+    #     plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    #     print("End S2")
+    #
+    # def test_get_ei_field_total(self):
+    #     # c1: no data assimilation
+    #     print("S3")
+    #     """ For now, it takes too much time to compute the entire EI field. """
+    #     eibv, ivr = self.g.get_ei_field_total()
+    #     plotf(self, v1=eibv, v2=ivr)
+    #
+    #     # eibv, ivr = self.g.get_ei_field_para()
+    #     # plotf(self, v1=eibv, v2=ivr)
+    #
+    #     # c2: with data assimilation
+    #     dataset = np.array([[8000, 8000, 0, 10],
+    #                         [9200, 9000, 0, 15],
+    #                         [7000, 8000, 0, 13],
+    #                         [8000, 7000, 0, 33],
+    #                         [6000, 8000, 0, 26],
+    #                         [5000, 9000, 0, 24]])
+    #     self.g.assimilate_data(dataset)
+    #     eibv, ivr = self.g.get_ei_field_total()
+    #     plotf(self, v1=eibv, v2=ivr)
+    #     plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
+    #     print("End S3")
 
-    def test_assimilate(self):
-        # c2: one
-        print("S2")
-        dataset = np.array([[6000, 8000, 0, 30]])
-        self.g.assimilate_data(dataset)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+    def test_resuming_features(self):
+        # s1: start assimilating multiple steps before resuming.
+        print("Start S4")
+        g1 = GRF(resume=False)
+        dataset = np.array([[6500, 7000,  0, 35],
+                            [7000, 8000, 0, 20],
+                            [7200, 8500, 0, 15],
+                            [7600, 8800, 0, 20]])
+        g1.assimilate_data(dataset)
+        plotf(self, v1=g1.get_mu(), v2=np.diag(g1.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        # c3: multiple
-        dataset = np.array([[5500, 6000,  0, 35],
-                            [6000, 9000, 0, 20],
-                            [6200, 8500, 0, 15],
-                            [6600, 8800, 0, 20]])
-        self.g.assimilate_data(dataset)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
-        print("End S2")
+        dataset = np.array([[7500, 7000,  0, 35],
+                            [8000, 8000, 0, 20],
+                            [8200, 8500, 0, 15],
+                            [8600, 8800, 0, 20]])
+        g1.assimilate_data(dataset)
+        plotf(self, v1=g1.get_mu(), v2=np.diag(g1.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-    def test_get_ei_field_total(self):
-        # c1: no data assimilation
-        print("S3")
-        """ For now, it takes too much time to compute the entire EI field. """
-        eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr)
+        dataset = np.array([[8500, 7000,  0, 35],
+                            [9000, 8000, 0, 20],
+                            [9200, 8500, 0, 15],
+                            [9600, 8800, 0, 20]])
+        g1.assimilate_data(dataset)
+        plotf(self, v1=g1.get_mu(), v2=np.diag(g1.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        eibv, ivr = self.g.get_ei_field_para()
-        plotf(self, v1=eibv, v2=ivr)
+        g2 = GRF(resume=False)
+        plotf(self, v1=g2.get_mu(), v2=np.diag(g2.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
 
-        # c2: with data assimilation
-        dataset = np.array([[10000, 9000, 0, 10],
-                            [12000, 8000, 0, 15],
-                            [8000, 10000, 0, 13],
-                            [6000, 6000, 0, 33],
-                            [8000, 8000, 0, 26],
-                            [4000, 9000, 0, 24]])
-        self.g.assimilate_data(dataset)
-        eibv, ivr = self.g.get_ei_field_total()
-        plotf(self, v1=eibv, v2=ivr)
-        plotf(self, v1=self.g.get_mu(), v2=np.diag(self.g.get_Sigma()))
-        print("End S3")
+        g3 = GRF(resume=True)
+        plotf(self, v1=g3.get_mu(), v2=np.diag(g3.get_Sigma()), vmin1=10, vmax1=36, vmin2=0, vmax2=1)
+        print("End S4")
 
     # def test_get_ei_field_partial(self):
     #     print("S4")

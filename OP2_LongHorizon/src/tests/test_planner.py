@@ -19,7 +19,8 @@ class TestPlanner(TestCase):
     """
 
     def setUp(self) -> None:
-        self.planner = Planner()
+        loc_start = np.array([10000, 10000])
+        self.planner = Planner(loc_start)
         self.cv = CostValley()
         self.rrtstarcv = RRTStarCV()
         self.stepsize = self.rrtstarcv.get_stepsize()

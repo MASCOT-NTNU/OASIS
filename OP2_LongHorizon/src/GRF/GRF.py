@@ -1,5 +1,9 @@
-""" GRF object handles GRF-related functions. """
-
+"""
+GRF handles the following functions
+- udpate the field.
+- assimilate data.
+- get eibv for a specific location.
+"""
 from Field import Field
 from Delft3D import Delft3D
 from usr_func.vectorize import vectorize
@@ -43,31 +47,40 @@ class GRF:
     __xg = vectorize(grid[:, 0])
     __yg = vectorize(grid[:, 1])
 
-    def __init__(self) -> None:
-        # s0: compute matern kernel
-        self.__construct_grf_field()
-
-        # s1: update prior mean
-        self.__construct_prior_mean()
-
-        # s2: update data folder
+    def __init__(self, resume: bool = False) -> None:
+        # s0: check datafolders
         t = int(time.time())
         f = os.getcwd()
-        self.foldername = f + "/GRF/data/{:d}/".format(t)
+        self.foldername_data = f + "/GRF/data/{:d}/".format(t)
         self.foldername_ctd = f + "/GRF/raw_ctd/{:d}/".format(t)
-        # self.foldername_thres = f + "/GRF/threshold/{:d}/".format(t)
-        checkfolder(self.foldername)
+        self.foldername_mu = f + "/GRF/mu/"
+        self.foldername_Sigma = f + "/GRF/Sigma/"
+        checkfolder(self.foldername_data)
         checkfolder(self.foldername_ctd)
-        self.__cnt_data_saving = 0
-        # checkfolder(self.foldername_thres)
+        checkfolder(self.foldername_mu)
+        checkfolder(self.foldername_Sigma)
 
-    def __construct_grf_field(self):
+        # s1: setup
+        if not resume:
+            # s0: compute matern kernel
+            self.__construct_grf_field()
+
+            # s1: update prior mean
+            self.__construct_prior_mean()
+
+            # s2: set initial data saving index
+            self.__cnt_data_saving = 0
+        else:
+            # s0: in case it is aborted
+            self.__load_conditional_field()
+
+    def __construct_grf_field(self) -> None:
         """ Construct distance matrix and thus Covariance matrix for the kernel. """
         self.__distance_matrix = cdist(self.grid, self.grid)
         self.__Sigma = self.__sigma ** 2 * ((1 + self.__eta * self.__distance_matrix) *
                                             np.exp(-self.__eta * self.__distance_matrix))
 
-    def __construct_prior_mean(self):
+    def __construct_prior_mean(self) -> None:
         # s0: get delft3d dataset
         dataset_delft3d = self.__delft3d.get_dataset()
         # s1: interpolate onto grid.
@@ -75,16 +88,33 @@ class GRF:
         ind_close = np.argmin(dm_grid_delft3d, axis=1)
         self.__mu = dataset_delft3d[ind_close, 2].reshape(-1, 1)
 
+    def __load_conditional_field(self) -> None:
+        """
+        Load data from suspended conditional salinity field and covariance structure.
+        """
+        files_mu = os.listdir(self.foldername_mu)
+        files_Sigma = os.listdir(self.foldername_Sigma)
+        if len(files_mu) > 0 and len(files_Sigma) > 0:
+            last_file = sorted(files_mu)[-1]
+            self.__mu = np.load(self.foldername_mu + last_file)
+            self.__Sigma = np.load(self.foldername_Sigma + last_file)
+            self.__cnt_data_saving = int(last_file[2:-4]) + 1
+        else:
+            self.__construct_grf_field()
+            self.__construct_prior_mean()
+            self.__cnt_data_saving = 0
+
     def assimilate_data(self, dataset: np.ndarray) -> None:
         """
         Assimilate dataset to GRF kernel.
         It computes the distance matrix between gmrf grid and dataset grid. Then the values are averged to each cell.
         Args:
             dataset: np.array([x, y, sal])
+            cnt_waypoint: int
         """
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
-        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt_data_saving))
+        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt_data_saving), index=False)
 
         # t1 = time.time()
         xd = dataset[:, 0].reshape(-1, 1)
@@ -107,7 +137,11 @@ class GRF:
         # ss2: save assimilated data
         data = np.hstack((ind_assimilated.reshape(-1, 1), salinity_assimilated))
         df = pd.DataFrame(data, columns=['ind', 'salinity'])
-        df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt_data_saving))
+        df.to_csv(self.foldername_data + "D_{:03d}.csv".format(self.__cnt_data_saving), index=False)
+
+        # ss3: save conditional mu and Sigma
+        np.save(self.foldername_mu + "D_{:03d}.npy".format(self.__cnt_data_saving), self.__mu)
+        np.save(self.foldername_Sigma + "D_{:03d}.npy".format(self.__cnt_data_saving), self.__Sigma)
 
         ## update counter
         self.__cnt_data_saving += 1
@@ -147,6 +181,7 @@ class GRF:
 
     def get_ei_field_para(self) -> tuple:
         t1 = time.time()
+
         def get_eibv_ivr(i):
             SF = self.__Sigma[:, i].reshape(-1, 1)
             MD = 1 / (self.__Sigma[i, i] + self.__nugget)
@@ -156,6 +191,7 @@ class GRF:
             eibv = self.__get_ibv(self.__mu, sigma_diag)
             ivr = np.sum(np.diag(VR))
             return eibv, ivr
+
         res = Parallel(n_jobs=10)(delayed(get_eibv_ivr)(i) for i in range(self.Ngrid))
         eibv_field = np.array([item[0] for item in res])
         ivr_field = np.array([item[1] for item in res])
@@ -243,4 +279,3 @@ class GRF:
 
 if __name__ == "__main__":
     g = GRF()
-

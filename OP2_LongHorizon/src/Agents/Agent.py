@@ -35,7 +35,8 @@ class Agent:
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: set up planner.
-        self.planner = Planner()
+        loc_start = np.array([6000, 8000])
+        self.planner = Planner(loc_start)
 
         # s2: setup AUV simulator.
         self.auv = AUVSimulator()
@@ -49,7 +50,6 @@ class Agent:
         """
         Run the autonomous operation according to Sense, Plan, Act philosophy.
         """
-
         wp_start = self.planner.get_starting_waypoint()
         wp_end = self.planner.get_end_waypoint()
 

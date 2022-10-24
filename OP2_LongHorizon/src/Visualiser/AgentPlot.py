@@ -136,7 +136,7 @@ class AgentPlot:
         ax = fig.add_subplot(gs[4])
         if not self.budget.get_go_home_alert():
             self.plotf_vector(self.ygrid, self.xgrid, cost_eibv, title="EIBV cost field",
-                              cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, stepsize=.25, cbar_title="Cost")
+                              cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
             # ax.add_patch(be)
         else:
             im = ax.scatter(self.ygrid, self.xgrid, c=cost_eibv, s=400, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
@@ -155,7 +155,7 @@ class AgentPlot:
         ax = fig.add_subplot(gs[5])
         if not self.budget.get_go_home_alert():
             self.plotf_vector(self.ygrid, self.xgrid, cost_ivr, title="IVR cost field",
-                              cmap=get_cmap("GnBu", 10), vmin=0, vmax=1, stepsize=.25, cbar_title="Cost")
+                              cmap=get_cmap("GnBu", 10), vmin=-.1, vmax=1.1, stepsize=.1, cbar_title="Cost")
             # ax.add_patch(be)
         else:
             im = ax.scatter(self.ygrid, self.xgrid, c=cost_ivr, s=200, cmap=get_cmap("GnBu", 10), vmin=0, vmax=1)
@@ -178,8 +178,12 @@ class AgentPlot:
                      cbar_title='test', colorbar=True, vmin=None, vmax=None, ticks=None,
                      stepsize=None, threshold=None, polygon_border=None,
                      polygon_obstacle=None, xlabel=None, ylabel=None):
+        """ Note for triangulation:
+        - Maybe sometimes it cannot triangulate based on one axis, but changing to another axis might work.
+        - So then the final output needs to be carefully treated so that it has the correct visualisation.
+        """
         """ To show threshold as a red line, then vmin, vmax, stepsize, threshold needs to have values. """
-        triangulated = tri.Triangulation(xplot, yplot)
+        triangulated = tri.Triangulation(yplot, xplot)
         x_triangulated = xplot[triangulated.triangles].mean(axis=1)
         y_triangulated = yplot[triangulated.triangles].mean(axis=1)
 
@@ -189,6 +193,10 @@ class AgentPlot:
         triangulated.set_mask(ind_mask)
         refiner = tri.UniformTriRefiner(triangulated)
         triangulated_refined, value_refined = refiner.refine_field(values.flatten(), subdiv=3)
+
+        """ extract new x and y, refined ones. """
+        xre_plot = triangulated_refined.x
+        yre_plot = triangulated_refined.y
 
         ax = plt.gca()
         # ax.triplot(triangulated, lw=0.5, color='white')
@@ -204,12 +212,12 @@ class AgentPlot:
                 ind = np.where(dist == np.amin(dist))[0]
                 linewidths[ind] = 3
                 colors[ind[0]] = 'red'
-            contourplot = ax.tricontourf(triangulated_refined, value_refined, levels=levels, cmap=cmap, alpha=alpha)
-            ax.tricontour(triangulated_refined, value_refined, levels=levels, linewidths=linewidths, colors=colors,
+            contourplot = ax.tricontourf(yre_plot, xre_plot, value_refined, levels=levels, cmap=cmap, alpha=alpha)
+            ax.tricontour(yre_plot, xre_plot, value_refined, levels=levels, linewidths=linewidths, colors=colors,
                           alpha=alpha)
         else:
-            contourplot = ax.tricontourf(triangulated_refined, value_refined, cmap=cmap, alpha=alpha)
-            ax.tricontour(triangulated_refined, value_refined, vmin=vmin, vmax=vmax, alpha=alpha)
+            contourplot = ax.tricontourf(yre_plot, xre_plot, value_refined, cmap=cmap, alpha=alpha)
+            ax.tricontour(yre_plot, xre_plot, value_refined, vmin=vmin, vmax=vmax, alpha=alpha)
 
         if colorbar:
             cbar = plt.colorbar(contourplot, ax=ax, ticks=ticks)

@@ -34,15 +34,16 @@ class Planner:
     __grf = __cv.get_grf_model()
     __grid = __grf.grid
 
-    # s3: set planning trackers.
-    __wp_now = __wp_start
-    __wp_next = __wp_start
-    __wp_pion = __wp_start
-    __traj = [[__wp_now[0], __wp_now[1]]]
-
-    def __init__(self):
-        """ In the initial phase, wp next and wp pion are selected along the direction to the target location. """
-        # s0: get minimum cost location.
+    def __init__(self, loc_start: np.ndarray) -> None:
+        """ Initial phase
+        - Update the starting location to be loc.
+        - Update current waypoint to be starting location.
+        - Calculate two steps ahead in the pioneer planning.
+        """
+        # s0: update the current waypoint location and append to traj and then get the minimum cost location.
+        self.__wp_start = loc_start
+        self.__wp_now = self.__wp_start
+        self.__traj = [[self.__wp_now[0], self.__wp_now[1]]]
         self.__wp_min_cv = self.__cv.get_minimum_cost_location()
 
         # s1: compute angle between the starting location to the minimum cost location.
