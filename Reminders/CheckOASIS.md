@@ -13,7 +13,7 @@
 - `uptime -s` shows the system uptime for the duration.
 - `KillUserProcesses=yes` in `/etc/systemd/logind.conf`
 - `loginctl enable-lingear` enables linearing.
-- `rsync -av -e ssh --exclude='*.npy' lauv-xp1:/home/lsts/catkin_ws/src/adaframe_examples/* .` to copy all files from remote server with eliminating some other files. 
+- `rsync -av -e ssh --exclude='*.npy' lauv-xp1:/home/lsts/catkin_ws/src/adaframe_examples/* .` to copy all files from remote server with eliminating some other files.
 
 ## To start DUNE from hardware mode, use the following command.
 `services dune restart`
