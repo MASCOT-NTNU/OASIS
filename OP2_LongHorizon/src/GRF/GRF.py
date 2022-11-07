@@ -51,11 +51,11 @@ class GRF:
     def __init__(self) -> None:
         # s0: check datafolders
         t = int(time.time())
-        f = os.getcwd()
-        self.foldername_data = f + "/GRF/data/{:d}/".format(t)
-        self.foldername_ctd = f + "/GRF/raw_ctd/{:d}/".format(t)
-        self.foldername_mu = f + "/GRF/mu/"
-        self.foldername_Sigma = f + "/GRF/Sigma/"
+        f = os.getcwd() + "/GRF/data/"
+        self.foldername_data = f + "assimilated/{:d}/".format(t)
+        self.foldername_ctd = f + "raw_ctd/{:d}/".format(t)
+        self.foldername_mu = f + "mu/"
+        self.foldername_Sigma = f + "Sigma/"
         checkfolder(self.foldername_data)
         checkfolder(self.foldername_ctd)
         checkfolder(self.foldername_mu)
