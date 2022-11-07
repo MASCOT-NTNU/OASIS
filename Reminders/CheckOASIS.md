@@ -1,4 +1,4 @@
-# IPs for all laptops
+# IPs for all laptops at LSTS
 - My MacBook Pro: 10.0.248.61
 - NTNU MacBook Pro: 10.0.248.65
 - Old PC: 10.0.248.63
@@ -6,7 +6,11 @@
 - Andre's mac: 10.0.248.62
 - Andre's Ubuntu: 10.0.248.64
 
+# IPs for all laptops at NTNU
+- My Macbook Pro: 129.241.15.10
+
 # Mission Checklist
+- `netstat -lntu` shows all open ports. 
 - `last reboot` shows all possible reboot in the history, but it needs to be the local machine's time.
 - `grep -nrw . -e "storing"`
 - `journalctl --list-boots` to list reboot time.

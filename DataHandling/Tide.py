@@ -4,6 +4,10 @@ Tide module handles the tide organsiation according to raw data.
 According to raw data,
 # "Preia - Mar" --> high tide
 # "Baixa - Mar" --> low tide
+
+Examples
+>>> t = Tide()
+>>> t.get_data4month(month=11)  # --> to get data for November
 """
 
 import numpy as np
@@ -15,7 +19,7 @@ from datetime import datetime
 class Tide:
 
     __datapath_tide = os.getcwd() + "/DataSources/tide/raw/"
-    __month_of_interest = 10  # October
+    __month_of_interest = 11  # October
 
     # "Preia - Mar" --> high tide
     # "Baixa - Mar" --> low tide
@@ -112,3 +116,4 @@ class Tide:
 
 if __name__ == "__main__":
     a = Tide()
+    a.get_data4month(11)

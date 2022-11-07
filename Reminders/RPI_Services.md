@@ -31,3 +31,9 @@ WantedBy=multi-user.target
 
 ### To stop service
 `sudo systemctl stop service_test.service`
+
+### To check service status
+`sudo systemctl status service_test.service`
+
+### To check journal of the logs
+`sudo journalctl -xe`
