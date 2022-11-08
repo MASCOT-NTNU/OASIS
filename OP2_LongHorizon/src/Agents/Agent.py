@@ -28,14 +28,14 @@ class Agent:
     traj = np.empty([0, 2])
 
     # ss: plot
-    __figpath = os.getcwd() + "/../../fig/trees/agent/"
+    # __figpath = os.getcwd() + "/../../fig/trees/agent/"
 
     def __init__(self) -> None:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: set up planner.
-        loc_start = np.array([10000, 7200])
+        loc_start = np.array([10000, 8200])
         self.planner = Planner(loc_start)
 
         # s2: setup AUV simulator.

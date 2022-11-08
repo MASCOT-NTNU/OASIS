@@ -49,20 +49,26 @@ class TestCostValley(TestCase):
         self.xlim, self.ylim = self.field.get_border_limits()
 
     def test_minimum_cost_location(self):
+        print("S1")
         loc_m = self.cv.get_minimum_cost_location()
         cv = self.cv.get_cost_field()
         id = np.argmin(cv)
         loc = self.grf.grid[id]
         self.assertIsNone(testing.assert_array_equal(loc, loc_m))
+        print("End S1")
 
     def test_get_cost_at_location(self):
+        print("S2")
         loc = np.array([4000, 4000])
         cost = self.cv.get_cost_at_location(loc)
+        print("End S2")
 
     def test_get_cost_along_path(self):
+        print("S3")
         l1 = np.array([4000, 5000])
         l2 = np.array([5000, 4500])
         c = self.cv.get_cost_along_path(l1, l2)
+        print("End S3")
 
     def plot_cost_valley(self):
         grid = self.cv.get_grid()
@@ -110,6 +116,7 @@ class TestCostValley(TestCase):
         plt.show()
 
     def test_update_cost_valley(self):
+        print("S4")
         self.plot_cost_valley()
 
         # s1: move and sample
@@ -159,8 +166,10 @@ class TestCostValley(TestCase):
         self.grf.assimilate_data(dataset)
         self.cv.update_cost_valley(dataset[0, :2])
         self.plot_cost_valley()
+        print("End S4")
 
     def test_resuming_features(self) -> None:
+        print("S5")
         # s1: move and sample
         dataset = np.array([[6000, 7400, 0, 30]])
         set_resume_state(False)
@@ -211,5 +220,6 @@ class TestCostValley(TestCase):
         self.cv = cv3
         self.grf = grf3
         self.plot_cost_valley()
+        print("End S5")
 
 

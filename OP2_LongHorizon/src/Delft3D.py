@@ -18,7 +18,7 @@ class Delft3D:
     __polygon_operational_area_shapely = __config.get_polygon_operational_area_shapely()
 
     """ Delft3D data manipulation. """
-    __data = pd.read_csv(os.getcwd() + "/../prior/" + __wind_dir + "/" + __wind_level + ".csv").to_numpy()
+    __data = pd.read_csv(os.getcwd() + "/../prior/Nov/" + __wind_dir + "/" + __wind_level + ".csv").to_numpy()
     __lat = __data[:, 0]
     __lon = __data[:, 1]
     __salinity = __data[:, 2]

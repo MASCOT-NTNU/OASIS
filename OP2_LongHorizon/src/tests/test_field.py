@@ -102,6 +102,7 @@ class TestField(TestCase):
         for i in range(len(wp)):
             plt.plot([wp[i, 1], wr[i, 1]], [wp[i, 0], wr[i, 0]], 'r.-')
             # plt.plot(wr[i, 0], wr[i, 1], '.', alpha=.3)
+        plt.gca().set_aspect('equal')
         plt.show()
 
     def test_border_contains(self):

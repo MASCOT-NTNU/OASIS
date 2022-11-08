@@ -4,6 +4,8 @@ from WGS import WGS
 import matplotlib.pyplot as plt
 from numpy import testing
 import numpy as np
+from usr_func.set_resume_state import set_resume_state
+from usr_func.get_resume_state import get_resume_state
 
 
 class TestConfig(TestCase):
@@ -29,41 +31,24 @@ class TestConfig(TestCase):
         plt.show()
 
     def test_get_resume_state(self):
-<<<<<<< HEAD
         # s1: check false state
-        Config.set_resume_state(False)
-        resume = Config.get_resume_state()
-        self.assertFalse(resume)
+        set_resume_state(False)
+        self.assertFalse(get_resume_state())
 
         # s2: check true state
-        Config.set_resume_state(True)
-        resume = Config.get_resume_state()
-        self.assertTrue(resume)
+        set_resume_state(True)
+        self.assertTrue(get_resume_state())
 
         # s3: check false again
-        Config.set_resume_state(False)
-        resume = Config.get_resume_state()
-        self.assertFalse(resume)
+        set_resume_state(False)
+        self.assertFalse(get_resume_state())
 
         # s4: check true
-        Config.set_resume_state(True)
-        resume = Config.get_resume_state()
-        self.assertTrue(resume)
+        set_resume_state(True)
+        self.assertTrue(get_resume_state())
 
         # s5: check false
-        Config.set_resume_state(False)
-        resume = Config.get_resume_state()
-        self.assertFalse(resume)
-=======
-        resume = self.c.get_resume_state()
-        self.assertFalse(resume)
-        np.save("resume_flag.npy", np.array([10.]))
-        c = Config()
-        re = c.get_resume_state()
-        self.assertTrue(re)
-        np.save("resume_flag.npy", np.array([.0]))
-        c = Config()
-        re = c.get_resume_state()
-        self.assertFalse(re)
->>>>>>> refs/remotes/origin/main
+        set_resume_state(False)
+        self.assertFalse(get_resume_state())
+
 
