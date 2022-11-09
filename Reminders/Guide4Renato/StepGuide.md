@@ -84,12 +84,28 @@ In this section, I will list some common issues in a mission operation out in th
     - Follow step 1, 2, 3 in **Plan B**.
     - Type `screen -r` to resume the previous detached session. If it is not working, then skip, it is probably dead already.
     - Type `htop` to check if both programs are running.
-    - ![Img1](img1.png) shows how it should look like.
-    - ![Img2](img2.png) shows how it shouldn't look like.
     - If none of the services or processes are running, then check the log with `cat /logs/log_op2.txt` first and then `cat /logs/log_bridge.txt` and we should keep in touch at this moment.
+---
+
+The following figures show how it should look like from a `htop` printout.
+
+- **Case I**: Everything goes well.
+
+![Img3](3.png)
+
+- **Case II**: Adaptive program is dead or finished.
+
+![Img2](2.png)
+
+- **Case III**: Both the bridge and the adaptive program are dead.
+
+![Img1](1.png)
+
+---
+
 
 * AUV not moving.
- - Take it easy, it is either popuping on the surface or calculating something. If it is not moving for a long time, recall the first issue. 
+ - Take it easy, it is either popuping on the surface or calculating something. If it is not moving for a long time, recall the first issue.
 
 * Not receiving SMS.
  - Take it easy and be patient.
