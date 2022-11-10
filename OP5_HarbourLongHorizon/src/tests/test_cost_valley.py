@@ -174,12 +174,12 @@ class TestCostValley(TestCase):
         import os
         filepath = os.getcwd() + "/GRF/data/"
         os.system("rm -rf " + filepath)
-        filepath = os.getcwd() + "/GRF/mu/"
-        os.system("rm -rf " + filepath)
-        filepath = os.getcwd() + "/GRF/Sigma/"
-        os.system("rm -rf " + filepath)
-        filepath = os.getcwd() + "/GRF/raw_ctd/"
-        os.system("rm -rf " + filepath)
+        # filepath = os.getcwd() + "/GRF/mu/"
+        # os.system("rm -rf " + filepath)
+        # filepath = os.getcwd() + "/GRF/Sigma/"
+        # os.system("rm -rf " + filepath)
+        # filepath = os.getcwd() + "/GRF/raw_ctd/"
+        # os.system("rm -rf " + filepath)
 
         # s1: move and sample
         dataset = np.array([[60, 74, 0, 30]])

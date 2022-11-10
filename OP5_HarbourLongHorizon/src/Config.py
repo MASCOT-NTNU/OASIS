@@ -20,8 +20,8 @@ from shapely.geometry import Polygon
 
 class Config:
     """ Mission setup. """
-    __mission_date = "2022-10-17_2022-10-18"  # needs to have one day ahead.
-    __wind_dir = "North"
+    __mission_date = "2022-11-10_2022-11-11"  # needs to have one day ahead.
+    __wind_dir = "East"
     __wind_level = "Moderate"
     __clock_start = 10  # expected starting time, at o'clock
     __clock_end = 16  # expected ending time, at o'clock

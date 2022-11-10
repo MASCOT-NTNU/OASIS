@@ -28,7 +28,7 @@ class Agent:
     traj = np.empty([0, 2])
 
     # ss: plot
-    __figpath = os.getcwd() + "/../../fig/trees/agent/"
+    # __figpath = os.getcwd() + "/../../fig/trees/agent/"
 
     def __init__(self) -> None:
         """
