@@ -1,8 +1,11 @@
 """ Unit test for Field
 This module tests the field object.
 """
-
+import os
 from unittest import TestCase
+
+import pandas as pd
+
 from Field import Field
 from usr_func.is_list_empty import is_list_empty
 from numpy import testing
@@ -161,6 +164,11 @@ class TestField(TestCase):
         # plt.plot(self.grid[ind, 1], self.grid[ind, 0], 'b.')
         # plt.show()
 
-
+    def test_get_grid_for_eda(self):
+        grid = self.grid
+        df = pd.DataFrame(grid, columns=['x', 'y'])
+        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid.csv", index=False)
+        self.grid
+        pass
 
 
