@@ -167,6 +167,7 @@ class TestField(TestCase):
         grid = self.grid
         df = pd.DataFrame(grid, columns=['x', 'y'])
         df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid_xy.csv", index=False)
+
         plg = self.polygon_border
         df = pd.DataFrame(plg, columns=['x', 'y'])
         df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/plg_xy.csv", index=False)
@@ -175,6 +176,11 @@ class TestField(TestCase):
         gd = np.stack((lat, lon), axis=1)
         df = pd.DataFrame(gd, columns=['lat', 'lon'])
         df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid.csv", index=False)
-        pass
+
+        lat, lon = WGS.xy2latlon(plg[:, 0], plg[:, 1])
+        plb = np.stack((lat, lon), axis=1)
+        df = pd.DataFrame(plb, columns=['lat', 'lon'])
+        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/polygon.csv", index=False)
+        df
 
 
