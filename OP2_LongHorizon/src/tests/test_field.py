@@ -3,9 +3,7 @@ This module tests the field object.
 """
 import os
 from unittest import TestCase
-
 import pandas as pd
-
 from Field import Field
 from usr_func.is_list_empty import is_list_empty
 from numpy import testing
@@ -14,6 +12,7 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import testing
+from WGS import WGS
 
 
 class TestField(TestCase):
@@ -167,8 +166,15 @@ class TestField(TestCase):
     def test_get_grid_for_eda(self):
         grid = self.grid
         df = pd.DataFrame(grid, columns=['x', 'y'])
+        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid_xy.csv", index=False)
+        plg = self.polygon_border
+        df = pd.DataFrame(plg, columns=['x', 'y'])
+        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/plg_xy.csv", index=False)
+
+        lat, lon = WGS.xy2latlon(grid[:, 0], grid[:, 1])
+        gd = np.stack((lat, lon), axis=1)
+        df = pd.DataFrame(gd, columns=['lat', 'lon'])
         df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid.csv", index=False)
-        self.grid
         pass
 
 
