@@ -225,7 +225,7 @@ class AgentPlot:
         return ax
 
     @staticmethod
-    def is_masked(x, y):
+    def is_masked(x, y) -> bool:
         """
         :param x:
         :param y:
