@@ -419,6 +419,7 @@ ax.plot(plg[:, 1], plg[:, 0], 'r-.')
 ax.set_aspect("equal")
 ax.set_xlim([-8.75, -8.68])
 ax.set_ylim([41.06, 41.16])
+ax.grid()
 
 # p2: MOHID
 ax = fig.add_subplot(gs[1])
@@ -428,6 +429,7 @@ ax.plot(plg[:, 1], plg[:, 0], 'r-.')
 ax.set_aspect("equal")
 ax.set_xlim([-8.75, -8.68])
 ax.set_ylim([41.06, 41.16])
+ax.grid()
 
 # p3: satellite
 ax = fig.add_subplot(gs[2])
@@ -438,10 +440,11 @@ ax.set_aspect("equal")
 ax.set_title("Satellite on 2022-11-10")
 ax.set_xlim([-8.75, -8.68])
 ax.set_ylim([41.06, 41.16])
+ax.grid()
 
 figpath = os.getcwd() + "/../../fig/OP2_LongHorizon/Experiment/"
 
-plt.savefig(figpath + "Comparison.png")
+plt.savefig(figpath + "Porto_Comparison_grid.png")
 
 plt.show()
 print("hello")
