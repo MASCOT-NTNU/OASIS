@@ -1,4 +1,5 @@
 """
+HITLSimple is only for simplifying the proces of starting sampling. So the first two locations are intendedly random.
 Agent object abstract the entire adaptive agent by wrapping all the other components together inside the class.
 It handles the procedure of the execution by integrating all essential modules and expand its functionalities.
 
