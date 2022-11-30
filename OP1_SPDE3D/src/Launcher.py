@@ -2,7 +2,7 @@
 Launches the mission.
 """
 
-from Agents.HITL import Agent
+from Agents.HITLSimple import Agent
 
 
 if __name__ == "__main__":

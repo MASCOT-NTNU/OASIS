@@ -44,7 +44,8 @@ class WaypointGraph:
         self.__waypoints = np.empty([0, 3])
         self.__box = np.load(os.getcwd() + "/GMRF/models/grid.npy")
         self.__polygon_border = sort_polygon_vertices(self.__box[:, 2:])
-        self.__polygon_border = np.stack((WGS.latlon2xy(self.__polygon_border[:, 0], self.__polygon_border[:, 1])), axis=1)
+        self.__polygon_border = np.stack((WGS.latlon2xy(self.__polygon_border[:, 0], self.__polygon_border[:, 1])),
+                                         axis=1)
         self.__polygon_border_shapely = Polygon(self.__polygon_border)
         self.__xmin, self.__ymin = map(np.amin, [self.__polygon_border[:, 0], self.__polygon_border[:, 1]])
         self.__xmax, self.__ymax = map(np.amax, [self.__polygon_border[:, 0], self.__polygon_border[:, 1]])
@@ -183,7 +184,6 @@ class WaypointGraph:
             waypoint: np.array([xp, yp, zp])
         Returns: index of the closest waypoint.
         """
-
         if len(waypoint) > 0:
             dm = waypoint.ndim
             if dm == 1:

@@ -19,7 +19,7 @@ import os
 
 
 class Agent:
-    __loc_start = np.array([6876.20208333, 4549.81267591, .5])
+    __loc_start = np.array([6876.20208333, 4549.81267591, -.5])
     __loc_end = np.array([0, 0, 0])
     __NUM_STEP = 50
     __counter = 0

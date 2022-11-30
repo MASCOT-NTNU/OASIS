@@ -24,8 +24,8 @@ import multiprocessing as mp
 
 class Agent:
 
-    __loc_start = np.array([41.12677, -8.68574, -0.5])
-    __NUM_STEP = 40
+    # __loc_start = np.array([41.12677, -8.68574, -0.5])
+    __NUM_STEP = 30
     __counter = 0
 
     def __init__(self) -> None:
@@ -37,6 +37,7 @@ class Agent:
 
         # s2: setup AUV.
         self.auv = AUV()
+        self.__loc_start = self.auv.get_vehicle_pos()
 
         # stest: set up pool
         self.pool = mp.Pool(1)
@@ -47,9 +48,9 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        x, y = WGS.latlon2xy(self.__loc_start[0], self.__loc_start[1])
-        loc = np.array([x, y, self.__loc_start[2]])
-        id_start = self.myopic.wp.get_ind_from_waypoint(loc)
+        # x, y = WGS.latlon2xy(self.__loc_start[0], self.__loc_start[1])
+        # loc = np.array([x, y, self.__loc_start[2]])
+        id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
         id_curr = id_start
         neighbour = self.myopic.wp.get_neighbour_indices(id_curr)
         id_next = neighbour[np.random.randint(len(neighbour))]
@@ -97,31 +98,6 @@ class Agent:
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
-
-                    # if self.__counter == 0:
-                    #     # s2: get next index using get_pioneer_waypoint
-                    #     ind = self.myopic.get_pioneer_waypoint_index()
-                    #     self.myopic.set_next_index(ind)
-                    #
-                    #     # p1: parallel move AUV to the first location
-                    #     loc = self.myopic.wp.get_waypoint_from_ind(ind)
-                    #     lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                    #     self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), np.abs(loc[2]), speed=speed)
-                    #     update_time = rospy.get_time()
-                    #
-                    #     # s3: update planner -> so curr and next waypoint is updated
-                    #     self.myopic.update_planner()
-                    #
-                    #     # s4: get pioneer waypoint
-                    #     self.myopic.get_pioneer_waypoint_index()
-                    #
-                    #     # s5: obtain CTD data
-                    #     ctd_data = np.array(ctd_data)
-                    #
-                    #     # s6: assimilate data
-                    #     self.myopic.gmrf.assimilate_data(ctd_data)
-                    #     ctd_data = []
-                    # else:
 
                     ind = self.myopic.get_next_index()
                     loc = self.myopic.wp.get_waypoint_from_ind(ind)

@@ -26,19 +26,7 @@ class Myopic3D(Planner):
     def __init__(self) -> None:
         super().__init__()
         self.wp = WaypointGraph()
-        # self.setup_waypoint_graph()
         self.gmrf = GMRF()
-
-    # def setup_waypoint_graph(self) -> None:
-    #     """
-    #     Set the waypoint graph for the whole field according to those polygon constrains.
-    #     """
-    #     self.wp.set_neighbour_distance(self.__NEIGHBOUR_DISTANCE)
-    #     self.wp.set_depth_layers(self.__DEPTHS)
-    #     self.wp.set_polygon_border(self.__POLYGON_BORDER)
-    #     self.wp.set_polygon_obstacles(self.__POLYGON_OBSTACLE)
-    #     self.wp.construct_waypoints()
-    #     self.wp.construct_hash_neighbours()
 
     def get_candidates_indices(self):
         """
@@ -77,6 +65,7 @@ class Myopic3D(Planner):
             wp_n = self.wp.get_waypoint_from_ind(iid)
             vec2 = self.wp.get_vector_between_two_waypoints(wp_next, wp_n)
             if vec1.T @ vec2 >= 0:
+                dot = vec1.T @ vec2
                 id_smooth.append(iid)
         return id_smooth, id_neighbours
 

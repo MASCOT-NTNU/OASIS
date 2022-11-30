@@ -31,44 +31,20 @@ class TestMyopic(TestCase):
         """
         cand = True
         # c1: one waypoint.
-        self.myopic.set_next_index(10)
+        id_curr = self.myopic.get_current_index()
         id_next = self.myopic.get_next_index()
-        id_neigh = self.wp.get_neighbour_indices(id_next)
-        id_curr = id_neigh[0]
-        # id_curr = id_neigh[np.random.randint(0, len(id_neigh))]
         wp_curr = self.wp.get_waypoint_from_ind(id_curr)
         wp_next = self.wp.get_waypoint_from_ind(id_next)
-        vec1 = WaypointGraph.get_vector_between_two_waypoints(wp_curr, wp_next)
+        vec1 = self.wp.get_vector_between_two_waypoints(wp_curr, wp_next)
         id_c, id_n = self.myopic.get_candidates_indices()
         for i in range(len(id_c)):
             wp_i = self.wp.get_waypoint_from_ind(id_c[i])
-            vec2 = WaypointGraph.get_vector_between_two_waypoints(wp_next, wp_i)
+            vec2 = self.wp.get_vector_between_two_waypoints(wp_next, wp_i)
             dot_prod = vec1.T @ vec2
             if dot_prod < 0:
                 cand = False
                 break
         self.assertTrue(cand)
-
-        # c2: some random combinations, to make test fast.
-        id_nexts = np.random.randint(0, len(self.waypoints), 100)
-        for i in range(len(id_nexts)):
-            self.myopic.set_next_index(id_nexts[i])
-            id_next = self.myopic.get_next_index()
-            wp_next = self.waypoints[id_next]
-            id_neigh = self.wp.get_neighbour_indices(id_next)
-            for j in range(len(id_neigh)):
-                self.myopic.set_current_index(id_neigh[j])
-                id_c, id_n = self.myopic.get_candidates_indices()
-                wp_curr = self.wp.get_waypoint_from_ind(self.myopic.get_current_index())
-                vec1 = WaypointGraph.get_vector_between_two_waypoints(wp_curr, wp_next)
-                for k in range(len(id_c)):
-                    wp_i = self.wp.get_waypoint_from_ind(id_c[k])
-                    vec2 = WaypointGraph.get_vector_between_two_waypoints(wp_next, wp_i)
-                    dot_prod = vec1.T @ vec2
-                    if dot_prod < 0:
-                        cand = False
-                        break
-        self.assertTrue(cand, msg="Candidates have illegal combinations, please check!")
 
         # c3: all possible combinations.
         # for i in range(len(self.waypoints)):
@@ -131,7 +107,7 @@ class TestMyopic(TestCase):
         # s4: get pioneer waypoint
         id_pion = self.myopic.get_pioneer_waypoint_index()
 
-        for i in range(50):
+        for i in range(10):
             print(i)
             t1 = time.time()
             # ss1: update planner

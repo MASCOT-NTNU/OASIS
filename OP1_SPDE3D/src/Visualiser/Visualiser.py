@@ -9,6 +9,7 @@ import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
+import time
 from usr_func.interpolate_3d import interpolate_3d
 from usr_func.checkfolder import checkfolder
 from usr_func.vectorize import vectorize
@@ -26,28 +27,45 @@ class Visualiser:
         self.myopic = self.agent.myopic
         self.gmrf = self.myopic.gmrf
         self.grid = self.myopic.gmrf.get_gmrf_grid()
+        self.grid_plot, self.ind_plot = self.interpolate_grid()
+        self.xplot = self.grid_plot[:, 1]
+        self.yplot = self.grid_plot[:, 0]
+        self.zplot = self.grid_plot[:, 2]
 
-        self.ind_remove_top_layer = np.where(self.grid[:, 2] <= 0)[0]
-        self.xgrid = self.grid[self.ind_remove_top_layer, 0]
-        self.ygrid = self.grid[self.ind_remove_top_layer, 1]
-        self.xplot = self.ygrid
-        self.yplot = self.xgrid
-        # self.RR = np.array([[np.cos(self.rotated_angle), -np.sin(self.rotated_angle), 0],
-        #                     [np.sin(self.rotated_angle), np.cos(self.rotated_angle), 0],
-        #                     [0, 0, 1]])
+    def interpolate_grid(self) -> tuple:
+        """
+        This function only works for this specific case since the grid from spde is not rectangular for plotting purposes.
+        """
+        x = self.grid[:, 0]
+        y = self.grid[:, 1]
+        z = self.grid[:, 2]
+        xmin, ymin, zmin = map(np.amin, [x, y, z])
+        xmax, ymax, zmax = map(np.amax, [x, y, z])
+
+        xn = np.linspace(xmin, xmax, 25)
+        yn = np.linspace(ymin, ymax, 25)
+        zn = np.linspace(zmin, zmax, 5)
+        grid = []
+        ind = []
+        t1 = time.time()
+        for i in range(xn.shape[0]):
+            for j in range(yn.shape[0]):
+                for k in range(zn.shape[0]):
+                    loc = [xn[i], yn[j], zn[k]]
+                    grid.append(loc)
+                    ind.append(self.gmrf.get_ind_from_location(np.array(loc)))
+        t2 = time.time()
+        print("Time for interpolation: ", t2 - t1)
+        return np.array(grid), np.array(ind)
 
     def plot_agent(self):
         mu = self.gmrf.get_mu()
         mvar = self.gmrf.get_mvar()
         self.cnt = self.agent.get_counter()
         mu[mu < 0] = 0
-        ind_selected_to_plot = np.where(mu[self.ind_remove_top_layer] >= 0)[0]
-        self.xplot = self.xplot[ind_selected_to_plot]
-        self.yplot = self.yplot[ind_selected_to_plot]
-        self.zplot = self.grid[self.ind_remove_top_layer, 2][ind_selected_to_plot]
 
         """ plot mean """
-        value = mu[self.ind_remove_top_layer][ind_selected_to_plot]
+        value = mu[self.ind_plot]
         vmin = 10
         vmax = 33
         filename = self.figpath + "mu/P_{:03d}.html".format(self.cnt)
@@ -55,7 +73,7 @@ class Visualiser:
 
         """ plot mvar """
         filename = self.figpath + "mvar/P_{:03d}.html".format(self.cnt)
-        value = mvar[self.ind_remove_top_layer][ind_selected_to_plot]
+        value = mvar[self.ind_plot]
         vmin = np.amin(value)
         vmax = np.amax(value)
         self.plot_figure(value, vmin=vmin, vmax=vmax, filename=filename, title="marginal variance", cmap="RdBu")
@@ -63,36 +81,36 @@ class Visualiser:
     def plot_figure(self, value, vmin=0, vmax=30, filename=None, title=None, cmap=None):
         # points_grid, values_grid = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
         fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scene'}]])
-        fig.add_trace(go.Scatter3d(
-            x=self.xplot,
-            y=self.yplot,
-            z=self.zplot,
-            mode="markers",
-            marker=dict(
-                size=10,
-                cmin=vmin,
-                cmax=vmax,
-                opacity=.3,
-                color=value,
-                colorscale=cmap,
-                showscale=True,
-                colorbar=dict(x=0.75, y=0.5, len=.5),
-            )))
-        # fig.add_trace(go.Volume(
+        # fig.add_trace(go.Scatter3d(
         #     x=self.xplot,
         #     y=self.yplot,
         #     z=self.zplot,
-        #     value=value,
-        #     isomin=vmin,
-        #     isomax=vmax,
-        #     opacity=.3,
-        #     surface_count=15,
-        #     colorscale=cmap,
-        #     # coloraxis="coloraxis",
-        #     colorbar=dict(x=0.75, y=0.5, len=.5),
-        #     # reversescale=True,
-        #     caps=dict(x_show=False, y_show=False, z_show=False),
-        # ))
+        #     mode="markers",
+        #     marker=dict(
+        #         size=10,
+        #         cmin=vmin,
+        #         cmax=vmax,
+        #         opacity=.3,
+        #         color=value,
+        #         colorscale=cmap,
+        #         showscale=True,
+        #         colorbar=dict(x=0.75, y=0.5, len=.5),
+        #     )))
+        fig.add_trace(go.Volume(
+            x=self.xplot,
+            y=self.yplot,
+            z=self.zplot,
+            value=value,
+            isomin=vmin,
+            isomax=vmax,
+            opacity=.3,
+            surface_count=15,
+            colorscale=cmap,
+            # coloraxis="coloraxis",
+            colorbar=dict(x=0.75, y=0.5, len=.5),
+            # reversescale=True,
+            caps=dict(x_show=False, y_show=False, z_show=False),
+        ))
 
         id = self.myopic.get_current_index()
         wp = self.myopic.wp.get_waypoint_from_ind(id)
