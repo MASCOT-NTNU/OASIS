@@ -102,7 +102,7 @@ class spde:
         else:
             self.mu = mu
 
-    def mvar(self,Q_fac = None, n=DEFAULT_NUM_SAMPLES):
+    def mvar(self,Q_fac=None, n=DEFAULT_NUM_SAMPLES):
         """Monte Carlo Estimate of the marginal variance of a GMRF.
 
         Args:
