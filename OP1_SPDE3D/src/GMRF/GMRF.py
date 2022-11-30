@@ -20,25 +20,28 @@ import time
 class GMRF:
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
     __GMRF_DISTANCE_NEIGHBOUR = 1  # lateral distance used to scale depth comparison
-    __gmrf_grid = None
-    __N_gmrf_grid = 0
-    __rotated_angle = .0
-    __cnt_data_assimilation = 0
-
-    # used for data assimilation
-    __xg = None
-    __yg = None
-    __zg = None
-    __Fgmrf = None
 
     def __init__(self):
+        self.__gmrf_grid = None
+        self.__N_gmrf_grid = 0
+        self.__rotated_angle = .0
+        self.__cnt_data_assimilation = 0
+        self.__threshold = np.loadtxt(os.getcwd() + "/threshold.txt")
+        print("GMRF threshold is loaded as: ", self.__threshold)
+
+        # used for data assimilation
+        self.__xg = None
+        self.__yg = None
+        self.__zg = None
+        self.__Fgmrf = None
+
         self.__spde = spde()
         self.__construct_gmrf_grid()
         t = int(time.time())
-        f = os.getcwd()
-        self.foldername = f + "/GMRF/data/{:d}/".format(t)
-        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}/".format(t)
-        self.foldername_thres = f + "/GMRF/threshold/{:d}/".format(t)
+        f = os.getcwd() + "/GMRF/data/"
+        self.foldername = f + "assimilated/{:d}/".format(t)
+        self.foldername_ctd = f + "raw_ctd/{:d}/".format(t)
+        self.foldername_thres = f + "threshold/{:d}/".format(t)
         checkfolder(self.foldername)
         checkfolder(self.foldername_ctd)
         checkfolder(self.foldername_thres)
@@ -137,7 +140,7 @@ class GMRF:
         # s3: get eibv using post variance
         eibv = []
         for i in range(len(id)):
-            ibv = GMRF.get_ibv(self.__spde.threshold, self.__spde.mu, post_var[:, i])
+            ibv = GMRF.get_ibv(self.__threshold, self.__spde.mu, post_var[:, i])
             eibv.append(ibv)
         return np.array(eibv)
 
@@ -165,7 +168,7 @@ class GMRF:
         """
         Calculate the integrated bernoulli variance given mean and variance.
         """
-        p = norm.cdf(threshold, mu, sigma_diag)
+        p = norm.cdf(threshold, mu, np.diag(sigma_diag))
         bv = p * (1 - p)
         ibv = np.sum(bv)
         return ibv
