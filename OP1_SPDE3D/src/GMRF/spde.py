@@ -120,7 +120,7 @@ class spde:
         """
         ind = np.load(FILEPATH + 'models/boundary.npy')
         self.threshold = self.mu[ind].mean()
-        print('Treshold is set to %.2f'%(self.threshold))
+        # print('Treshold is set to %.2f'%(self.threshold))
 
     def getThreshold(self) -> np.ndarray:
         """ Get updated threshold """

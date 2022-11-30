@@ -165,10 +165,13 @@ class GMRF:
 
     @staticmethod
     def get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
+        """ Calculate the integrated bernoulli variance given mean and variance.
+        :param threshold: numerical values specifying threshold.
+        :param mu: column vector stores the mean of the field.
+        :param sigma_diag: column vector stores the variance of the field, only sqrt of sigma can be used for cdf.
+        :return:
         """
-        Calculate the integrated bernoulli variance given mean and variance.
-        """
-        p = norm.cdf(threshold, mu, np.diag(sigma_diag))
+        p = norm.cdf(threshold, mu, np.sqrt(sigma_diag))
         bv = p * (1 - p)
         ibv = np.sum(bv)
         return ibv
