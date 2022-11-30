@@ -37,3 +37,4 @@ WantedBy=multi-user.target
 
 ### To check journal of the logs
 `sudo journalctl -xe`
+`sudo journalctl -u mascot_op1.service`

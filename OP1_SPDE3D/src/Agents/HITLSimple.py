@@ -38,7 +38,7 @@ class Agent:
 
         # s2: setup AUV.
         self.auv = AUV()
-        self.__loc_start = self.auv.get_vehicle_pos()
+        self.__loc_start = np.array(self.auv.get_vehicle_pos())
 
         # stest: set up pool
         self.pool = mp.Pool(1)
@@ -49,8 +49,6 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        # x, y = WGS.latlon2xy(self.__loc_start[0], self.__loc_start[1])
-        # loc = np.array([x, y, self.__loc_start[2]])
         id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
         id_curr = id_start
         neighbour = self.myopic.wp.get_neighbour_indices(id_curr)
