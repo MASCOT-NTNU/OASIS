@@ -42,7 +42,7 @@ class spde:
             n (int, optional): Number of realizations. Defaults to 1.
         """
         z = np.random.normal(size = self.n*n).reshape(self.n,n)
-        data = self.mu[:, np.newaxis] + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma
+        data = self.mu[:, np.newaxis] + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
         return(data)
 
     def cholesky(self,Q):
@@ -113,7 +113,7 @@ class spde:
             Q_fac = self.Q_fac
         z = np.random.normal(size = self.n*n).reshape(self.n,n)
         data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
-        return(data.var(axis = 1) + self.sigma**2)
+        return(data.var(axis = 1))
 
     def setThreshold(self):
         """Set threshold for Excursion set
