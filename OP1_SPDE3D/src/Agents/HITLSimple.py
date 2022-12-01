@@ -26,7 +26,7 @@ import multiprocessing as mp
 class Agent:
 
     # __loc_start = np.array([41.12677, -8.68574, -0.5])
-    __NUM_STEP = 30
+    __NUM_STEP = 40
     __counter = 0
 
     def __init__(self) -> None:
