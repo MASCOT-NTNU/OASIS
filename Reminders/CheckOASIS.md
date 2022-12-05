@@ -81,7 +81,7 @@ DNS: 8.8.8.8
 - Step II: Change IP address at IMC_ROS_launch.bridge and check port number.
 
 - WARNING: Launch all the commands in the backseat CPU with `> /dev/null 2>&1 &`.
-- check process ID: pidof python3/python
+- check process ID: `pidof python3/python`
 
 - check if AUV has HITL mode.
 
