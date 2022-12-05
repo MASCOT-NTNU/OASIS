@@ -10,6 +10,14 @@ The guide is composed of three sections. Section I handles what needs to be done
 
 ---
 
+# Section 0: Threshold
+
+---
+
+Threshold needs to be monitored and updated with the onboard portable CTD sensor. The plan is to drive the boat along the c
+
+---
+
 # Section I: User laptop
 
 ---
