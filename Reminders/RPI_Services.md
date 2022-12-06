@@ -1,6 +1,7 @@
 # Launch it in system services
 `cd /lib/systemd/system`
 `sudo touch test.service`
+**TODO**: check if disabled service can reactivate or not. 
 
 # Step I: Create service file such as
 ```
