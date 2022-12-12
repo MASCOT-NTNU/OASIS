@@ -3,9 +3,7 @@ MOHID handles the data preparation for the operation day. It imports Delft3D dat
 krige the updated field based on the forecast data from MOHID data source.
 """
 import pandas as pd
-
 from WGS import WGS
-from Config import Config
 import os
 import numpy as np
 import h5py
@@ -21,7 +19,8 @@ class MOHID:
     __polygon_operational_area_shapely = __setup.get_polygon_operational_area_shapely()
 
     """ MOHID data manipulation. """
-    __folderpath_mohid = os.getcwd() + "/../../../../Data/Porto/20221111/mohid/"
+    # __folderpath_mohid = os.getcwd() + "/../../../../Data/Porto/20221111/mohid/"
+    __folderpath_mohid = "/Users/yaoling/Downloads/MOHID/"
     __files_mohid = os.listdir(__folderpath_mohid); __files_mohid.sort()
     __ind_date = __files_mohid.index(__mission_date)
     __datapath_mohid = __folderpath_mohid + __files_mohid[__ind_date] + "/WaterProperties.hdf5"
@@ -66,6 +65,7 @@ if __name__ == "__main__":
     dataset = np.stack((lat, lon, df[:, 2]), axis=1)
     df = pd.DataFrame(dataset, columns=['lat', 'lon', 'salinity'])
     df.to_csv("csv/df_mohid.csv", index=False)
+    print("Complete")
 
 
 
