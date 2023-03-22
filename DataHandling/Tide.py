@@ -116,4 +116,4 @@ class Tide:
 
 if __name__ == "__main__":
     a = Tide()
-    a.get_data4month(11)
+    a.get_data4month(3)

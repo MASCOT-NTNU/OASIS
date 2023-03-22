@@ -97,3 +97,53 @@ DNS: 8.8.8.8
 # x11vnc setup
 - Step I, `x11vnc -storepasswd`
 - Step II,
+
+
+# Backseat CPU set up
+`
+[Transports.TCP.Server/Backseat]
+Enabled                                 = Always
+Entity Label                            = TCP Server (Backseat)
+Debug Level                             = Spew
+Activation Time                         = 0
+Deactivation Time                       = 0
+Execution Priority                      = 10
+Port                                    = 32603
+Trace - Incoming Messages               = false
+Trace - Outgoing Messages               = false
+Announce Service                        = false
+Transports                              = Abort,
+                                      Announce,
+                                          Chlorophyll,
+                                          Depth,
+                                          DesiredSpeed,
+                                          DesiredZ,
+                                          DissolvedOrganicMatter,
+                                          EntityActivationState,
+                                          EntityState,
+                                          Heartbeat,
+                                          EntityParameters,
+                                          GpsFix,
+                                          QueryEntityParameters,
+                                          SetEntityParameters,
+                                          SaveEntityParameters,
+                                          EntityList,
+                                          EstimatedState,
+                                          VehicleState,
+                                          VehicleMedium,
+                                          PlanControl,
+                                          PlanControlState,
+                                          FollowRefState,
+                                          EntityActivationState,
+                                          Temperature,
+                                          LogBookEntry,
+                                          Salinity,
+                                          Sms
+
+Rate Limiters                           = EstimatedState:2,
+                                          NavigationUncertainty:2
+
+`
+
+
+# Link closed, connection refused

@@ -8,24 +8,25 @@ from Field import Field
 from Delft3D import Delft3D
 from usr_func.vectorize import vectorize
 from usr_func.checkfolder import checkfolder
+from usr_func.normalize import normalize
+from usr_func.get_resume_state import get_resume_state
 from scipy.spatial.distance import cdist
 import numpy as np
 from scipy.stats import norm
-from usr_func.normalize import normalize
-from usr_func.get_resume_state import get_resume_state
 from sys import maxsize
 import time
 import os
 import pandas as pd
+from numba import jit
 
 
 class GRF:
     # parameters
     __distance_matrix = None
-    __sigma = 1.
-    __lateral_range = 3000
-    __nugget = .04
-    __threshold = 30
+    __sigma = 1.5
+    __lateral_range = 2000
+    __nugget = .1
+    __threshold = 27
 
     # computed
     __eta = 4.5 / __lateral_range  # decay factor
@@ -48,7 +49,9 @@ class GRF:
     __xg = vectorize(grid[:, 0])
     __yg = vectorize(grid[:, 1])
 
-    def __init__(self) -> None:
+    def __init__(self, approximate_eibv: bool = False) -> None:
+        self.__approximate_eibv = approximate_eibv
+
         # s0: check datafolders
         t = int(time.time())
         f = os.getcwd() + "/GRF/data/"
@@ -76,6 +79,9 @@ class GRF:
             # s0: in case it is aborted
             self.__load_conditional_field()
 
+        # s2: load cdf table
+        self.__load_cdf_table()
+
     def __construct_grf_field(self) -> None:
         """ Construct distance matrix and thus Covariance matrix for the kernel. """
         self.__distance_matrix = cdist(self.grid, self.grid)
@@ -89,6 +95,16 @@ class GRF:
         dm_grid_delft3d = cdist(self.grid, dataset_delft3d[:, :2])
         ind_close = np.argmin(dm_grid_delft3d, axis=1)
         self.__mu = dataset_delft3d[ind_close, 2].reshape(-1, 1)
+
+    def __load_cdf_table(self) -> None:
+        """
+        Load cdf table for the analytical solution.
+        """
+        table = np.load("./../prior/cdf.npz")
+        self.__cdf_z1 = table["z1"]
+        self.__cdf_z2 = table["z2"]
+        self.__cdf_rho = table["rho"]
+        self.__cdf_table = table["cdf"]
 
     def __load_conditional_field(self) -> None:
         """
@@ -173,7 +189,15 @@ class GRF:
             VR = SF @ SF.T * MD
             SP = self.__Sigma - VR
             sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv_field[i] = self.__get_ibv(self.__mu, sigma_diag)
+            if self.__approximate_eibv:
+                eibv_field[i] = self.__get_eibv_approximate(self.__mu, sigma_diag)
+            else:
+                vr_diag = np.diag(VR).reshape(-1, 1)
+                eibv_field[i] = self.__get_eibv_analytical_fast(mu=self.__mu, sigma_diag=sigma_diag, vr_diag=vr_diag,
+                                                                threshold=self.__threshold, cdf_z1=self.__cdf_z1,
+                                                                cdf_z2=self.__cdf_z2, cdf_rho=self.__cdf_rho,
+                                                                cdf_table=self.__cdf_table)
+            eibv_field[i] = self.__get_eibv_approximate(self.__mu, sigma_diag)
             ivr_field[i] = np.sum(np.diag(VR))
         self.__eibv_field = normalize(eibv_field)
         self.__ivr_field = 1 - normalize(ivr_field)
@@ -190,7 +214,7 @@ class GRF:
             VR = SF @ SF.T * MD
             SP = self.__Sigma - VR
             sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv = self.__get_ibv(self.__mu, sigma_diag)
+            eibv = self.__get_eibv_approximate(self.__mu, sigma_diag)
             ivr = np.sum(np.diag(VR))
             return eibv, ivr
 
@@ -216,7 +240,7 @@ class GRF:
             VR = SF @ SF.T * MD
             SP = self.__Sigma - VR
             sigma_diag = np.diag(SP).reshape(-1, 1)
-            eibv_field[idx] = self.__get_ibv(self.__mu, sigma_diag)
+            eibv_field[idx] = self.__get_eibv_approximate(self.__mu, sigma_diag)
             ivr_field[idx] = np.sum(np.diag(VR))
         eibv_field[indices] = normalize(eibv_field[indices])
         ivr_field[indices] = 1 - normalize(ivr_field[indices])
@@ -226,7 +250,7 @@ class GRF:
         print("Partial EI field takes: ", t2 - t1, " seconds.")
         return self.__eibv_field, self.__ivr_field
 
-    def __get_ibv(self, mu: np.ndarray, sigma_diag: np.ndarray):
+    def __get_eibv_approximate(self, mu: np.ndarray, sigma_diag: np.ndarray):
         """ !!! Be careful with dimensions, it can lead to serious problems.
         :param mu: n x 1 dimension
         :param sigma_diag: n x 1 dimension
@@ -236,6 +260,37 @@ class GRF:
         bv = p * (1 - p)
         ibv = np.sum(bv)
         return ibv
+
+    @staticmethod
+    @jit
+    def __get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
+                                   threshold: float, cdf_z1: np.ndarray, cdf_z2: np.ndarray,
+                                   cdf_rho: np.ndarray, cdf_table: np.ndarray) -> float:
+        """
+        Calculate the eibv using the analytical formula but using a loaded cdf dataset.
+        """
+        eibv = .0
+        for i in range(len(mu)):
+            sn2 = sigma_diag[i]
+            vn2 = vr_diag[i]
+
+            sn = np.sqrt(sn2)
+            m = mu[i]
+
+            mur = (threshold - m) / sn
+
+            sig2r_1 = sn2 + vn2
+            sig2r = vn2
+
+            z1 = mur
+            z2 = -mur
+            rho = -sig2r / sig2r_1
+
+            ind1 = np.argmin(np.abs(z1 - cdf_z1))
+            ind2 = np.argmin(np.abs(z2 - cdf_z2))
+            ind3 = np.argmin(np.abs(rho - cdf_rho))
+            eibv += cdf_table[ind1][ind2][ind3]
+        return eibv
 
     def set_sigma(self, value: float) -> None:
         self.__sigma = value

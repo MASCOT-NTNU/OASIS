@@ -163,24 +163,24 @@ class TestField(TestCase):
         # plt.plot(self.grid[ind, 1], self.grid[ind, 0], 'b.')
         # plt.show()
 
-    def test_get_grid_for_eda(self):
-        grid = self.grid
-        df = pd.DataFrame(grid, columns=['x', 'y'])
-        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid_xy.csv", index=False)
-
-        plg = self.polygon_border
-        df = pd.DataFrame(plg, columns=['x', 'y'])
-        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/plg_xy.csv", index=False)
-
-        lat, lon = WGS.xy2latlon(grid[:, 0], grid[:, 1])
-        gd = np.stack((lat, lon), axis=1)
-        df = pd.DataFrame(gd, columns=['lat', 'lon'])
-        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid.csv", index=False)
-
-        lat, lon = WGS.xy2latlon(plg[:, 0], plg[:, 1])
-        plb = np.stack((lat, lon), axis=1)
-        df = pd.DataFrame(plb, columns=['lat', 'lon'])
-        df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/polygon.csv", index=False)
-        df
+    # def test_get_grid_for_eda(self):
+    #     grid = self.grid
+    #     df = pd.DataFrame(grid, columns=['x', 'y'])
+    #     df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid_xy.csv", index=False)
+    #
+    #     plg = self.polygon_border
+    #     df = pd.DataFrame(plg, columns=['x', 'y'])
+    #     df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/plg_xy.csv", index=False)
+    #
+    #     lat, lon = WGS.xy2latlon(grid[:, 0], grid[:, 1])
+    #     gd = np.stack((lat, lon), axis=1)
+    #     df = pd.DataFrame(gd, columns=['lat', 'lon'])
+    #     df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/grid.csv", index=False)
+    #
+    #     lat, lon = WGS.xy2latlon(plg[:, 0], plg[:, 1])
+    #     plb = np.stack((lat, lon), axis=1)
+    #     df = pd.DataFrame(plb, columns=['lat', 'lon'])
+    #     df.to_csv(os.getcwd() + "/../../EDA/OP2_LongHorizon/polygon.csv", index=False)
+    #     df
 
 
